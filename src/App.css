@@ -1,0 +1,15 @@
+.current-pres{
+  font-weight: bold
+}
+
+.current-chan{
+  font-style: italic
+}
+
+.prev-pres{
+  opacity: .5
+}
+
+.prev-chan{
+  opacity: .5
+}
