@@ -33,7 +33,7 @@ export default function Lobby({name, game, setGame, isConnected}) {
       try {
         await client.post(`/game/start/${id}`)
       } catch (err) {
-        throw new Error(err)
+        console.log(err)
       }
     }
   }
@@ -52,15 +52,20 @@ export default function Lobby({name, game, setGame, isConnected}) {
     }
 
     //called on cleanup - if leaving the lobby (takes into account may be leaving lobby to enter game)
-    function leaveGame(){
-      client.post(`/game/leave/${id}`, {socketId: socket.id, enteringGame: enteringGameRef.current})
+    async function leaveGame(){
+      try {
+        await client.post(`/game/leave/${id}`, {socketId: socket.id, enteringGame: enteringGameRef.current})
+      }
+      catch (err) {
+        console.log(err.response.data.message)
+      }
     }
 
     return () => {
       socket.off(UPDATE, handleUpdate)
       leaveGame()
     };
-  }, [id, navigate, setGame]) //will these be an issue causing dismout and leave game to be called?
+  }, []) //will these be an issue causing dismout and leave game to be called?
 
 
   //don't think this will ever get used since they should always get navigated to game
@@ -77,8 +82,6 @@ export default function Lobby({name, game, setGame, isConnected}) {
     }
   }
 
-  console.log(game?.gameType)
-
   return (
     <>
     {game?.status === Status.CREATED ?
@@ -93,7 +96,7 @@ export default function Lobby({name, game, setGame, isConnected}) {
       <ol>
         {players}
       </ol>
-      <button disabled={!game || game.players?.length < 1} onClick={startGame}>Start Game</button>
+      <button disabled={!game || game.players?.length < 2} onClick={startGame}>Start Game</button>
     </div> :
     <button onClick={goToGame}>Go to game</button> }
     </>

@@ -7,9 +7,37 @@
 }
 
 .prev-pres{
-  opacity: .5
+  text-decoration: underline
 }
 
 .prev-chan{
-  opacity: .5
+  text-decoration: underline;
+}
+
+.choosable-player{
+  cursor: pointer
+}
+
+.disconnected{
+  opacity: .3
+}
+
+.selected{
+  border: 3px solid black
+}
+
+.dead{
+  text-decoration: line-through
+}
+
+.Liberal{
+  color: blue
+}
+
+.Fascist{
+  color: red
+}
+
+.hitler{
+  color: darkred
 }

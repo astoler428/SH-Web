@@ -21,7 +21,6 @@ function App() {
       setIsConnected(true)
     })
     socket.on('disconnect', ()=>{
-      console.log('disconnected from app')
       setIsConnected(false)
     })
 

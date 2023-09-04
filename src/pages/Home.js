@@ -15,7 +15,7 @@ export default function Home({name, setName, isConnected, setIsLoading}) {
       navigate(`/lobby/${id}`)
     } catch (err) {
       setIsLoading(false)
-      throw new Error(err.response.data.message)
+      console.log(err.response.data.message)
     }
   }
 

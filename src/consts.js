@@ -8,19 +8,56 @@ export const UPDATE = 'UPDATE'
 
 export const Status = {
   CREATED: 'CREATED',
+  CHOOSE_CHAN: 'CHOOSE_CHAN',
+  PRES_CLAIM: 'PRES_CLAIM',
+  CHAN_CLAIM: 'CHAN_CLAIM',
   END_LIB: 'END_LIB',
   END_FASC: 'END_FASC',
-  CHOOSE_CHAN: 'CHOOSE_CHAN',
+  INV_CLAIM: 'INV_CLAIM',
   VOTE: 'VOTE',
+  VOTE_RESULT: 'VOTE_RESULT',
   PRES_DISCARD: 'PRES_DISCARD',
   CHAN_PLAY: 'CHAN_PLAY',
+  INV: 'INV',
   SE: 'SE',
   INSPECT_TOP3: 'INSPECT_TOP3',
   GUN: 'GUN',
   VETO_REQUEST: 'VETO_REQUEST',
+  VETO_DECLINED: 'VETO_DECLINED',
 }
 
 export const GameType = {
   BLIND: 'Blind',
   NORMAL: 'Normal'
 }
+
+export const Vote = {
+  JA: 'Ja',
+  NEIN: 'Nein'
+}
+
+export const Role = {
+  LIB: 'Liberal',
+  FASC: 'Fascist'
+}
+
+export const Color = {
+  RED: 'R',
+  BLUE: 'B'
+}
+
+export const Policy = {
+  LIB: 'Liberal',
+  FASC: 'Fascist'
+}
+
+export const BBB = 'BBB'
+export const RBB = 'RBB'
+export const RRB = 'RRB'
+export const RRR = 'RRR'
+export const BB = 'BB'
+export const RB = 'RB'
+export const RR = 'RR'
+
+export const draws3 = [RRR, RRB, RBB, BBB]
+export const draws2 = [RR, RB, BB]
