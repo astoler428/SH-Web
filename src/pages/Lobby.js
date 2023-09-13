@@ -1,15 +1,16 @@
 import React, {useEffect, useRef} from 'react'
 import { useParams } from 'react-router'
-import { UPDATE, Status, GameType } from '../consts'
+import { UPDATE, Status, GameType, GameSettings } from '../consts'
 import { socket } from '../socket'
 import { useNavigate } from "react-router-dom";
-import client from '../api/api';
+import client, {post} from '../api/api';
 
 export default function Lobby({name, game, setGame, isConnected}) {
   const navigate = useNavigate()
   const params = useParams()
   const id = params.id
   const enteringGameRef = useRef(false)
+  // const [gameSettings, setGameSettings] = useState({type: GameType.BLIND, libSpy: false, redDown: false, hitlerKnowsFasc: false})
 
   //join game (redundant but just in case someone navigates directly to the url)
   useEffect(()=>{
@@ -76,9 +77,16 @@ export default function Lobby({name, game, setGame, isConnected}) {
 
   const players = game?.players?.map(player => <li key={Math.random()}>{player.name}</li>)
 
-  function handleGameTypeChange(){
+  async function handleSettingsChange(propName){
     if(game.createdBy === name){
-      client.post(`/game/gameType/${id}`, {gameType: game.gameType === GameType.BLIND ? GameType.NORMAL : GameType.BLIND})
+      const propValue = propName === GameSettings.TYPE ? (game.settings.type === GameType.BLIND ? GameType.NORMAL : GameType.BLIND) : !game.settings[propName]
+
+      try {
+        await client.post(`/game/settings/${id}`, {gameSettings: {...game.settings, [propName]: propValue}})
+      }
+      catch (err) {
+        console.log(err.response.data.message)
+      }
     }
   }
 
@@ -89,14 +97,27 @@ export default function Lobby({name, game, setGame, isConnected}) {
       <label>GameId: {id} </label>
       <br/>
       <label> Blind
-        <input type="checkbox" checked={game.gameType === GameType.BLIND} onChange={handleGameTypeChange}/>
+        <input type="checkbox" checked={game.settings?.type === GameType.BLIND} onChange={(e)=> handleSettingsChange(GameSettings.TYPE)}/>
       </label>
+      <label> Begin with red on board
+        <input type="checkbox" checked={game.settings?.redDown} onChange={(e)=> handleSettingsChange(GameSettings.REDDOWN)}/>
+      </label>
+      { game.settings?.type === GameType.NORMAL &&
+      <>
+        <label> Liberal spy
+          <input type="checkbox" checked={game.settings?.libSpy} onChange={(e)=> handleSettingsChange(GameSettings.LIBSPY)}/>
+        </label>
+        <label> Hitler knows fasc in 7+
+          <input type="checkbox" checked={game.settings?.hitlerKnowsFasc} onChange={(e)=> handleSettingsChange(GameSettings.HITLERKNOWSFASC)}/>
+        </label>
+      </>
+    }
       <br/>
       <label>Players:</label>
       <ol>
         {players}
       </ol>
-      <button disabled={!game || game.players?.length < 2} onClick={startGame}>Start Game</button>
+      <button disabled={!game || game.players?.length < 5} onClick={startGame}>Start Game</button>
     </div> :
     <button onClick={goToGame}>Go to game</button> }
     </>

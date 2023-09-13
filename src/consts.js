@@ -31,14 +31,27 @@ export const GameType = {
   NORMAL: 'Normal'
 }
 
+export const GameSettings = {
+  TYPE: 'type',
+  LIBSPY: 'libSpy',
+  REDDOWN: 'redDown',
+  HITLERKNOWSFASC: 'hitlerKnowsFasc'
+}
+
 export const Vote = {
   JA: 'Ja',
   NEIN: 'Nein'
 }
 
+export const Team = {
+  LIB: 'Liberal',
+  FASC: 'Fascist',
+}
+
 export const Role = {
   LIB: 'Liberal',
-  FASC: 'Fascist'
+  FASC: 'Fascist',
+  HITLER: 'Hitler'
 }
 
 export const Color = {

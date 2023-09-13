@@ -5,16 +5,16 @@ import client from '../api/api'
 export default function Action({game, name, id}) {
 
   let action
-  const isCurrentPres = game.currentPres.name === name
-  const isCurrentChan = game.currentChan?.name === name
+  const isCurrentPres = game.currentPres === name
+  const isCurrentChan = game.currentChan === name
   const thisPlayer = game.players.find(player => player.name === name)
   if(game.status === Status.CREATED){
-    action = <div>Waiting for game to start</div>
+    action = <div>Waiting for the game to start</div>
   }
   else if(game.status === Status.CHOOSE_CHAN){
     action = isCurrentPres ?
     <div>Choose an eligible chancellor </div> :
-    <div> Waiting for {game.currentPres.name} to pick a chancellor</div>
+    <div> Waiting for {game.currentPres} to pick a chancellor</div>
   }
   else if(game.status === Status.VOTE && thisPlayer.alive){
     action =
@@ -26,59 +26,60 @@ export default function Action({game, name, id}) {
   else if(game.status === Status.PRES_DISCARD){
     action = isCurrentPres ?
     game.presCards.map(card => <button onClick={handlePresDiscard} key={Math.random()}>{card.color}</button>) :
-    <div>Waiting for the president to discard</div>
+    <div>Waiting for the {game.currentPres} to discard</div>
   }
   else if(game.status === Status.CHAN_PLAY || game.status === Status.VETO_DECLINED){
     action = isCurrentChan ?
     <>
       {game.chanCards.map(card => <button onClick={handleChanPlay} key={Math.random()}>{card.color}</button>)}
-      {game.fascistPoliciesEnacted === 5 && !(game.status === Status.VETO_DECLINED) && <button onClick={handleVetoRequest}>Request veto</button>}
+      {game.FascPoliciesEnacted === 5 && !(game.status === Status.VETO_DECLINED) && <button onClick={handleVetoRequest}>Request veto</button>}
     </> :
-    <div>Waiting for the chancellor to play</div>
+    <div>Waiting for {game.currentChan} to play</div>
   }
   else if(game.status === Status.CHAN_CLAIM){
     action = isCurrentChan ?
     [0,1,2].map((i) => <button onClick={handleChanClaim} key={Math.random()}>{draws2[i]}</button>) :
-    <div>Waiting for the chancellor to claim</div>
+    <div>Waiting for the {game.currentChan} to claim</div>
   }
   else if(game.status === Status.PRES_CLAIM){
     action = isCurrentPres ?
     [0,1,2,3].map((i) => <button onClick={handlePresClaim} key={Math.random()}>{draws3[i]}</button>) :
-    <div>Waiting for the president to claim.</div>
+    <div>Waiting for the {game.currentPres} to claim.</div>
   }
   else if(game.status === Status.INV){
     action = isCurrentPres ?
     <div>Choose a player to investigate </div> :
-    <div>Waiting for president to investigate</div>
+    <div>Waiting for {game.currentPres} to investigate</div>
   }
   else if(game.status === Status.INV_CLAIM){
-    const playerInvd = game.currentPres.investigations.slice(-1)[0]
+    const currentPres = game.players.find(player => player.name === game.currentPres)
+    const playerInvd = currentPres.investigations.slice(-1)[0]
     action = isCurrentPres ?
     <>
-      <div>{playerInvd.name} is a {playerInvd.role}. Make your claim </div>
+      <div>{playerInvd.name} is a {playerInvd.team}. Make your claim </div>
       <button onClick={()=> handleInvClaim(Role.LIB)} >Liberal</button>
       <button onClick={()=> handleInvClaim(Role.FASC)}>Fascist</button>
     </> :
-    <div>Waiting for president to claim investigation.</div>
+    <div>Waiting for {game.currentPres} to claim investigation.</div>
   }
   else if(game.status === Status.SE){
     action = isCurrentPres ?
     <div>Choose a player to special elect</div> :
-    <div>Waiting for president to special elect</div>
+    <div>Waiting for {game.currentPres} to special elect</div>
   }
   else if(game.status === Status.GUN){
     action = isCurrentPres ?
     <div>Choose a player to shoot</div> :
-    <div>Waiting for president to shoot</div>
+    <div>Waiting for {game.currentPres} to shoot</div>
   }
   else if(game.status === Status.INSPECT_TOP3){
     action = isCurrentPres ?
     <>
     <div>Here are the top 3 policies in order. Make a claim. </div>
-    {game.top3.map((card) => <label>{card.color}</label>)}
-    {[0,1,2,3].map((i) => <button onClick={handleInspect3Claim} key={Math.random()}>{draws3[i]}</button>)}
+    {game.top3.map((card) => <label key={Math.random()}>{card.color}</label>)}
+    {[0,1,2,3].map((i) => <button key={i} onClick={handleInspect3Claim}>{draws3[i]}</button>)}
     </> :
-    <div>Waiting for president to look at top 3</div>
+    <div>Waiting for {game.currentPres} to look at top 3</div>
   }
   //may not need this - in logs
   else if(game.status === Status.END_FASC || game.status === Status.END_LIB){
@@ -88,12 +89,12 @@ export default function Action({game, name, id}) {
   else if(game.status === Status.VETO_REQUEST){
     action = isCurrentPres ?
     <>
-    <div>Your chancellor requests a veto.</div>
+    <div>{game.currentChan} requests a veto.</div>
      <button onClick={()=>handleVetoReply(true)}>Accept</button>
       <button onClick={()=>handleVetoReply(false)}>Decline</button>
     </>
      :
-    <div>Waiting for president to decide on veto</div>
+    <div>Waiting for {game.currentPres} to decide on veto</div>
   }
 
 

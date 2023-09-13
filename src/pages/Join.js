@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import { useNavigate } from "react-router-dom";
 import client from '../api/api'
 import { socket } from '../socket'
@@ -8,6 +8,8 @@ export default function Join({name, setIsLoading}) {
   const navigate = useNavigate();
   const [id, setId] = useState("")
   const [error, setError] = useState(null)
+  const gameIdInputRef = useRef()
+
 
   async function handleJoin(){
     try {
@@ -27,9 +29,13 @@ export default function Join({name, setIsLoading}) {
     }
   }
 
+  useEffect(()=>{
+    gameIdInputRef.current.focus()
+  },[])
+
   return (
     <div>
-      <input placeholder="Game ID" value={id} onChange={(e)=>setId(e.target.value)} />
+      <input ref={gameIdInputRef} placeholder="Game ID" value={id} onChange={(e)=>setId(e.target.value)} />
       <button disabled={id.length !== 4} onClick={handleJoin}>Join Game</button>
       <div>{error}</div>
     </div>
