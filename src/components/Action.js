@@ -1,8 +1,8 @@
 import React from 'react'
-import { Role, Status, Vote, draws2, draws3 } from '../consts'
-import client from '../api/api'
+import { Color, Role, Team, Status, Vote, draws2, draws3, GameType } from '../consts'
+import {post} from '../api/api'
 
-export default function Action({game, name, id}) {
+export default function Action({game, name, id, mySetMessage}) {
 
   let action
   const isCurrentPres = game.currentPres === name
@@ -81,7 +81,6 @@ export default function Action({game, name, id}) {
     </> :
     <div>Waiting for {game.currentPres} to look at top 3</div>
   }
-  //may not need this - in logs
   else if(game.status === Status.END_FASC || game.status === Status.END_LIB){
     const winners = game.status === Status.END_FASC ? "Fascists" : "Liberals"
     action = <div>Game over. {winners} win!</div>
@@ -97,92 +96,86 @@ export default function Action({game, name, id}) {
     <div>Waiting for {game.currentPres} to decide on veto</div>
   }
 
+  function validDiscardDueToMixedRole(cardColor){
+    if(game.settings.type !== GameType.MIXED_ROLES){
+      return true
+    }
+    if(thisPlayer.team === Team.LIB && thisPlayer.role == Role.FASC){
+      //lib who has to play red is either discarding a blue or they are all red
+      return cardColor === Color.BLUE || game.presCards.every(card => card.color === Color.RED)
+    }
+    else if(thisPlayer.team === Team.FASC && thisPlayer.role === Role.LIB){
+      //fasc who has to play blue unless all red
+      return cardColor === Color.RED || game.presCards.every(card => card.color === Color.BLUE)
+    }
+    return true
+  }
+
+  function validPlayDueToMixedRole(cardColor){
+    if(game.settings.type !== GameType.MIXED_ROLES){
+      return true
+    }
+    if(thisPlayer.team === Team.LIB && thisPlayer.role == Role.FASC){
+      //lib who has to play red is either discarding a blue or they are all red
+      return cardColor === Color.RED || game.chanCards.every(card => card.color === Color.BLUE)
+    }
+    else if(thisPlayer.team === Team.FASC && thisPlayer.role == Role.LIB){
+      //fasc who has to play blue unless all red
+      return cardColor === Color.BLUE || game.chanCards.every(card => card.color === Color.RED)
+    }
+    return true
+  }
 
 
   async function handleVote(vote){
-    try {
-      await client.post(`/game/vote/${id}`, {name, vote})
-    }
-    catch (err) {
-      console.log(err.response.data.message)
-    }
+    await post(`/game/vote/${id}`, {name, vote})
   }
 
   async function handlePresDiscard(e){
     const cardColor = e.target.textContent
-    try {
-      await client.post(`/game/presDiscard/${id}`, {cardColor})
+    if(validDiscardDueToMixedRole(cardColor)){
+      await post(`/game/presDiscard/${id}`, {cardColor})
     }
-    catch (err) {
-      console.log(err.response.data.message)
+    else{
+      mySetMessage(`You cannot discard a ${cardColor}`)
     }
   }
 
   async function handleChanPlay(e){
     const cardColor = e.target.textContent
-    try {
-      await client.post(`/game/chanPlay/${id}`, {cardColor})
+    if(validPlayDueToMixedRole(cardColor)){
+      await post(`/game/chanPlay/${id}`, {cardColor})
     }
-    catch (err) {
-      console.log(err.response.data.message)
+    else{
+      mySetMessage(`You cannot play a ${cardColor}`)
     }
   }
 
   async function handlePresClaim(e){
     const claim = e.target.textContent
-    try {
-      await client.post(`/game/presClaim/${id}`, {claim})
-    }
-    catch (err) {
-      console.log(err.response.data.message)
-    }
+    await post(`/game/presClaim/${id}`, {claim})
   }
 
   async function handleChanClaim(e){
     const claim = e.target.textContent
-    try {
-      await client.post(`/game/chanClaim/${id}`, {claim})
-    }
-    catch (err) {
-      console.log(err.response.data.message)
-    }
+    await post(`/game/chanClaim/${id}`, {claim})
   }
 
   async function handleInvClaim(role){
-    try {
-      await client.post(`/game/invClaim/${id}`, {claim: role})
-    }
-    catch (err) {
-      console.log(err.response.data.message)
-    }
+    await post(`/game/invClaim/${id}`, {claim: role})
   }
 
   async function handleInspect3Claim(e){
     const claim = e.target.textContent
-    try {
-      await client.post(`/game/inspect3Claim/${id}`, {claim})
-    }
-    catch (err) {
-      console.log(err.response.data.message)
-    }
+    await post(`/game/inspect3Claim/${id}`, {claim})
   }
 
   async function handleVetoRequest(){
-    try {
-      await client.post(`/game/vetoRequest/${id}`)
-    }
-    catch (err) {
-      console.log(err.response.data.message)
-    }
+    await post(`/game/vetoRequest/${id}`)
   }
 
   async function handleVetoReply(vetoAccepted){
-    try {
-      await client.post(`/game/vetoReply/${id}`, {vetoAccepted})
-    }
-    catch (err) {
-      console.log(err.response.data.message)
-    }
+    await post(`/game/vetoReply/${id}`, {vetoAccepted})
   }
 
   return (

@@ -2,7 +2,7 @@ import React from 'react'
 import {Status, Role, Team} from '../consts'
 
 
-export default function Players({name, game, handleChoosePlayer}) {
+export default function Players({name, game, handleChoosePlayer, message}) {
   const choosing = game.currentPres === name &&
   (game.status === Status.CHOOSE_CHAN ||
    game.status === Status.INV ||
@@ -56,15 +56,15 @@ export default function Players({name, game, handleChoosePlayer}) {
     }
     //show your own role
     if(player.name === name){
-      cls += ` ${player.role} `
+      cls += ` ${player.role === Role.HITLER ? player.role : player.team} `
     }
     const thisPlayerInvestigatedPlayer = thisPlayer.investigations.some(invName => invName === player.name)
     if(thisPlayerInvestigatedPlayer){
       cls += ` ${player.team} `
     }
     //fasc see other fasc
-    if(player.team === Team.FASC && (thisPlayer.role === Role.FASC || game.settings.hitlerKnowsFasc || (game.players.length < 7 && thisPlayer.role === Role.HITLER))){
-      cls += ` ${player.role} `
+    if(player.team === Team.FASC && thisPlayer.team === Team.FASC && (thisPlayer.role !== Role.HITLER || game.settings.hitlerKnowsFasc || (game.players.length < 7))){
+      cls += ` ${player.role === Role.HITLER ? player.role : player.team} `
     }
 
     return <li key={player.name}>
@@ -75,7 +75,7 @@ export default function Players({name, game, handleChoosePlayer}) {
       </li>
   })
 
-
+console.log(game.players)
 
   return (
     <div>
@@ -83,6 +83,7 @@ export default function Players({name, game, handleChoosePlayer}) {
       <ol>
         {renderPlayers}
       </ol>
+      {message}
     </div>
   )
 }

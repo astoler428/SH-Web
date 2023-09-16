@@ -1,9 +1,9 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import { useNavigate } from "react-router-dom";
 import { useParams } from 'react-router'
-import client from '../api/api'
+import client, {post} from '../api/api'
 import { socket } from '../socket'
-import {Status, UPDATE} from '../consts'
+import {GameType, Status, UPDATE} from '../consts'
 import Players from '../components/Players';
 import Board from '../components/Board';
 import Action from '../components/Action';
@@ -16,7 +16,12 @@ export default function Game({name, game, setGame, isConnected}) {
   const id = params.id
   const isCurrentPres = game?.currentPres === name
   const thisPlayer = game?.players.find(player => player.name === name)
-  let message = ""
+  const [message, setMessage] = useState("")
+
+  const mySetMessage = (newMessage) => {
+    setMessage(newMessage)
+    setTimeout(()=> setMessage(""), 2000)
+  }
 
   //redundant join by just in case someone navigates directly or refreshes page
   useEffect(()=>{
@@ -40,11 +45,12 @@ export default function Game({name, game, setGame, isConnected}) {
     socket.on(UPDATE, (game) => setGame(game))
 
     async function leaveGame(){
-      try {
-        await client.post(`/game/leave/${id}`, {socketId: socket.id, enteringGame: false})
-      } catch (err) {
-        console.log(err.response.data.message)
-      }
+      await post(`/game/leave/${id}`, {socketId: socket.id, enteringGame: false})
+      // try {
+      //   await client.post(`/game/leave/${id}`, {socketId: socket.id, enteringGame: false})
+      // } catch (err) {
+      //   console.log(err.response.data.message)
+      // }
     }
     return () => {
       socket.off(UPDATE, (game) => setGame(game));
@@ -74,46 +80,26 @@ export default function Game({name, game, setGame, isConnected}) {
 
   async function handleChooseChan(chosenPlayer){
     if(chosenPlayer.name === game.prevPres || chosenPlayer.name === game.prevChan){
-      message = 'You must choose an eligible chancellor.'
+      mySetMessage('You must choose an eligible chancellor.')
       return
     }
-    try {
-      await client.post(`/game/chooseChan/${id}`, {chanName: chosenPlayer.name})
-    }
-    catch (err) {
-      console.log(err.response.data.message)
-    }
+    await post(`/game/chooseChan/${id}`, {chanName: chosenPlayer.name})
   }
 
   async function handleChooseInv(chosenPlayer){
     if(chosenPlayer.investigated){
-      message = "This player has already been investigated."
+      mySetMessage("This player has already been investigated.")
       return
     }
-    try {
-      await client.post(`/game/chooseInv/${id}`, {invName: chosenPlayer.name})
-    }
-    catch (err) {
-      console.log(err.response.data.message)
-    }
+    await post(`/game/chooseInv/${id}`, {invName: chosenPlayer.name})
   }
 
   async function handleChooseSE(chosenPlayer){
-    try {
-      await client.post(`/game/chooseSE/${id}`, {seName: chosenPlayer.name})
-    }
-    catch (err) {
-      console.log(err.response.data.message)
-    }
+    await post(`/game/chooseSE/${id}`, {seName: chosenPlayer.name})
   }
 
   async function handleChooseGun(chosenPlayer){
-    try {
-      await client.post(`/game/chooseGun/${id}`, {shotName: chosenPlayer.name})
-    }
-    catch (err) {
-      console.log(err.response.data.message)
-    }
+    await post(`/game/chooseGun/${id}`, {shotName: chosenPlayer.name})
   }
 
   return (
@@ -122,12 +108,22 @@ export default function Game({name, game, setGame, isConnected}) {
     <div>
       <label> GameId: {id} </label>
       <div>Name: {name}</div>
-      <div>Role: {thisPlayer.role}</div>
-      <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer}/>
+      <div>
+        {game.settings.type === GameType.MIXED_ROLES ? (
+          <div>
+            Team: {thisPlayer.team}, Role: {thisPlayer.role}
+          </div>) :
+          (
+          <div>
+            Role: {thisPlayer.role}
+          </div>
+          )
+        }
+      </div>
+      <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} message={message}/>
       <Board game={game}/>
-      <Action game={game} name={name} id={id}/>
+      <Action game={game} name={name} id={id} mySetMessage={mySetMessage}/>
       <Log game={game}/>
-      <div>{message}</div>
     </div>
     : <Loading/>
      }

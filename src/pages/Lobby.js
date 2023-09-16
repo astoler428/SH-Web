@@ -31,11 +31,13 @@ export default function Lobby({name, game, setGame, isConnected}) {
   //click listener to start the game - a socket message update comes in causing navigation
   async function startGame(){
     if(game.createdBy === name){
-      try {
-        await client.post(`/game/start/${id}`)
-      } catch (err) {
-        console.log(err)
-      }
+      await post(`/game/start/${id}`)
+
+      // try {
+      //   await client.post(`/game/start/${id}`)
+      // } catch (err) {
+      //   console.log(err)
+      // }
     }
   }
 
@@ -54,12 +56,13 @@ export default function Lobby({name, game, setGame, isConnected}) {
 
     //called on cleanup - if leaving the lobby (takes into account may be leaving lobby to enter game)
     async function leaveGame(){
-      try {
-        await client.post(`/game/leave/${id}`, {socketId: socket.id, enteringGame: enteringGameRef.current})
-      }
-      catch (err) {
-        console.log(err.response.data.message)
-      }
+      await post(`/game/leave/${id}`, {socketId: socket.id, enteringGame: enteringGameRef.current})
+      // try {
+      //   await client.post(`/game/leave/${id}`, {socketId: socket.id, enteringGame: enteringGameRef.current})
+      // }
+      // catch (err) {
+      //   console.log(err.response.data.message)
+      // }
     }
 
     return () => {
@@ -77,36 +80,34 @@ export default function Lobby({name, game, setGame, isConnected}) {
 
   const players = game?.players?.map(player => <li key={Math.random()}>{player.name}</li>)
 
-  async function handleSettingsChange(propName){
+  async function handleSettingsChange(propName, propValue){
     if(game.createdBy === name){
-      const propValue = propName === GameSettings.TYPE ? (game.settings.type === GameType.BLIND ? GameType.NORMAL : GameType.BLIND) : !game.settings[propName]
-
-      try {
-        await client.post(`/game/settings/${id}`, {gameSettings: {...game.settings, [propName]: propValue}})
-      }
-      catch (err) {
-        console.log(err.response.data.message)
-      }
-    }
+      propValue = propName === GameSettings.TYPE ? propValue : !game.settings[propName]
+      await post(`/game/settings/${id}`, {gameSettings: {...game.settings, [propName]: propValue}})
   }
+}
 
+//change handleSettingsChange
   return (
     <>
     {game?.status === Status.CREATED ?
     <div>
       <label>GameId: {id} </label>
       <br/>
-      <label> Blind
-        <input type="checkbox" checked={game.settings?.type === GameType.BLIND} onChange={(e)=> handleSettingsChange(GameSettings.TYPE)}/>
-      </label>
+      <label htmlFor='gameType'>Choose Game Type:</label>
+      <select name='gameType' value={game.settings.type} onChange={(e)=> handleSettingsChange(GameSettings.TYPE, e.target.value)}>
+        <option>{GameType.BLIND}</option>
+        <option>{GameType.NORMAL}</option>
+        <option>{GameType.LIB_SPY}</option>
+        <option>{GameType.MIXED_ROLES}</option>
+    </select>
+
+
       <label> Begin with red on board
         <input type="checkbox" checked={game.settings?.redDown} onChange={(e)=> handleSettingsChange(GameSettings.REDDOWN)}/>
       </label>
-      { game.settings?.type === GameType.NORMAL &&
+      { game.settings?.type !== GameType.BLIND &&
       <>
-        <label> Liberal spy
-          <input type="checkbox" checked={game.settings?.libSpy} onChange={(e)=> handleSettingsChange(GameSettings.LIBSPY)}/>
-        </label>
         <label> Hitler knows fasc in 7+
           <input type="checkbox" checked={game.settings?.hitlerKnowsFasc} onChange={(e)=> handleSettingsChange(GameSettings.HITLERKNOWSFASC)}/>
         </label>
@@ -120,6 +121,7 @@ export default function Lobby({name, game, setGame, isConnected}) {
       <button disabled={!game || game.players?.length < 5} onClick={startGame}>Start Game</button>
     </div> :
     <button onClick={goToGame}>Go to game</button> }
+
     </>
   )
 }

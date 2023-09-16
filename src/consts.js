@@ -28,12 +28,13 @@ export const Status = {
 
 export const GameType = {
   BLIND: 'Blind',
-  NORMAL: 'Normal'
+  NORMAL: 'Normal',
+  LIB_SPY: 'Liberal Spy',
+  MIXED_ROLES: 'Mixed Roles'
 }
 
 export const GameSettings = {
   TYPE: 'type',
-  LIBSPY: 'libSpy',
   REDDOWN: 'redDown',
   HITLERKNOWSFASC: 'hitlerKnowsFasc'
 }
