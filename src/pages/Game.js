@@ -33,7 +33,7 @@ export default function Game({name, game, setGame, isConnected}) {
         await client.post(`/game/join/${id}`, {name, socketId: socket.id})
       }
       catch (err) {
-        console.log(err.response.data.message)
+        console.log(err?.response?.data?.message)
         navigate('/')
       }
     }
@@ -46,11 +46,6 @@ export default function Game({name, game, setGame, isConnected}) {
 
     async function leaveGame(){
       await post(`/game/leave/${id}`, {socketId: socket.id, enteringGame: false})
-      // try {
-      //   await client.post(`/game/leave/${id}`, {socketId: socket.id, enteringGame: false})
-      // } catch (err) {
-      //   console.log(err.response.data.message)
-      // }
     }
     return () => {
       socket.off(UPDATE, (game) => setGame(game));
@@ -61,6 +56,7 @@ export default function Game({name, game, setGame, isConnected}) {
   function handleChoosePlayer(e){
     let chosenName = e.target.textContent
     let chosenPlayer = game.players.find(player => player.name === chosenName)
+    //perhaps in blind version you can choose yourself to inv
     if(!isCurrentPres || chosenPlayer.name === thisPlayer.name || !chosenPlayer.alive){
       return
     }
@@ -68,7 +64,7 @@ export default function Game({name, game, setGame, isConnected}) {
       handleChooseChan(chosenPlayer)
     }
     else if(game.status === Status.INV){
-        handleChooseInv(chosenPlayer)
+      handleChooseInv(chosenPlayer)
     }
     else if(game.status === Status.SE){
       handleChooseSE(chosenPlayer)
@@ -102,6 +98,12 @@ export default function Game({name, game, setGame, isConnected}) {
     await post(`/game/chooseGun/${id}`, {shotName: chosenPlayer.name})
   }
 
+  async function handleConfirmFasc(){
+    if(window.confirm("Are you sure? If you are wrong, the liberals lose.")){
+      await post(`/game/confirmFasc/${id}`, {name: thisPlayer.name})
+    }
+  }
+
   return (
       <>
     {game && game.status !== Status.CREATED ?
@@ -109,19 +111,26 @@ export default function Game({name, game, setGame, isConnected}) {
       <label> GameId: {id} </label>
       <div>Name: {name}</div>
       <div>
-        {game.settings.type === GameType.MIXED_ROLES ? (
-          <div>
-            Team: {thisPlayer.team}, Role: {thisPlayer.role}
-          </div>) :
-          (
-          <div>
-            Role: {thisPlayer.role}
-          </div>
-          )
+        {game.settings.type === GameType.BLIND ?
+        <div>
+          <label>Role: {thisPlayer.role}</label>
+          {thisPlayer.confirmedFasc ? <span>{thisPlayer.role}</span> : <button onClick={handleConfirmFasc}>Confirm Fasc?</button>}
+        </div> :
+        game.settings.type === GameType.MIXED_ROLES ? (
+        <div>
+          Team: {thisPlayer.team}, Role: {thisPlayer.role}
+        </div>
+        ) :
+        (
+        <div>
+          Role: {thisPlayer.role}
+        </div>
+        )
         }
       </div>
-      <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} message={message}/>
+      <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer}/>
       <Board game={game}/>
+      <div>{message}</div>
       <Action game={game} name={name} id={id} mySetMessage={mySetMessage}/>
       <Log game={game}/>
     </div>
@@ -130,3 +139,9 @@ export default function Game({name, game, setGame, isConnected}) {
     </>
   )
 }
+
+
+/**
+ * currently showing role on blind to see
+ * currently only 1 vote and it either passes or fails
+ */

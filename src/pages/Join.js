@@ -25,7 +25,7 @@ export default function Join({name, setIsLoading}) {
       }
     } catch (err) {
       setIsLoading(false)
-      setError(err.response.data.message)
+      setError(err?.response?.data?.message)
     }
   }
 

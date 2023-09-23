@@ -1,8 +1,8 @@
 import React from 'react'
-import {Status, Role, Team} from '../consts'
+import {Status, Role, Team, GameType} from '../consts'
 
 
-export default function Players({name, game, handleChoosePlayer, message}) {
+export default function Players({name, game, handleChoosePlayer}) {
   const choosing = game.currentPres === name &&
   (game.status === Status.CHOOSE_CHAN ||
    game.status === Status.INV ||
@@ -55,7 +55,7 @@ export default function Players({name, game, handleChoosePlayer, message}) {
       cls += " current-pres "
     }
     //show your own role
-    if(player.name === name){
+    if(player.name === name && showOwnRole(player)){
       cls += ` ${player.role === Role.HITLER ? player.role : player.team} `
     }
     const thisPlayerInvestigatedPlayer = thisPlayer.investigations.some(invName => invName === player.name)
@@ -63,8 +63,11 @@ export default function Players({name, game, handleChoosePlayer, message}) {
       cls += ` ${player.team} `
     }
     //fasc see other fasc
-    if(player.team === Team.FASC && thisPlayer.team === Team.FASC && (thisPlayer.role !== Role.HITLER || game.settings.hitlerKnowsFasc || (game.players.length < 7))){
+    if(player.name !== name && player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)){
       cls += ` ${player.role === Role.HITLER ? player.role : player.team} `
+      if(player.confirmedFasc){
+        cls += ` confirmed `
+      }
     }
 
     return <li key={player.name}>
@@ -75,7 +78,24 @@ export default function Players({name, game, handleChoosePlayer, message}) {
       </li>
   })
 
-console.log(game.players)
+  function showOwnRole(player){
+    return game.settings.type !== GameType.BLIND || player.confirmedFasc
+  }
+
+  function showOtherFasc(fascPlayer, otherFasc){
+    if(game.settings.type !== GameType.BLIND){
+      return fascPlayer.role !== Role.HITLER || game.settings.hitlerKnowsFasc
+    }
+    if(!fascPlayer.confirmedFasc){
+      return false
+    }
+    if(fascPlayer.omniFasc){
+      return true
+    }
+    if((fascPlayer.role !== Role.HITLER || game.settings.hitlerKnowsFasc) && (otherFasc.confirmedFasc || otherFasc.role === Role.HITLER)){
+      return true
+    }
+  }
 
   return (
     <div>
@@ -83,7 +103,6 @@ console.log(game.players)
       <ol>
         {renderPlayers}
       </ol>
-      {message}
     </div>
   )
 }

@@ -22,7 +22,7 @@ export const Status = {
   SE: 'SE',
   INSPECT_TOP3: 'INSPECT_TOP3',
   GUN: 'GUN',
-  VETO_REQUEST: 'VETO_REQUEST',
+  VETO_REPLY: 'VETO_REPLY',
   VETO_DECLINED: 'VETO_DECLINED',
 }
 
@@ -36,7 +36,8 @@ export const GameType = {
 export const GameSettings = {
   TYPE: 'type',
   REDDOWN: 'redDown',
-  HITLERKNOWSFASC: 'hitlerKnowsFasc'
+  HITLERKNOWSFASC: 'hitlerKnowsFasc',
+  SIMPLEBLIND: 'simpleBlind',
 }
 
 export const Vote = {

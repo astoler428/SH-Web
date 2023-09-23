@@ -1,0 +1,19 @@
+"filename", "language", "JavaScript", "CSS", "comment", "blank", "total"
+"/Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/App.css", "CSS", 0, 33, 0, 10, 43
+"/Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/App.js", "JavaScript", 68, 0, 0, 8, 76
+"/Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/App.test.js", "JavaScript", 7, 0, 0, 2, 9
+"/Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/api/api.js", "JavaScript", 17, 0, 0, 3, 20
+"/Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/components/Action.js", "JavaScript", 167, 0, 4, 17, 188
+"/Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/components/Board.js", "JavaScript", 12, 0, 0, 3, 15
+"/Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/components/Loading.js", "JavaScript", 8, 0, 0, 2, 10
+"/Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/components/Log.js", "JavaScript", 8, 0, 0, 2, 10
+"/Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/components/Players.js", "JavaScript", 77, 0, 2, 11, 90
+"/Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/consts.js", "JavaScript", 67, 0, 0, 10, 77
+"/Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/index.css", "CSS", 0, 12, 0, 2, 14
+"/Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/index.js", "JavaScript", 11, 0, 0, 2, 13
+"/Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/pages/Game.js", "JavaScript", 113, 0, 7, 13, 133
+"/Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/pages/Home.js", "JavaScript", 36, 0, 0, 7, 43
+"/Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/pages/Join.js", "JavaScript", 38, 0, 0, 6, 44
+"/Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/pages/Lobby.js", "JavaScript", 92, 0, 19, 17, 128
+"/Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/socket.js", "JavaScript", 2, 0, 0, 2, 4
+"Total", "-", 723, 45, 32, 117, 917

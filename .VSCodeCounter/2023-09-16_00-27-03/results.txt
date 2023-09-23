@@ -1,0 +1,46 @@
+Date : 2023-09-16 00:27:03
+Directory : /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src
+Total : 17 files,  768 codes, 32 comments, 117 blanks, all 917 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| JavaScript |         15 |        723 |         32 |        105 |        860 |
+| CSS        |          2 |         45 |          0 |         12 |         57 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                    | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                       |         17 |        768 |         32 |        117 |        917 |
+| . (Files)                                                                               |          7 |        200 |          0 |         36 |        236 |
+| api                                                                                     |          1 |         17 |          0 |          3 |         20 |
+| components                                                                              |          5 |        272 |          6 |         35 |        313 |
+| pages                                                                                   |          4 |        279 |         26 |         43 |        348 |
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                | language   | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/App.css               | CSS        |         33 |          0 |         10 |         43 |
+| /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/App.js                | JavaScript |         68 |          0 |          8 |         76 |
+| /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/App.test.js           | JavaScript |          7 |          0 |          2 |          9 |
+| /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/api/api.js            | JavaScript |         17 |          0 |          3 |         20 |
+| /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/components/Action.js  | JavaScript |        167 |          4 |         17 |        188 |
+| /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/components/Board.js   | JavaScript |         12 |          0 |          3 |         15 |
+| /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/components/Loading.js | JavaScript |          8 |          0 |          2 |         10 |
+| /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/components/Log.js     | JavaScript |          8 |          0 |          2 |         10 |
+| /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/components/Players.js | JavaScript |         77 |          2 |         11 |         90 |
+| /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/consts.js             | JavaScript |         67 |          0 |         10 |         77 |
+| /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/index.css             | CSS        |         12 |          0 |          2 |         14 |
+| /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/index.js              | JavaScript |         11 |          0 |          2 |         13 |
+| /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/pages/Game.js         | JavaScript |        113 |          7 |         13 |        133 |
+| /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/pages/Home.js         | JavaScript |         36 |          0 |          7 |         43 |
+| /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/pages/Join.js         | JavaScript |         38 |          0 |          6 |         44 |
+| /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/pages/Lobby.js        | JavaScript |         92 |         19 |         17 |        128 |
+| /Users/aristoler/Desktop/Coding/Personal Projects/blindSH-web/src/socket.js             | JavaScript |          2 |          0 |          2 |          4 |
+| Total                                                                                   |            |        768 |         32 |        117 |        917 |
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

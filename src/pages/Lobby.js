@@ -22,7 +22,7 @@ export default function Lobby({name, game, setGame, isConnected}) {
         await client.post(`/game/join/${id}`, {name, socketId: socket.id})
       }
       catch (err) {
-        console.log(err.response.data.message)
+        console.log(err?.response?.data?.message)
         navigate('/')
       }
     }
@@ -106,6 +106,13 @@ export default function Lobby({name, game, setGame, isConnected}) {
       <label> Begin with red on board
         <input type="checkbox" checked={game.settings?.redDown} onChange={(e)=> handleSettingsChange(GameSettings.REDDOWN)}/>
       </label>
+      { game.settings?.type === GameType.BLIND &&
+      <>
+        <label> Simple Blind
+          <input type="checkbox" checked={game.settings?.simpleBlind} onChange={(e)=> handleSettingsChange(GameSettings.SIMPLEBLIND)}/>
+        </label>
+      </>
+    }
       { game.settings?.type !== GameType.BLIND &&
       <>
         <label> Hitler knows fasc in 7+
