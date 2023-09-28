@@ -2,6 +2,7 @@ import React, {useEffect, useRef} from 'react'
 import { useNavigate } from "react-router-dom";
 import { socket } from '../socket';
 import client from '../api/api'
+import {Typography} from '@mui/material'
 
 export default function Home({name, setName, isConnected, setIsLoading}) {
   const navigate = useNavigate();

@@ -125,7 +125,7 @@ export default function Lobby({name, game, setGame, isConnected}) {
       <ol>
         {players}
       </ol>
-      <button disabled={!game || game.players?.length < 5} onClick={startGame}>Start Game</button>
+      <button disabled={!game || game.players?.length < 5} onClick={startGame}>{game.createdBy === name ? "Start Game" : `Waiting for ${game.createdBy} to start the game`}</button>
     </div> :
     <button onClick={goToGame}>Go to game</button> }
 

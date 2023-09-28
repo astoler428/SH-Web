@@ -9,6 +9,7 @@ import Board from '../components/Board';
 import Action from '../components/Action';
 import Log from '../components/Log';
 import Loading from '../components/Loading';
+import Chat from '../components/Chat';
 
 export default function Game({name, game, setGame, isConnected}) {
   const navigate = useNavigate()
@@ -133,6 +134,7 @@ export default function Game({name, game, setGame, isConnected}) {
       <div>{message}</div>
       <Action game={game} name={name} id={id} mySetMessage={mySetMessage}/>
       <Log game={game}/>
+      <Chat game={game} name={name}/>
     </div>
     : <Loading/>
      }
