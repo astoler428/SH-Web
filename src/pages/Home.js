@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from 'react'
 import { useNavigate } from "react-router-dom";
 import { socket } from '../socket';
 import client from '../api/api'
-import {Typography} from '@mui/material'
+import {Typography, CssBaseline, Container} from '@mui/material'
 
 export default function Home({name, setName, isConnected, setIsLoading}) {
   const navigate = useNavigate();
@@ -32,12 +32,15 @@ export default function Home({name, setName, isConnected, setIsLoading}) {
   }, [])
 
   return (
-    <div>
-      <label>{isConnected ? `Connected` : `Not connected`}</label>
-      <input ref={nameInputRef} placeholder="Name" value={name} onChange={handleInputChange} />
-      <button disabled={!name} onClick={createGame}>Create Game</button>
-      <button disabled={!name} onClick={()=> navigate('/join')}>Join Game</button>
-    </div>
+    <>
+      <CssBaseline />
+      <Container maxWidth="sm">
+        <label>{isConnected ? `Connected` : `Not connected`}</label>
+        <input ref={nameInputRef} placeholder="Name" value={name} onChange={handleInputChange} />
+        <button disabled={!name} onClick={createGame}>Create Game</button>
+        <button disabled={!name} onClick={()=> navigate('/join')}>Join Game</button>
+      </Container>
+    </>
   )
 }
 
