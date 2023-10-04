@@ -1,9 +1,10 @@
 import React from 'react'
+import {Box, CircularProgress} from '@mui/material'
 
 export default function Loading() {
   return (
-    <div>
-      Loading...
-    </div>
+    <Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+      <CircularProgress size={100} />
+    </Box>
   )
 }

@@ -1,14 +1,15 @@
-import React, {useState, useRef, useEffect} from 'react'
+import React, {useState} from 'react'
 import { useNavigate } from "react-router-dom";
 import client from '../api/api'
 import { socket } from '../socket'
 import { Status } from '../consts'
+import {Typography, CssBaseline, IconButton, Snackbar, Box, TextField, Button} from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close';
 
 export default function Join({name, setIsLoading}) {
   const navigate = useNavigate();
   const [id, setId] = useState("")
   const [error, setError] = useState(null)
-  const gameIdInputRef = useRef()
 
 
   async function handleJoin(){
@@ -29,15 +30,59 @@ export default function Join({name, setIsLoading}) {
     }
   }
 
-  useEffect(()=>{
-    gameIdInputRef.current.focus()
-  },[])
+  const handleClose = () => setError(null)
+
+  const action = (
+    <React.Fragment>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
 
   return (
-    <div>
-      <input ref={gameIdInputRef} placeholder="Game ID" value={id} onChange={(e)=>setId(e.target.value)} />
-      <button disabled={id.length !== 4} onClick={handleJoin}>Join Game</button>
-      <div>{error}</div>
-    </div>
+    <Box sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: '100vh'
+    }}>
+      <Box sx={{
+        display:"flex",
+        flexDirection:"row",
+        flexWrap:"wrap",
+        width:320,
+        gap:2
+      }}>
+        <TextField
+          autoFocus
+          label="Game ID"
+          value={id}
+          onChange={(e)=>setId(e.target.value.toUpperCase())}
+          fullWidth
+          required
+          />
+        <Button
+          fullWidth
+          variant='contained'
+          disabled={id.length !== 4}
+          onClick={handleJoin}
+          >
+            Join Game
+        </Button>
+      </Box>
+      <Snackbar
+        open={error !== null}
+        onClose={handleClose}
+        message={error}
+        autoHideDuration={5000}
+        action={action}
+      />
+    </Box>
   )
 }

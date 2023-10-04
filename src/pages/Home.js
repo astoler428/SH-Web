@@ -2,7 +2,16 @@ import React, {useEffect, useRef} from 'react'
 import { useNavigate } from "react-router-dom";
 import { socket } from '../socket';
 import client from '../api/api'
-import {Typography, CssBaseline, Container} from '@mui/material'
+import {Typography, CssBaseline, Box, TextField, Button} from '@mui/material'
+import PolicyBack from '../components/PolicyBack';
+import LibPolicy from '../components/LibPolicy';
+import FascPolicy from '../components/FascPolicy';
+import VoteCard from '../components/VoteCard';
+import Tracker from '../components/Tracker';
+import PolicyBoard from '../components/PolicyBoard';
+import Loading from '../components/Loading';
+import { Role, Vote } from '../consts';
+import RoleModal from '../components/RoleModal';
 
 export default function Home({name, setName, isConnected, setIsLoading}) {
   const navigate = useNavigate();
@@ -26,6 +35,7 @@ export default function Home({name, setName, isConnected, setIsLoading}) {
     setName(e.target.value)
   }
 
+  // ref={nameInputRef}
   useEffect(()=>{
     nameInputRef.current.focus()
     nameInputRef.current.select()
@@ -33,13 +43,57 @@ export default function Home({name, setName, isConnected, setIsLoading}) {
 
   return (
     <>
+    <RoleModal role={Role.LIB}></RoleModal>
+      <Box sx={{
+        position: 'absolute',
+        left: 12,
+        top: 12
+      }}>
+        <Typography>
+        {isConnected ? '🟢 online' : '🔴 offline'}
+        </Typography>
+      </Box>
       <CssBaseline />
-      <Container maxWidth="sm">
-        <label>{isConnected ? `Connected` : `Not connected`}</label>
-        <input ref={nameInputRef} placeholder="Name" value={name} onChange={handleInputChange} />
-        <button disabled={!name} onClick={createGame}>Create Game</button>
-        <button disabled={!name} onClick={()=> navigate('/join')}>Join Game</button>
-      </Container>
+        <Box
+        sx={{
+          display:"flex",
+          alignItems:"center",
+          justifyContent:"center",
+          minHeight:"100vh"
+        }}
+        >
+          <Box
+            sx={{
+              display:"flex",
+              flexDirection:"row",
+              flexWrap:"wrap",
+              width:320,
+              gap:2
+              }}
+          >
+            <TextField
+              required
+              inputRef={nameInputRef}
+              label='Name'
+              fullWidth
+              value={name}
+              onChange={handleInputChange} />
+            <Button
+              disabled={!name}
+              onClick={createGame}
+              fullWidth
+              variant='contained'>
+                Create Game
+            </Button>
+            <Button
+              disabled={!name}
+              onClick={()=> navigate('/join')}
+              variant='outlined'
+              fullWidth>
+                Join Game
+            </Button>
+          </Box>
+        </Box>
     </>
   )
 }

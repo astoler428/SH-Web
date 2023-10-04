@@ -10,6 +10,8 @@ import Action from '../components/Action';
 import Log from '../components/Log';
 import Loading from '../components/Loading';
 import Chat from '../components/Chat';
+import { Typography, AppBar, Toolbar, Button } from '@mui/material';
+import RoleModal from '../components/RoleModal';
 
 export default function Game({name, game, setGame, isConnected}) {
   const navigate = useNavigate()
@@ -18,6 +20,7 @@ export default function Game({name, game, setGame, isConnected}) {
   const isCurrentPres = game?.currentPres === name
   const thisPlayer = game?.players.find(player => player.name === name)
   const [message, setMessage] = useState("")
+  const [roleOpen, setRoleOpen] = useState(false);
 
   const mySetMessage = (newMessage) => {
     setMessage(newMessage)
@@ -105,29 +108,23 @@ export default function Game({name, game, setGame, isConnected}) {
     }
   }
 
+
+
   return (
       <>
     {game && game.status !== Status.CREATED ?
-    <div>
-      <label> GameId: {id} </label>
-      <div>Name: {name}</div>
-      <div>
-        {game.settings.type === GameType.BLIND ?
-        <div>
-          <label>Role: {thisPlayer.role}</label>
-          {thisPlayer.confirmedFasc ? <span>{thisPlayer.role}</span> : <button onClick={handleConfirmFasc}>Confirm Fasc?</button>}
-        </div> :
-        game.settings.type === GameType.MIXED_ROLES ? (
-        <div>
-          Team: {thisPlayer.team}, Role: {thisPlayer.role}
-        </div>
-        ) :
-        (
-        <div>
-          Role: {thisPlayer.role}
-        </div>
-        )
-        }
+    <>
+      <AppBar>
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Game ID: {id}
+          </Typography>
+          <Button color="inherit" onClick={() => setRoleOpen(true)}>Role</Button>
+          <RoleModal thisPlayer={thisPlayer} roleOpen={roleOpen} setRoleOpen={setRoleOpen} gameType={game.settings.type} handleConfirmFasc={handleConfirmFasc} />
+        </Toolbar>
+      </AppBar>
+      <div style={{marginTop: '100px'}}>
+
       </div>
       <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer}/>
       <Board game={game}/>
@@ -135,7 +132,7 @@ export default function Game({name, game, setGame, isConnected}) {
       <Action game={game} name={name} id={id} mySetMessage={mySetMessage}/>
       <Log game={game}/>
       <Chat game={game} name={name}/>
-    </div>
+    </>
     : <Loading/>
      }
     </>

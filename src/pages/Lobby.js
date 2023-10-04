@@ -4,13 +4,16 @@ import { UPDATE, Status, GameType, GameSettings } from '../consts'
 import { socket } from '../socket'
 import { useNavigate } from "react-router-dom";
 import client, {post} from '../api/api';
+import { Typography, Box, Toolbar, IconButton, Button, AppBar } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+
+import GameSettingsComponent from '../components/GameSettingsComponent';
 
 export default function Lobby({name, game, setGame, isConnected}) {
   const navigate = useNavigate()
   const params = useParams()
   const id = params.id
   const enteringGameRef = useRef(false)
-  // const [gameSettings, setGameSettings] = useState({type: GameType.BLIND, libSpy: false, redDown: false, hitlerKnowsFasc: false})
 
   //join game (redundant but just in case someone navigates directly to the url)
   useEffect(()=>{
@@ -30,14 +33,8 @@ export default function Lobby({name, game, setGame, isConnected}) {
 
   //click listener to start the game - a socket message update comes in causing navigation
   async function startGame(){
-    if(game.createdBy === name){
+    if(game.host === name){
       await post(`/game/start/${id}`)
-
-      // try {
-      //   await client.post(`/game/start/${id}`)
-      // } catch (err) {
-      //   console.log(err)
-      // }
     }
   }
 
@@ -57,12 +54,6 @@ export default function Lobby({name, game, setGame, isConnected}) {
     //called on cleanup - if leaving the lobby (takes into account may be leaving lobby to enter game)
     async function leaveGame(){
       await post(`/game/leave/${id}`, {socketId: socket.id, enteringGame: enteringGameRef.current})
-      // try {
-      //   await client.post(`/game/leave/${id}`, {socketId: socket.id, enteringGame: enteringGameRef.current})
-      // }
-      // catch (err) {
-      //   console.log(err.response.data.message)
-      // }
     }
 
     return () => {
@@ -78,56 +69,73 @@ export default function Lobby({name, game, setGame, isConnected}) {
     navigate(`/game/${id}`)
   }
 
-  const players = game?.players?.map(player => <li key={Math.random()}>{player.name}</li>)
 
   async function handleSettingsChange(propName, propValue){
-    if(game.createdBy === name){
+    if(game.host === name){
       propValue = propName === GameSettings.TYPE ? propValue : !game.settings[propName]
       await post(`/game/settings/${id}`, {gameSettings: {...game.settings, [propName]: propValue}})
+    }
   }
-}
 
-//change handleSettingsChange
+  const renderPlayerName = _name => _name === name ? _name + ` (YOU)` : _name
+
+  const players = game?.players?.map(player => <li key={player.name}>
+     <Box
+      display="flex"
+      justifyContent="flex-start"
+      alignItems="center"
+    >
+      {renderPlayerName(player.name)}
+    </Box>
+  </li>)
+
+  const startGameButtonText = game?.players?.length < 5 ?
+    `Waiting for more players` :
+    game?.host === name ?  `Start Game` : `WAITING for ${game?.host} to start game`
+
+  const disabled = !game || game?.players?.length < 5 || game?.host !== name
   return (
     <>
     {game?.status === Status.CREATED ?
-    <div>
-      <label>GameId: {id} </label>
-      <br/>
-      <label htmlFor='gameType'>Choose Game Type:</label>
-      <select name='gameType' value={game.settings.type} onChange={(e)=> handleSettingsChange(GameSettings.TYPE, e.target.value)}>
-        <option>{GameType.BLIND}</option>
-        <option>{GameType.NORMAL}</option>
-        <option>{GameType.LIB_SPY}</option>
-        <option>{GameType.MIXED_ROLES}</option>
-    </select>
-
-
-      <label> Begin with red on board
-        <input type="checkbox" checked={game.settings?.redDown} onChange={(e)=> handleSettingsChange(GameSettings.REDDOWN)}/>
-      </label>
-      { game.settings?.type === GameType.BLIND &&
-      <>
-        <label> Simple Blind
-          <input type="checkbox" checked={game.settings?.simpleBlind} onChange={(e)=> handleSettingsChange(GameSettings.SIMPLEBLIND)}/>
-        </label>
-      </>
-    }
-      { game.settings?.type !== GameType.BLIND &&
-      <>
-        <label> Hitler knows fasc in 7+
-          <input type="checkbox" checked={game.settings?.hitlerKnowsFasc} onChange={(e)=> handleSettingsChange(GameSettings.HITLERKNOWSFASC)}/>
-        </label>
-      </>
-    }
-      <br/>
-      <label>Players:</label>
-      <ol>
-        {players}
-      </ol>
-      <button disabled={!game || game.players?.length < 5} onClick={startGame}>{game.createdBy === name ? "Start Game" : `Waiting for ${game.createdBy} to start the game`}</button>
-    </div> :
-    <button onClick={goToGame}>Go to game</button> }
+    <>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Game ID: {id}
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Box sx={{
+        marginTop: {xs: '50px', sm: '100px'},
+        display: 'flex',
+        justifyContent: 'center',
+        minHeight:"100vh",
+      }}>
+        <Box
+          sx={{
+            display:"flex",
+            flexDirection:"column",
+            // flexWrap:"wrap",
+            width:320,
+            gap:4
+          }}
+        >
+      <GameSettingsComponent game={game} name={name} handleSettingsChange={handleSettingsChange}/>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1}}>
+        <Typography variant='h4' sx={{display: 'block'}}>Players: </Typography>
+        <ol>
+          {players}
+        </ol>
+        <Button variant='contained' disabled={disabled} onClick={startGame}>{startGameButtonText}</Button>
+        </Box>
+        </Box>
+      </Box>
+    </> :
+    <Button onClick={goToGame}>Go to game</Button> }
 
     </>
   )
