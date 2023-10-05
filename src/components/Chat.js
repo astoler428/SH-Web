@@ -8,8 +8,8 @@ import MinimizeIcon from '@mui/icons-material/Minimize';
 export default function Chat({game, name}) {
   const [message, setMessage] = useState("")
   const [open, setOpen] = useState(true)
-  const messageInputRef = useRef(null);
-  const scrollRef = useRef(null);
+  const messageInputRef = useRef(undefined);
+  const scrollRef = useRef(undefined);
   window.addEventListener('keydown', handleKeyPress)
 
   // useEffect(() => {
@@ -37,7 +37,7 @@ export default function Chat({game, name}) {
     }
     else if (e.key !== "Enter" && document.activeElement !== messageInputRef.current) {
       setOpen(true)
-      messageInputRef.current.focus()
+      messageInputRef.current?.focus()
     }
   }
 
@@ -54,7 +54,7 @@ export default function Chat({game, name}) {
   }, [game])
 
   return (
-    <Box sx={{position: 'absolute', bottom: open ? '20px' : '-420px', right: '100px', width: '360px'}}>
+    <Box sx={{position: 'fixed', bottom: open ? '20px' : '-420px', right: 0, width: '360px'}}>
       <Box sx={{display: 'flex', alignItems: 'center', backgroundColor: 'black', height: '30px', color: 'white', width:'100%', maxHeight: '400px', borderRadius: '4px 4px 0 0', position: 'relative'}}>
         <Box onClick={toggleChatWindow} sx={{display: 'flex', flexGrow: '1', alignItems: 'center', justifyContent: 'space-between', margin: '0 5px'}}>
         <Typography>Chat</Typography>
