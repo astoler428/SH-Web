@@ -35,7 +35,7 @@ export default function Chat({game, name}) {
     if (e.key === "Enter" && message && document.activeElement === messageInputRef.current) {
       sendMessage()
     }
-    else if (e.key !== "Enter" && document.activeElement !== messageInputRef.current) {
+    else if (e.key !== "Enter" && e.key.length === 1 && document.activeElement !== messageInputRef.current) {
       setOpen(true)
       messageInputRef.current?.focus()
     }
@@ -44,7 +44,7 @@ export default function Chat({game, name}) {
   const gameChat = game.chat.map(message => {
     return (
       <ListItem key={Math.random()} sx={{margin: '0', padding: '0', marginLeft: '5px'}}>
-        <Typography sx={{marginLeft: '5px'}}><span style={{fontWeight: 'bold'}}>{message.name}: </span>{message.message}</Typography>
+        <Typography sx={{marginLeft: '5px', fontFamily: "ShoppingBasketJNL"}}><span style={{fontWeight: 'bold'}}>{message.name}: </span>{message.message}</Typography>
       </ListItem>
     )
   })
@@ -54,7 +54,7 @@ export default function Chat({game, name}) {
   }, [game])
 
   return (
-    <Box sx={{position: 'fixed', bottom: open ? '20px' : '-420px', right: 0, width: '360px'}}>
+    <Box sx={{position: 'fixed', zIndex: 100, bottom: open ? '20px' : '-420px', right: 0, width: '360px'}}>
       <Box sx={{display: 'flex', alignItems: 'center', backgroundColor: 'black', height: '30px', color: 'white', width:'100%', maxHeight: '400px', borderRadius: '4px 4px 0 0', position: 'relative'}}>
         <Box onClick={toggleChatWindow} sx={{display: 'flex', flexGrow: '1', alignItems: 'center', justifyContent: 'space-between', margin: '0 5px'}}>
         <Typography>Chat</Typography>

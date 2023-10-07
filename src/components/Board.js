@@ -9,6 +9,7 @@ import libPolicy from '../img/LibPolicy.png'
 import fascPolicy from '../img/FascPolicy.png'
 import PolicyBack from '../img/PolicyBack.png';
 
+
 const boardWidth = 600
 const boardLeft = 0
 const boardBottom = 0
@@ -39,12 +40,12 @@ export default function Board({game}) {
     libPolicies.push(<img src={libPolicy} style={{ width: policyWidth }}/>)
   }
 
+
   return (
     <>
       <Box sx={{width: boardWidth, display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'absolute', left: boardLeft, bottom: boardBottom}}>
-        <img src={fascBoard} style={{ maxWidth: "100%" }}/>
-        <img src={libBoard} style={{ maxWidth: "100%" }}/>
-
+        <img key={1} src={fascBoard} style={{ maxWidth: "100%" }}/>
+        <img key={2} src={libBoard} style={{ maxWidth: "100%" }}/>
       </Box>
       <Box sx={{position: 'absolute', bottom: fascBottom, left: fascLeft, display: 'flex', gap: .7}}>
           {fascPolicies}

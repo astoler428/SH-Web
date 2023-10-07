@@ -10,6 +10,7 @@ import Action from '../components/Action';
 import Log from '../components/Log';
 import Loading from '../components/Loading';
 import Chat from '../components/Chat';
+import Player from '../components/Player';
 import { Typography, AppBar, Toolbar, Button } from '@mui/material';
 import RoleModal from '../components/RoleModal';
 
@@ -58,7 +59,8 @@ export default function Game({name, game, setGame, isConnected}) {
   }, []) //will these be an issue causing dismout and leave game to be called?
 
   function handleChoosePlayer(e){
-    let chosenName = e.target.textContent
+    const card = e.target.closest('.MuiCard-root');
+    let chosenName = card.getAttribute('data-key')
     let chosenPlayer = game.players.find(player => player.name === chosenName)
     //perhaps in blind version you can choose yourself to inv
     if(!isCurrentPres || chosenPlayer.name === thisPlayer.name || !chosenPlayer.alive){

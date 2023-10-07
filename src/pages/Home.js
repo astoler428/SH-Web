@@ -11,7 +11,7 @@ import Tracker from '../components/Tracker';
 import PolicyBoard from '../components/PolicyBoard';
 import Loading from '../components/Loading';
 import { Role, Vote } from '../consts';
-import RoleModal from '../components/RoleModal';
+import Player from '../components/Player';
 
 export default function Home({name, setName, isConnected, setIsLoading}) {
   const navigate = useNavigate();
@@ -43,7 +43,6 @@ export default function Home({name, setName, isConnected, setIsLoading}) {
 
   return (
     <>
-    <RoleModal role={Role.LIB}></RoleModal>
       <Box sx={{
         position: 'absolute',
         left: 12,

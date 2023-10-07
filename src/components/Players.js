@@ -1,5 +1,38 @@
 import React from 'react'
-import {Status, Role, Team, GameType} from '../consts'
+import {Status, Role, Team, GameType, Vote} from '../consts'
+import {Card, CircularProgress, Grid, Typography, Box} from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close';
+
+import hitlerPng from '../img/Hitler.png'
+import liberalPng from '../img/Liberal.png'
+import fascistPng from '../img/Fascist.png'
+import roleBackPng from '../img/RoleBack.png'
+import libPartyPng from '../img/LibParty.png'
+import fascPartyPng from '../img/FascParty.png'
+import jaPng from '../img/Ja.png'
+import neinPng from '../img/Nein.png'
+import presPng from '../img/President.png'
+import chanPng from '../img/Chancellor.png'
+import errorPng from '../img/Error.png'
+
+//card height to width ratio = 1.36
+//visibity: hidden]
+
+/**
+ * default content is cardBack
+ *
+ * options:
+ * may be a full role if it's you or a fellow fasc
+ * maybe a team party on inv
+ *
+ * loading if waiting on action - vote, current pres
+ * Ja or Nein if time to display the vote
+ *
+ * end of game reveal all roles
+ *
+ * need to figure out how to show whether the other fasc have confirmed themselves or not
+ *
+ */
 
 
 export default function Players({name, game, handleChoosePlayer}) {
@@ -10,14 +43,14 @@ export default function Players({name, game, handleChoosePlayer}) {
    game.status === Status.GUN)
 
   const thisPlayer = game.players.find(player => player.name === name)
-
-  const renderPlayers = game?.players?.map(player => {
-    let cls = " "
-
-    const voted = player.vote ? 'voted' : 'waiting on vote'
-
+  const getRoleImg = (player) => player.role === Role.HITLER ? hitlerPng : player.role === Role.FASC ? fascistPng : liberalPng
+  const getTeamImg = (player) => player.team === Team.FASC ? fascPartyPng : player.role === Role.FASC ? fascistPng : liberalPng
+  const getVote = (player) => player.vote === Vote.JA ? jaPng : player.vote === Vote.NEIN ? neinPng : errorPng
+  const renderPlayers = game?.players?.map((player, idx) => {
+    let imgContent =  roleBackPng
+    let choosable = false
+    const thisPlayerInvestigatedPlayer = thisPlayer.investigations.some(invName => invName === player.name)
     if(choosing && player.name !== name && player.alive){
-      let choosable = false
       if(game.status === Status.CHOOSE_CHAN){
         if(game.prevChan !== player.name && game.prevPres !== player.name){
           choosable = true
@@ -31,51 +64,48 @@ export default function Players({name, game, handleChoosePlayer}) {
       else{
         choosable = true
       }
-      if(choosable){
-        cls += " choosable-player "
-      }
-
     }
-    if(!player.alive){
-      cls += " dead "
-    }
-    if(!player.socketId){
-      cls += " disconnected "
-    }
-    if(game.prevPres === player.name){
-      cls += "prev-pres "
-    }
-    if(game.prevChan === player.name){
-      cls += " prev-chan "
-    }
-    if(game.currentChan === player.name){
-      cls += " current-chan "
-    }
-    if(game.currentPres === player.name){
-      cls += " current-pres "
-    }
-    //show your own role
-    if(player.name === name && showOwnRole(player)){
-      cls += ` ${player.role === Role.HITLER ? player.role : player.team} `
-    }
-    const thisPlayerInvestigatedPlayer = thisPlayer.investigations.some(invName => invName === player.name)
-    if(thisPlayerInvestigatedPlayer){
-      cls += ` ${player.team} `
+    //your own role
+    if(player.name === name){
+      imgContent = showOwnRole(player) ? getRoleImg(player) : roleBackPng
     }
     //fasc see other fasc
-    if(player.name !== name && player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)){
-      cls += ` ${player.role === Role.HITLER ? player.role : player.team} `
-      if(player.confirmedFasc){
-        cls += ` confirmed `
-      }
+    else if(player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)){
+      imgContent = getRoleImg(player)
+      // if(player.confirmedFasc){
+      //   cls += ` confirmed `
+      // }
+    }
+    else if(thisPlayerInvestigatedPlayer){
+      imgContent = getTeamImg(player)
     }
 
-    return <li key={player.name}>
-      <div className={cls} onClick={handleChoosePlayer}>{player.name}</div>
-      {game.status === Status.VOTE && <label>{voted}</label>}
-      {game.status === Status.VOTE_RESULT && <label>{player.vote}</label>}
-      {(game.status === Status.END_FASC || game.status === Status.END_LIB) &&  (player.role)}
-      </li>
+    if(game.status === Status.VOTE_RESULT){
+      imgContent = getVote(player)
+    }
+
+    if(game.status === Status.END_FASC || game.status === Status.END_LIB){
+      imgContent = getRoleImg(player)
+    }
+
+    return (
+    <Grid key={idx} item xs={12/game.players.length} sx={{}}>
+      <Box sx={{opacity: player.socketId? 1 : .3, display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+        <Typography sx={{fontSize: '10px'}}>{idx+1}: {player.name}</Typography>
+        <Card data-key={player.name} onClick={handleChoosePlayer} sx={{cursor: choosable ? 'pointer' : 'auto' ,display: 'flex', flexDirection: 'column', position: 'relative'}}>
+          <img className='player-card' src={imgContent} style={{maxWidth: "100%", }}/>
+          {game.currentPres === player.name && <img src={presPng} style={{maxWidth: "100%", position: 'absolute', bottom: 0}}/>}
+          {game.currentChan === player.name && <img src={chanPng} style={{maxWidth: "100%", position: 'absolute', bottom: 0}}/>}
+          {game.prevPres === player.name && <img src={presPng} style={{opacity: .2, maxWidth: "100%", position: 'absolute', top: 0}}/>}
+          {game.prevChan === player.name && <img src={chanPng} style={{opacity: .2, maxWidth: "100%", position: 'absolute', top: 0}}/>}
+          {game.status === Status.VOTE && !player.vote && <Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+            <CircularProgress size={40} />
+          </Box>}
+          {!player.alive && <CloseIcon sx={{width: '100%', height: '100%', position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', color: 'red' }}/>}
+          {game.status === Status.VOTE_RESULT}
+        </Card>
+      </Box>
+    </Grid> )
   })
 
   function showOwnRole(player){
@@ -98,11 +128,11 @@ export default function Players({name, game, handleChoosePlayer}) {
   }
 
   return (
-    <div>
-      <label>Players:</label>
-      <ol>
-        {renderPlayers}
-      </ol>
-    </div>
+    <Box sx={{width: 600}}>
+        <Grid container spacing={1}>
+          {renderPlayers}
+        </Grid>
+    </Box>
+
   )
 }
