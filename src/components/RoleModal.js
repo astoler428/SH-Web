@@ -1,5 +1,7 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
+import {Card, CardHeader, IconButton} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
@@ -9,7 +11,7 @@ import fascistPng from '../img/Fascist.png'
 import roleBackPng from '../img/RoleBack.png'
 import libParty from '../img/LibParty.png'
 import fascParty from '../img/FascParty.png'
-import { Role, GameType, Team } from '../consts';
+import { Role, GameType, Team, Status } from '../consts';
 
 const style = {
   position: 'absolute',
@@ -28,7 +30,8 @@ const style = {
   gap: 2
 };
 
-export default function RoleModal({thisPlayer, roleOpen, setRoleOpen, gameType, handleConfirmFasc}) {
+export default function RoleModal({thisPlayer, game, roleOpen, setRoleOpen, handleConfirmFasc}) {
+  const gameOver = game?.status === Status.END_FASC || game?.status === Status.END_LIB
   let roleImg, teamImg
   switch (thisPlayer?.role) {
     case Role.FASC:
@@ -43,7 +46,7 @@ export default function RoleModal({thisPlayer, roleOpen, setRoleOpen, gameType, 
     default:
       roleImg = roleBackPng
   }
-  if(gameType === GameType.BLIND && !thisPlayer.confirmedFasc){
+  if(game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver){
     roleImg = roleBackPng
   }
 
@@ -65,11 +68,20 @@ export default function RoleModal({thisPlayer, roleOpen, setRoleOpen, gameType, 
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
+          <IconButton onClick={()=>setRoleOpen(false)} aria-label="close" sx={{position: 'absolute', right: 2, top: 2}}>
+              <CloseIcon/>
+          </IconButton>
           <img src={roleImg} style={{ maxWidth: "100%", width: '200px', maxHeight: "calc(100vh - 64px)" }}/>
-          {gameType === GameType.MIXED_ROLES && <img src={teamImg} style={{ maxWidth: "100%", width: '200px', maxHeight: "calc(100vh - 64px)" }}/>}
-          {gameType === GameType.BLIND && !thisPlayer.confirmedFasc && <Button onClick={handleConfirmFasc} variant='contained' color='error'>Confirm Fasc</Button>}
+          {game.settings.type === GameType.MIXED_ROLES && <img src={teamImg} style={{ maxWidth: "100%", width: '200px', maxHeight: "calc(100vh - 64px)" }}/>}
+          {game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver && <Button onClick={handleConfirmFasc} variant='contained' color='error'>Confirm Fasc</Button>}
         </Box>
       </Modal>
     </div>
   );
 }
+
+/**
+ * make ax x button by turning into card with header and action?
+ * Or just position absolute
+ * Make so if confirm fasc loses - modal closes automatically
+ */

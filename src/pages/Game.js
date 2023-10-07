@@ -110,7 +110,11 @@ export default function Game({name, game, setGame, isConnected}) {
     }
   }
 
-
+  useEffect(() => {
+    if(game.status === Status.END_FASC || game.status === Status.END_LIB){
+      setRoleOpen(false)
+    }
+  }, [game])
 
   return (
       <>
@@ -122,14 +126,14 @@ export default function Game({name, game, setGame, isConnected}) {
             Game ID: {id}
           </Typography>
           <Button color="inherit" onClick={() => setRoleOpen(true)}>Role</Button>
-          <RoleModal thisPlayer={thisPlayer} roleOpen={roleOpen} setRoleOpen={setRoleOpen} gameType={game.settings.type} handleConfirmFasc={handleConfirmFasc} />
+          <RoleModal thisPlayer={thisPlayer} game={game} roleOpen={roleOpen} setRoleOpen={setRoleOpen} handleConfirmFasc={handleConfirmFasc} />
         </Toolbar>
       </AppBar>
-      <div style={{marginTop: '100px'}}>
+      <div style={{marginTop: '64px'}}>
 
       </div>
-      <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer}/>
       <Board game={game}/>
+      <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer}/>
       <div>{message}</div>
       <Action game={game} name={name} id={id} mySetMessage={mySetMessage}/>
       <Log game={game}/>
