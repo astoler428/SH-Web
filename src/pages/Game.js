@@ -6,13 +6,13 @@ import { socket } from '../socket'
 import {GameType, Status, UPDATE} from '../consts'
 import Players from '../components/Players';
 import Board from '../components/Board';
-import Action from '../components/Action';
 import Log from '../components/Log';
 import Loading from '../components/Loading';
 import Chat from '../components/Chat';
-import Player from '../components/Player';
-import { Typography, AppBar, Toolbar, Button } from '@mui/material';
+import { Typography, IconButton, Snackbar, AppBar, Toolbar, Button, Box } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import RoleModal from '../components/RoleModal';
+import ConfirmFascDialog from '../components/ConfirmFascDialog';
 
 export default function Game({name, game, setGame, isConnected}) {
   const navigate = useNavigate()
@@ -22,6 +22,9 @@ export default function Game({name, game, setGame, isConnected}) {
   const thisPlayer = game?.players.find(player => player.name === name)
   const [message, setMessage] = useState("")
   const [roleOpen, setRoleOpen] = useState(false);
+  const [confirmFascOpen, setConfirmFascOpen] = useState(false)
+  const [error, setError] = useState(null)
+
 
   const mySetMessage = (newMessage) => {
     setMessage(newMessage)
@@ -105,16 +108,30 @@ export default function Game({name, game, setGame, isConnected}) {
   }
 
   async function handleConfirmFasc(){
-    if(window.confirm("Are you sure? If you are wrong, the liberals lose.")){
+    //show dialog box
+    // if(window.confirm("Are you sure? If you are wrong, the liberals lose.")){
       await post(`/game/confirmFasc/${id}`, {name: thisPlayer.name})
-    }
+    // }
   }
 
   useEffect(() => {
-    if(game.status === Status.END_FASC || game.status === Status.END_LIB){
+    if(game?.status === Status.END_FASC || game?.status === Status.END_LIB){
       setRoleOpen(false)
     }
   }, [game])
+
+  const action = (
+    <React.Fragment>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={()=> setError(null)}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
 
   return (
       <>
@@ -126,20 +143,27 @@ export default function Game({name, game, setGame, isConnected}) {
             Game ID: {id}
           </Typography>
           <Button color="inherit" onClick={() => setRoleOpen(true)}>Role</Button>
-          <RoleModal thisPlayer={thisPlayer} game={game} roleOpen={roleOpen} setRoleOpen={setRoleOpen} handleConfirmFasc={handleConfirmFasc} />
+          <RoleModal thisPlayer={thisPlayer} game={game} roleOpen={roleOpen} setRoleOpen={setRoleOpen} setConfirmFascOpen={setConfirmFascOpen} />
         </Toolbar>
       </AppBar>
       <div style={{marginTop: '64px'}}>
 
       </div>
-      <Board game={game}/>
+      <Board game={game} name={name} id={id} setError={setError}/>
       <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer}/>
       <div>{message}</div>
-      <Action game={game} name={name} id={id} mySetMessage={mySetMessage}/>
       <Log game={game}/>
       <Chat game={game} name={name}/>
+      <Snackbar
+        open={error !== null}
+        onClose={() => setError(null)}
+        message={error}
+        autoHideDuration={5000}
+        action={action}
+      />
+      <ConfirmFascDialog confirmFascOpen={confirmFascOpen} setConfirmFascOpen={setConfirmFascOpen} handleConfirmFasc={handleConfirmFasc}/>
     </>
-    : <Loading/>
+    : <Loading />
      }
     </>
   )

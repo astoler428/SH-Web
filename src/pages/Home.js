@@ -10,8 +10,9 @@ import VoteCard from '../components/VoteCard';
 import Tracker from '../components/Tracker';
 import PolicyBoard from '../components/PolicyBoard';
 import Loading from '../components/Loading';
-import { Role, Vote } from '../consts';
-import Player from '../components/Player';
+import { Role, Vote, POLICY_WIDTH } from '../consts';
+import libPolicy from '../img/LibPolicy.png'
+import fascPolicy from '../img/FascPolicy.png'
 
 export default function Home({name, setName, isConnected, setIsLoading}) {
   const navigate = useNavigate();
@@ -43,6 +44,28 @@ export default function Home({name, setName, isConnected, setIsLoading}) {
 
   return (
     <>
+    {/* <Box sx={{maxWidth: 600, opacity: 1}}>
+     <Box sx={{position: 'relative', width: 600, height: 600}}>
+    <Box style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100%' }}>
+      <Box sx={{width: '100%'}}>
+        <Typography sx={{width: '100%', fontSize: '25px', textAlign: 'center'}}>CHOOSE A POLICY TO PLAY</Typography>
+      </Box>
+
+      <Box sx={{ display: 'flex', gap:4, justifyContent: 'center', alignItems: 'center'}}>
+      <Box sx={{height: '100%', display: 'flex'}}>
+        <img src={libPolicy} style={{width: POLICY_WIDTH, borderRadius: '10px', cursor: 'pointer' }}/>
+      </Box>
+      <Box sx={{height: '100%', display: 'flex'}}>
+        <img src={libPolicy} style={{width: POLICY_WIDTH, borderRadius: '10px', cursor: 'pointer' }}/>
+      </Box>
+      <Box sx={{height: '100%', display: 'flex'}}>
+        <img src={libPolicy} style={{width: POLICY_WIDTH, borderRadius: '10px', cursor: 'pointer' }}/>
+      </Box>
+
+      </Box>
+    </Box>
+    </Box>
+    </Box> */}
       <Box sx={{
         position: 'absolute',
         left: 12,

@@ -1,3 +1,7 @@
+*{
+  box-sizing: border-box;
+}
+
 .current-pres{
   font-weight: bold
 }

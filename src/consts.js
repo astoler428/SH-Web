@@ -1,3 +1,5 @@
+export const POLICY_WIDTH = 74
+
 export const CREATE_GAME = 'CREATE_GAME'
 export const JOIN_GAME = 'JOIN_GAME'
 export const LEAVE_GAME = 'LEAVE_GAME'
@@ -5,6 +7,13 @@ export const UPDATE_PLAYERS = 'UPDATE_PLAYERS'
 export const START_GAME = 'START_GAME'
 export const UPDATE_LOBBY = 'UPDATE_LOBBY'
 export const UPDATE = 'UPDATE'
+
+export const ClaimType = {
+  PRES: 'PRES',
+  CHAN: 'CHAN',
+  INV: 'INV',
+  INSPECT_TOP3: 'INSPECT_TOP3'
+}
 
 export const Status = {
   CREATED: 'CREATED',
@@ -76,3 +85,16 @@ export const RR = 'RR'
 
 export const draws3 = [RRR, RRB, RBB, BBB]
 export const draws2 = [RR, RB, BB]
+
+export const CHAN2 = {
+  RR: 'RR',
+  RB: 'RB',
+  BB: 'BB',
+}
+
+export const PRES3 = {
+  RRR: 'RRR',
+  RRB: 'RRB',
+  RBB: 'RBB',
+  BBB: 'BBB'
+}
