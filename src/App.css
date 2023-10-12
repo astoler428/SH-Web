@@ -2,6 +2,14 @@
   box-sizing: border-box;
 }
 
+/* body{
+  background-color: rgb(46, 109, 28);
+} */
+
+img{
+  user-select: none;
+}
+
 .current-pres{
   font-weight: bold
 }

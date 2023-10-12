@@ -54,7 +54,7 @@ export default function Chat({game, name}) {
   }, [game])
 
   return (
-    <Box sx={{position: 'fixed', zIndex: 100, bottom: open ? '20px' : '-420px', right: 0, width: '360px'}}>
+    <Box sx={{position: 'fixed', zIndex: 100, bottom: open ? '0px' : '-390px', right: 0, width: '360px'}}>
       <Box sx={{display: 'flex', alignItems: 'center', backgroundColor: 'black', height: '30px', color: 'white', width:'100%', maxHeight: '400px', borderRadius: '4px 4px 0 0', position: 'relative'}}>
         <Box onClick={toggleChatWindow} sx={{display: 'flex', flexGrow: '1', alignItems: 'center', justifyContent: 'space-between', margin: '0 5px'}}>
         <Typography>Chat</Typography>
@@ -63,7 +63,7 @@ export default function Chat({game, name}) {
           </IconButton>
         </Box>
       </Box>
-      <Paper elevation={1} sx={{width:'100%', height: '400px', maxHeight: '400px', overflow: 'auto', position: 'relative', borderRadius: '0', bgcolor: 'white'}}>
+      <Paper elevation={1} sx={{width:'100%', height: '350px', maxHeight: '400px', overflow: 'auto', position: 'relative', borderRadius: '0', bgcolor: 'white'}}>
         <List>
           {gameChat}
           <ListItem sx={{height: '0', padding: '0', margin: '0'}} ref={scrollRef}></ListItem>
@@ -75,7 +75,7 @@ export default function Chat({game, name}) {
         size='small'
         autoComplete='off'
         placeholder='Send a message'
-        sx={{width: '100%', height: '10px', borderRadius: '0'}}
+        sx={{width: '100%', borderRadius: '0', backgroundColor: 'white'}}
         onChange={(e) => setMessage(e.target.value)}
         />
     </Box>

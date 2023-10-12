@@ -20,16 +20,9 @@ export default function Game({name, game, setGame, isConnected}) {
   const id = params.id
   const isCurrentPres = game?.currentPres === name
   const thisPlayer = game?.players.find(player => player.name === name)
-  const [message, setMessage] = useState("")
   const [roleOpen, setRoleOpen] = useState(false);
   const [confirmFascOpen, setConfirmFascOpen] = useState(false)
   const [error, setError] = useState(null)
-
-
-  const mySetMessage = (newMessage) => {
-    setMessage(newMessage)
-    setTimeout(()=> setMessage(""), 2000)
-  }
 
   //redundant join by just in case someone navigates directly or refreshes page
   useEffect(()=>{
@@ -61,6 +54,11 @@ export default function Game({name, game, setGame, isConnected}) {
     };
   }, []) //will these be an issue causing dismout and leave game to be called?
 
+  useEffect(() => {
+    document.body.style.backgroundColor = 'rgb(46, 109, 28)'
+    return () => {document.body.style.backgroundColor = ''}
+  }, [])
+
   function handleChoosePlayer(e){
     const card = e.target.closest('.MuiCard-root');
     let chosenName = card.getAttribute('data-key')
@@ -85,7 +83,7 @@ export default function Game({name, game, setGame, isConnected}) {
 
   async function handleChooseChan(chosenPlayer){
     if(chosenPlayer.name === game.prevPres || chosenPlayer.name === game.prevChan){
-      mySetMessage('You must choose an eligible chancellor.')
+      setError('You must choose an eligible chancellor.')
       return
     }
     await post(`/game/chooseChan/${id}`, {chanName: chosenPlayer.name})
@@ -93,7 +91,7 @@ export default function Game({name, game, setGame, isConnected}) {
 
   async function handleChooseInv(chosenPlayer){
     if(chosenPlayer.investigated){
-      mySetMessage("This player has already been investigated.")
+      setError("This player has already been investigated.")
       return
     }
     await post(`/game/chooseInv/${id}`, {invName: chosenPlayer.name})
@@ -151,7 +149,6 @@ export default function Game({name, game, setGame, isConnected}) {
       </div>
       <Board game={game} name={name} id={id} setError={setError}/>
       <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer}/>
-      <div>{message}</div>
       <Log game={game}/>
       <Chat game={game} name={name}/>
       <Snackbar

@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {IconButton, Snackbar, Button, ButtonGroup, Typography, Box, Container} from '@mui/material'
 import libPolicyPng from '../img/LibPolicy.png'
 import fascPolicyPng from '../img/FascPolicy.png'
@@ -21,6 +21,9 @@ export default function Action({game, name, id, setError, blur, setBlur}) {
     if(thisPlayer.alive){
       title = 'SELECT A VOTE.'
       content = showVoteCards()
+    }
+    else{
+      _blur = false
     }
   }
   else if(isCurrentPres){
@@ -75,9 +78,11 @@ export default function Action({game, name, id, setError, blur, setBlur}) {
     _blur = false
   }
 
-  if(blur !== _blur){
-    setBlur(_blur)
-  }
+  useEffect(()=>{
+    if(blur !== _blur){
+      setBlur(_blur)
+    }
+  })
 
 
   function showVoteCards(){
@@ -85,8 +90,8 @@ export default function Action({game, name, id, setError, blur, setBlur}) {
     const neinVote = thisPlayer.vote === Vote.NEIN
     return (
       <>
-        <img onClick={()=> handleVote(Vote.JA)} src={jaPng} style={{width: jaVote ? voteWidth + 20 : voteWidth, border: jaVote ? '6px solid green' : 'none', borderRadius: '10px', cursor: 'pointer' }}/>
-        <img onClick={()=> handleVote(Vote.NEIN)}  src={neinPng} style={{width: neinVote ? voteWidth + 20 : voteWidth,  border: neinVote ? '6px solid green' : 'none', borderRadius: '10px', cursor: 'pointer' }}/>
+        <img onClick={()=> handleVote(Vote.JA)} src={jaPng} draggable='false' style={{width: jaVote ? voteWidth + 20 : voteWidth, border: jaVote ? '6px solid green' : 'none', borderRadius: '10px', cursor: 'pointer' }}/>
+        <img onClick={()=> handleVote(Vote.NEIN)} src={neinPng} draggable='false' style={{width: neinVote ? voteWidth + 20 : voteWidth,  border: neinVote ? '6px solid green' : 'none', borderRadius: '10px', cursor: 'pointer' }}/>
       </>
     )
   }
@@ -96,7 +101,7 @@ export default function Action({game, name, id, setError, blur, setBlur}) {
     return game.presCards.map(card => {
       const policyImg = getPolicyImg(card)
       return (
-          <img key={Math.random()} data-key={card.color} onClick={handlePresDiscard} src={policyImg} style={{width: POLICY_WIDTH, borderRadius: '10px', cursor: 'pointer' }}/>
+          <img key={Math.random()} data-key={card.color} onClick={handlePresDiscard} src={policyImg} draggable='false' style={{width: POLICY_WIDTH, borderRadius: '10px', cursor: 'pointer' }}/>
       )
     })
   }
@@ -104,7 +109,7 @@ export default function Action({game, name, id, setError, blur, setBlur}) {
     const chanCards = game.chanCards.map(card => {
       const policyImg = getPolicyImg(card)
       return (
-          <img key={Math.random()} data-key={card.color} onClick={handleChanPlay} src={policyImg} style={{width: POLICY_WIDTH, borderRadius: '10px', cursor: 'pointer' }}/>
+          <img key={Math.random()} data-key={card.color} onClick={handleChanPlay} src={policyImg} draggable='false' style={{width: POLICY_WIDTH, borderRadius: '10px', cursor: 'pointer' }}/>
       )
     })
     return (
@@ -149,7 +154,7 @@ export default function Action({game, name, id, setError, blur, setBlur}) {
     const top3 = game.top3.map(card => {
       const policyImg = getPolicyImg(card)
       return (
-          <img key={Math.random()} src={policyImg} style={{width: POLICY_WIDTH, borderRadius: '10px'}}/>
+          <img key={Math.random()} src={policyImg} draggable='false' style={{width: POLICY_WIDTH, borderRadius: '10px'}}/>
       )
     })
     return (

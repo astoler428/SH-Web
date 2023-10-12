@@ -13,13 +13,13 @@ import Action from './Action';
 
 const boardWidth = 600
 
-const fascBottom = 284
-const fascLeft = 63
+const fascBottom = 276
+const fascLeft = 59
 const libBottom = 60
 const libLeft = 101
 const trackerGap = 55.5
-const trackerBottom = 30.6
-const trackerLeft = 202.5
+const trackerBottom = 30.5
+const trackerLeft = 202.3
 const deckBottom = 0
 const deckLeft = 600
 
@@ -42,8 +42,8 @@ export default function Board({game, name, id, setError}) {
       <Box sx={{width: boardWidth, display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative'}}>
         <Action game={game} name={name} id={id} setError={setError} blur={blur} setBlur={setBlur}/>
         <Box sx={{filter: blur ? 'blur(2.5px)' : 'blur(0)', zIndex: -1, display: 'flex', flexDirection: 'column'}}>
-          <img key={1} src={fascBoard} style={{ maxWidth: "100%"}}/>
-          <img key={2} src={libBoard} style={{ maxWidth: "100%" }}/>
+          <img key={1} src={fascBoard} draggable='false' style={{ maxWidth: "100%"}}/>
+          <img key={2} src={libBoard} draggable='false' style={{ maxWidth: "100%" }}/>
           <Box sx={{position: 'absolute', bottom: fascBottom, left: fascLeft, display: 'flex', gap: .8}}>
             {fascPolicies}
           </Box>
@@ -53,12 +53,12 @@ export default function Board({game, name, id, setError}) {
           <CircleIcon sx={{color: 'blue', position: 'absolute', bottom: trackerBottom, left: trackerLeft + game.tracker * trackerGap}}/>
           <Box sx={{position: 'absolute', bottom: deckBottom, left: deckLeft, display: 'flex', flexDirection: 'column', gap: .2}}>
             <Box sx={{display: 'flex'}}>
-              <img src={PolicyBack} style={{ width: POLICY_WIDTH }}/>
+              <img src={PolicyBack} draggable='false' style={{ width: POLICY_WIDTH }}/>
               <Box sx={{position: 'relative', top: 0, left: -POLICY_WIDTH, color: 'white', backgroundColor: 'black', textAlign: 'center', width: 25, height: 25, fontWeight: 'bold', fontSize: 18}}>{game.deck.drawPile.length}
               </Box>
             </Box>
             <Box sx={{display: 'flex'}}>
-              <img src={PolicyBack} style={{ width: POLICY_WIDTH }}/>
+              <img src={PolicyBack} draggable='false' style={{ width: POLICY_WIDTH }}/>
               <Box sx={{position: 'relative', top: 0, left: -POLICY_WIDTH, color: 'white', backgroundColor: 'black', textAlign: 'center', width: 25, height: 25, fontWeight: 'bold', fontSize: 18}}>{game.deck.discardPile.length}
               </Box>
             </Box>

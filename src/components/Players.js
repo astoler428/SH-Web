@@ -112,16 +112,20 @@ export default function Players({name, game, handleChoosePlayer}) {
       <Box sx={{opacity: player.socketId? 1 : .3, display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
         <Typography sx={{fontSize: '10px'}}>{idx+1}: {player.name}</Typography>
         <Card data-key={player.name} onClick={handleChoosePlayer} sx={{cursor: choosable ? 'pointer' : 'auto', border: choosable ? '4px solid lightgreen' : 'none', display: 'flex', flexDirection: 'column', position: 'relative'}}>
-          <img className='player-card' src={imgContent} style={{maxWidth: "100%", }}/>
-          {game.currentPres === player.name && <img src={presPng} style={{maxWidth: "100%", position: 'absolute', bottom: 0}}/>}
-          {game.currentChan === player.name && <img src={chanPng} style={{maxWidth: "100%", position: 'absolute', bottom: 0}}/>}
-          {game.prevPres === player.name && <img src={presPng} style={{opacity: .2, maxWidth: "100%", position: 'absolute', top: 0}}/>}
-          {game.prevChan === player.name && <img src={chanPng} style={{opacity: .2, maxWidth: "100%", position: 'absolute', top: 0}}/>}
-          {makingDecision && <Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-            <CircularProgress size={40} sx={{color: 'white'}} />
+          <img className='player-card' src={imgContent} draggable='false' style={{maxWidth: "100%", }}/>
+          {game.status !== Status.END_FASC && game.status !== Status.END_LIB &&
+            <>
+          {game.currentPres === player.name && <img src={presPng} draggable='false' style={{maxWidth: "100%", position: 'absolute', bottom: 0}}/>}
+          {game.currentChan === player.name && <img src={chanPng} draggable='false' style={{maxWidth: "100%", position: 'absolute', bottom: 0}}/>}
+          {game.prevPres === player.name && <img src={presPng} draggable='false' style={{opacity: .2, maxWidth: "100%", position: 'absolute', top: 0}}/>}
+          {game.prevChan === player.name && <img src={chanPng} draggable='false' style={{opacity: .2, maxWidth: "100%", position: 'absolute', top: 0}}/>}
+          {makingDecision &&
+          <Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+            <CircularProgress size={32} sx={{color: 'white'}} />
           </Box>}
           {!player.alive && <CloseIcon sx={{width: '100%', height: '100%', position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', color: 'red' }}/>}
-
+            </>
+          }
         </Card>
       </Box>
     </Grid> )

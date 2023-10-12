@@ -27,7 +27,7 @@ export default function DefaulDiscardDialog({showDiscardDialog, setShowDiscardDi
           {"You discarded:"}
         </DialogTitle>
         <DialogContent sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-          <img src={getPolicyImg(presDiscard)} style={{width: POLICY_WIDTH, borderRadius: '10px'}}/>
+          <img src={getPolicyImg(presDiscard)} draggable='false' style={{width: POLICY_WIDTH, borderRadius: '10px'}}/>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowDiscardDialog(false)}>Ok</Button>

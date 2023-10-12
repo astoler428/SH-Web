@@ -71,8 +71,8 @@ export default function RoleModal({thisPlayer, game, roleOpen, setRoleOpen, setC
           <IconButton onClick={()=>setRoleOpen(false)} aria-label="close" sx={{position: 'absolute', right: 2, top: 2}}>
               <CloseIcon/>
           </IconButton>
-          {game.settings.type === GameType.MIXED_ROLES && <img src={teamImg} style={{ maxWidth: "100%", width: '200px', maxHeight: "calc(100vh - 64px)" }}/>}
-          <img src={roleImg} style={{ maxWidth: "100%", width: '200px', maxHeight: "calc(100vh - 64px)" }}/>
+          {game.settings.type === GameType.MIXED_ROLES && <img src={teamImg} draggable='false' style={{ maxWidth: "100%", width: '200px', maxHeight: "calc(100vh - 64px)" }}/>}
+          <img src={roleImg} draggable='false' style={{ maxWidth: "100%", width: '200px', maxHeight: "calc(100vh - 64px)" }}/>
           {game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver && <Button onClick={() => setConfirmFascOpen(true)} variant='contained' color='error'>Confirm Fasc</Button>}
         </Box>
       </Modal>
