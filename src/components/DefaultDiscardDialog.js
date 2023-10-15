@@ -5,20 +5,23 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { POLICY_WIDTH, Color } from '../consts';
+import { POLICY_WIDTH, Color, Status, inGov } from '../consts';
 import libPolicyPng from '../img/LibPolicy.png'
 import fascPolicyPng from '../img/FascPolicy.png'
 
-export default function DefaulDiscardDialog({showDiscardDialog, setShowDiscardDialog, presDiscard}) {
+
+export default function DefaulDiscardDialog({game, name, showDiscardDialog, setShowDiscardDialog, presDiscard}) {
 
   function getPolicyImg(card){
     return card?.color === Color.RED ? fascPolicyPng : libPolicyPng
   }
 
+  const playerInGov = inGov(game, name)
+
   return (
     <div>
       <Dialog
-        open={showDiscardDialog}
+        open={showDiscardDialog && !playerInGov}
         onClose={() => setShowDiscardDialog(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"

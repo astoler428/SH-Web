@@ -1,8 +1,14 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import { Typography, Box, Container, FormGroup, Card, List, FormControlLabel, Checkbox, FormControl, InputLabel, Select, MenuItem, Button, CardContent, ListItem, ListItemText } from '@mui/material';
 import { GameType, GameSettings } from '../consts';
 
 export default function GameSettingsComponent({game, name, handleSettingsChange}) {
+  // useEffect(() => {
+  //   if(game.settings.hitlerKnowsFasc && game.players.length < 7){
+  //     handleSettingsChange(GameSettings.HITLERKNOWSFASC)
+  //   }
+  // }, [game])
+
   return (
     <>
     {game.host === name ?
@@ -37,7 +43,7 @@ export default function GameSettingsComponent({game, name, handleSettingsChange}
             label="Start with red down"
             />
         <FormControlLabel
-          disabled={game.settings?.type === GameType.BLIND}
+          // disabled={game.settings?.type === GameType.BLIND}
           control={<Checkbox
             checked={game.settings?.hitlerKnowsFasc}
             onChange={() => handleSettingsChange(GameSettings.HITLERKNOWSFASC)}
@@ -51,6 +57,14 @@ export default function GameSettingsComponent({game, name, handleSettingsChange}
             onChange={() => handleSettingsChange(GameSettings.SIMPLEBLIND)}
             />}
             label="Simple Blind"
+            />
+        <FormControlLabel
+          disabled={game.settings?.type !== GameType.LIB_SPY}
+          control={<Checkbox
+            checked={game.settings?.teamLibSpy}
+            onChange={() => handleSettingsChange(GameSettings.TEAMLIBSPY)}
+            />}
+            label="Team Liberal spy condition"
             />
         </FormGroup>
       </Box>

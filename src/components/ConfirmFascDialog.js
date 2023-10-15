@@ -5,14 +5,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-
+import {post} from '../api/api'
 
 export default function ConfirmFascDialog({confirmFascOpen, setConfirmFascOpen, handleConfirmFasc}) {
-
-  function handleConfirm(){
-    setConfirmFascOpen(false)
-    handleConfirmFasc()
-  }
 
   return (
     <div>
@@ -32,7 +27,7 @@ export default function ConfirmFascDialog({confirmFascOpen, setConfirmFascOpen, 
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setConfirmFascOpen(false)}>Nevermind</Button>
-          <Button onClick={handleConfirm} autoFocus>
+          <Button onClick={handleConfirmFasc} autoFocus>
             Confirm
           </Button>
         </DialogActions>

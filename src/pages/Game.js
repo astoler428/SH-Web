@@ -13,6 +13,7 @@ import { Typography, IconButton, Snackbar, AppBar, Toolbar, Button, Box } from '
 import CloseIcon from '@mui/icons-material/Close';
 import RoleModal from '../components/RoleModal';
 import ConfirmFascDialog from '../components/ConfirmFascDialog';
+import StatusMessage from '../components/StatusMessage';
 
 export default function Game({name, game, setGame, isConnected}) {
   const navigate = useNavigate()
@@ -23,6 +24,7 @@ export default function Game({name, game, setGame, isConnected}) {
   const [roleOpen, setRoleOpen] = useState(false);
   const [confirmFascOpen, setConfirmFascOpen] = useState(false)
   const [error, setError] = useState(null)
+  const [showInvCard, setShowInvCard] = useState(true)
 
   //redundant join by just in case someone navigates directly or refreshes page
   useEffect(()=>{
@@ -106,10 +108,8 @@ export default function Game({name, game, setGame, isConnected}) {
   }
 
   async function handleConfirmFasc(){
-    //show dialog box
-    // if(window.confirm("Are you sure? If you are wrong, the liberals lose.")){
-      await post(`/game/confirmFasc/${id}`, {name: thisPlayer.name})
-    // }
+    setConfirmFascOpen(false)
+    await post(`/game/confirmFasc/${id}`, {name: thisPlayer.name})
   }
 
   useEffect(() => {
@@ -117,6 +117,14 @@ export default function Game({name, game, setGame, isConnected}) {
       setRoleOpen(false)
     }
   }, [game])
+
+  useEffect(() => {
+    if(game?.status !== Status.INV_CLAIM){
+      setShowInvCard(true)
+    }
+  }, [game?.status])
+
+
 
   const action = (
     <React.Fragment>
@@ -131,25 +139,25 @@ export default function Game({name, game, setGame, isConnected}) {
     </React.Fragment>
   );
 
+
   return (
       <>
     {game && game.status !== Status.CREATED ?
     <>
       <AppBar>
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Toolbar sx={{maxWidth: '95vw'}}>
+          <Typography component="div" sx={{flexGrow: 1, fontSize: {xs: '14px', sm: '20px'}}}>
             Game ID: {id}
           </Typography>
           <Button color="inherit" onClick={() => setRoleOpen(true)}>Role</Button>
-          <RoleModal thisPlayer={thisPlayer} game={game} roleOpen={roleOpen} setRoleOpen={setRoleOpen} setConfirmFascOpen={setConfirmFascOpen} />
         </Toolbar>
       </AppBar>
-      <div style={{marginTop: '64px'}}>
-
-      </div>
-      <Board game={game} name={name} id={id} setError={setError}/>
-      <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer}/>
+      <Box sx={{marginTop: {xs:'56px', sm: '64px'}}}/>
+      <RoleModal thisPlayer={thisPlayer} game={game} roleOpen={roleOpen} setRoleOpen={setRoleOpen} setConfirmFascOpen={setConfirmFascOpen} />
+      <StatusMessage game={game} name={name}/>
+      <Board game={game} name={name} id={id} setError={setError} showInvCard={showInvCard}/>
       <Log game={game}/>
+      <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} showInvCard={showInvCard} setShowInvCard={setShowInvCard}/>
       <Chat game={game} name={name}/>
       <Snackbar
         open={error !== null}

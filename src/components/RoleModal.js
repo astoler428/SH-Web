@@ -7,17 +7,19 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import hitlerPng from '../img/Hitler.png'
 import liberalPng from '../img/Liberal.png'
+import liberalSpyPng from '../img/LiberalSpy.png'
 import fascistPng from '../img/Fascist.png'
 import roleBackPng from '../img/RoleBack.png'
 import libParty from '../img/LibParty.png'
 import fascParty from '../img/FascParty.png'
-import { Role, GameType, Team, Status } from '../consts';
+import { Role, GameType, Team, Status, inGov } from '../consts';
 
 const style = {
   position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
+  width: '60%',
   maxWidth: 400,
   bgcolor: 'background.paper',
   border: '2px solid #000',
@@ -43,6 +45,9 @@ export default function RoleModal({thisPlayer, game, roleOpen, setRoleOpen, setC
     case Role.HITLER:
       roleImg = hitlerPng
       break
+    case Role.LIB_SPY:
+      roleImg = liberalSpyPng
+      break
     default:
       roleImg = roleBackPng
   }
@@ -59,8 +64,11 @@ export default function RoleModal({thisPlayer, game, roleOpen, setRoleOpen, setC
       break
   }
 
+  const disableConfirmFasc = inGov(game, thisPlayer.name)
+  const confirmFascText = disableConfirmFasc ? 'Cannot confirm fasc until after claims' : 'confirm fasc'
+
   return (
-    <div>
+    <div >
       <Modal
         open={roleOpen}
         onClose={() => setRoleOpen(false)}
@@ -72,8 +80,8 @@ export default function RoleModal({thisPlayer, game, roleOpen, setRoleOpen, setC
               <CloseIcon/>
           </IconButton>
           {game.settings.type === GameType.MIXED_ROLES && <img src={teamImg} draggable='false' style={{ maxWidth: "100%", width: '200px', maxHeight: "calc(100vh - 64px)" }}/>}
-          <img src={roleImg} draggable='false' style={{ maxWidth: "100%", width: '200px', maxHeight: "calc(100vh - 64px)" }}/>
-          {game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver && <Button onClick={() => setConfirmFascOpen(true)} variant='contained' color='error'>Confirm Fasc</Button>}
+          <img src={roleImg} draggable='false' style={{ maxWidth: "100%", width: '200px' }}/>
+          {game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver && <Button disabled={disableConfirmFasc} onClick={()=>setConfirmFascOpen(true)} variant='contained' color='error'>{confirmFascText}</Button>}
         </Box>
       </Modal>
     </div>

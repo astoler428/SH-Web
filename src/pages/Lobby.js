@@ -84,6 +84,7 @@ export default function Lobby({name, game, setGame, isConnected}) {
       display="flex"
       justifyContent="flex-start"
       alignItems="center"
+      sx={{fontSize: '20px', whiteSpace: 'nowrap', overflow: 'hidden'}}
     >
       {renderPlayerName(player.name)}
     </Box>
@@ -106,7 +107,7 @@ export default function Lobby({name, game, setGame, isConnected}) {
         </Toolbar>
       </AppBar>
       <Box sx={{
-        marginTop: {xs: '50px', sm: '100px'},
+        marginTop: {xs: '30px', sm: '100px'},
         display: 'flex',
         justifyContent: 'center',
         minHeight:"100vh",
@@ -117,7 +118,7 @@ export default function Lobby({name, game, setGame, isConnected}) {
             flexDirection:"column",
             // flexWrap:"wrap",
             width:320,
-            gap:4
+            gap:{sx: 1, sm: 2, md: 3, lg: 4}
           }}
         >
       <GameSettingsComponent game={game} name={name} handleSettingsChange={handleSettingsChange}/>
@@ -126,8 +127,8 @@ export default function Lobby({name, game, setGame, isConnected}) {
           display: 'flex',
           flexDirection: 'column',
           gap: 1}}>
-        <Typography variant='h4' sx={{display: 'block'}}>Players: </Typography>
-        <ol>
+        <Typography variant={{xs: 'h5', sm: 'h4' }} sx={{display: 'block'}}>Players: </Typography>
+        <ol style={{margin: '0'}}>
           {players}
         </ol>
         <Button variant='contained' disabled={disabled} onClick={startGame}>{startGameButtonText}</Button>

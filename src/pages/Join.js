@@ -59,22 +59,25 @@ export default function Join({name, setIsLoading}) {
         width:320,
         gap:2
       }}>
-        <TextField
-          autoFocus
-          label="Game ID"
-          value={id}
-          onChange={(e)=>setId(e.target.value.toUpperCase())}
-          fullWidth
-          required
-          />
-        <Button
-          fullWidth
-          variant='contained'
-          disabled={id.length !== 4}
-          onClick={handleJoin}
-          >
-            Join Game
-        </Button>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <TextField
+            autoFocus
+            label="Game ID"
+            value={id}
+            onChange={(e)=>setId(e.target.value.toUpperCase())}
+            fullWidth
+            required
+            />
+          <Button
+            type='submit'
+            fullWidth
+            variant='contained'
+            disabled={id.length !== 4}
+            onClick={handleJoin}
+            >
+              Join Game
+          </Button>
+        </form>
       </Box>
       <Snackbar
         open={error !== null}

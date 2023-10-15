@@ -93,27 +93,30 @@ export default function Home({name, setName, isConnected, setIsLoading}) {
               gap:2
               }}
           >
-            <TextField
-              required
-              inputRef={nameInputRef}
-              label='Name'
-              fullWidth
-              value={name}
-              onChange={handleInputChange} />
-            <Button
-              disabled={!name}
-              onClick={createGame}
-              fullWidth
-              variant='contained'>
-                Create Game
-            </Button>
-            <Button
-              disabled={!name}
-              onClick={()=> navigate('/join')}
-              variant='outlined'
-              fullWidth>
-                Join Game
-            </Button>
+            <form onSubmit={(e) => e.preventDefault()}>
+              <TextField
+                required
+                inputRef={nameInputRef}
+                label='Name'
+                fullWidth
+                value={name}
+                onChange={handleInputChange} />
+              <Button
+                type='submit'
+                disabled={!name}
+                onClick={createGame}
+                fullWidth
+                variant='contained'>
+                  Create Game
+              </Button>
+              <Button
+                disabled={!name}
+                onClick={()=> navigate('/join')}
+                variant='outlined'
+                fullWidth>
+                  Join Game
+              </Button>
+            </form>
           </Box>
         </Box>
     </>
