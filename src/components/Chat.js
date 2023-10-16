@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react'
 import { socket } from '../socket'
-import {CardHeader, Paper, List, Card, ListItemButton, ListItemIcon, Typography, IconButton, Container, Box, CardContent, TextField, ListItem, ListItemText } from '@mui/material'
+import {CardHeader, Button, Paper, List, Card, ListItemButton, ListItemIcon, Typography, IconButton, Container, Box, CardContent, TextField, ListItem, ListItemText } from '@mui/material'
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import MarkChatUnreadIcon from '@mui/icons-material/MarkChatUnread';
@@ -20,7 +20,8 @@ export default function Chat({game, name}) {
     messageInputRef.current.blur();
   }, []);
 
-  function sendMessage(){
+  function sendMessage(e){
+    e.preventDefault()
     if(message){
       socket.emit('chat', {id: game.id, name, message})
       setMessage("")
@@ -38,10 +39,7 @@ export default function Chat({game, name}) {
   }
 
   function handleKeyPress(e) {
-    if (e.key === "Enter" && message && document.activeElement === messageInputRef.current) {
-      sendMessage()
-    }
-    else if (e.key !== "Enter" && e.key.length === 1 && document.activeElement !== messageInputRef.current) {
+    if (!open && e.key !== "Enter" && e.key.length === 1 && document.activeElement !== messageInputRef.current) {
       setOpen(true)
       messageInputRef.current?.focus()
     }
@@ -62,35 +60,38 @@ export default function Chat({game, name}) {
   }, [game])
 
   return (
-    <Box sx={{position: 'fixed', zIndex: 100, bottom: open ? '-0px' : {xs: '-262px', sm: '-386px'}, right: 0, width: '90%', maxWidth: '360px', margin: 0, padding: 0}}>
-      <Box sx={{display: 'flex', alignItems: 'center', backgroundColor: 'black', height: '30px', color: 'white', width:'100%', maxHeight: '400px', borderRadius: '4px 4px 0 0', position: 'relative'}}>
-        <Box onClick={toggleChatWindow} sx={{display: 'flex', flexGrow: '1', alignItems: 'center', justifyContent: 'space-between', margin: '0 5px'}}>
-        <Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
-          {unReadChatMessages ? <MarkChatUnreadIcon fontSize='small'/> :
-          <ChatBubbleIcon fontSize='small'/>}
-          <Typography>Chat</Typography>
+    <form>
+      <Box sx={{position: 'fixed', zIndex: 100, bottom: open ? '-0px' : {xs: '-262px', sm: '-386px'}, right: 0, width: '90%', maxWidth: '360px', margin: 0, padding: 0}}>
+        <Box sx={{display: 'flex', alignItems: 'center', backgroundColor: 'black', height: '30px', color: 'white', width:'100%', maxHeight: '400px', borderRadius: '4px 4px 0 0', position: 'relative'}}>
+          <Box onClick={toggleChatWindow} sx={{display: 'flex', flexGrow: '1', alignItems: 'center', justifyContent: 'space-between', margin: '0 5px'}}>
+          <Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
+            {unReadChatMessages ? <MarkChatUnreadIcon fontSize='small'/> :
+            <ChatBubbleIcon fontSize='small'/>}
+            <Typography>Chat</Typography>
+          </Box>
+          <IconButton sx={{}}>
+              <MinimizeIcon sx={{backgroundColor: 'lightgray', fontSize: 'large', borderRadius: '30px'}}/>
+            </IconButton>
+          </Box>
         </Box>
-        <IconButton sx={{}}>
-            <MinimizeIcon sx={{backgroundColor: 'lightgray', fontSize: 'large', borderRadius: '30px'}}/>
-          </IconButton>
-        </Box>
+        <Paper elevation={1} sx={{width:'100%', height: {xs: '222px', sm: '346px'}, maxHeight: '400px', overflow: 'auto', borderRadius: '0', bgcolor: 'white', paddingBottom: '40px'}}>
+          <List>
+            {gameChat}
+            <ListItem sx={{height: '0', padding: '0', margin: '0'}} ref={scrollRef}></ListItem>
+          </List>
+          <TextField
+            disabled={disabled}
+            inputRef={messageInputRef}
+            value={message}
+            size='small'
+            autoComplete='off'
+            placeholder={disabled ? 'Chat disabled during government' : 'Send a message'}
+            sx={{width: '100%', borderRadius: '0', backgroundColor: 'white', position: 'absolute', bottom: 0}}
+            onChange={(e) => setMessage(e.target.value)}
+            />
+        </Paper>
+        <button style={{visibility: 'hidden', width: '1px', height: '1px', position: 'absolute'}} type='submit' onClick={sendMessage}></button>
       </Box>
-      <Paper elevation={1} sx={{width:'100%', height: {xs: '222px', sm: '346px'}, maxHeight: '400px', overflow: 'auto', borderRadius: '0', bgcolor: 'white', paddingBottom: '40px'}}>
-        <List>
-          {gameChat}
-          <ListItem sx={{height: '0', padding: '0', margin: '0'}} ref={scrollRef}></ListItem>
-        </List>
-        <TextField
-          disabled={disabled}
-          inputRef={messageInputRef}
-          value={message}
-          size='small'
-          autoComplete='off'
-          placeholder={disabled ? 'Chat disabled during government' : 'Send a message'}
-          sx={{width: '100%', borderRadius: '0', backgroundColor: 'white', position: 'absolute', bottom: 0}}
-          onChange={(e) => setMessage(e.target.value)}
-          />
-      </Paper>
-    </Box>
+    </form>
   )
 }

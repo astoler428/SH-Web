@@ -1,19 +1,23 @@
-import React, {useEffect, useRef} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import { useParams } from 'react-router'
 import { UPDATE, Status, GameType, GameSettings } from '../consts'
 import { socket } from '../socket'
 import { useNavigate } from "react-router-dom";
 import client, {post} from '../api/api';
 import { Typography, Box, Toolbar, IconButton, Button, AppBar } from '@mui/material';
+import {makeStyles} from '@mui/styles';
+import {createTheme} from '@mui/material/styles'
 import MenuIcon from '@mui/icons-material/Menu';
-
 import GameSettingsComponent from '../components/GameSettingsComponent';
+import { ClassNames } from '@emotion/react';
+
 
 export default function Lobby({name, game, setGame, isConnected}) {
   const navigate = useNavigate()
   const params = useParams()
   const id = params.id
   const enteringGameRef = useRef(false)
+  const [flexDirection, setFlexDirection] = useState('column')
 
   //join game (redundant but just in case someone navigates directly to the url)
   useEffect(()=>{
@@ -89,12 +93,30 @@ export default function Lobby({name, game, setGame, isConnected}) {
       {renderPlayerName(player.name)}
     </Box>
   </li>)
+  // //118 need to change
+
+  // useEffect(() => {
+  //   window.addEventListener('orientationchange', checkLandscape)
+  //   checkLandscape()
+
+  //   function checkLandscape(){
+  //     const wasLandscape = window.matchMedia('(orientation: landscape)').matches
+  //     if(wasLandscape){
+  //       setFlexDirection('column')
+  //     }
+  //     else if(!wasLandscape){
+  //       setFlexDirection('row')
+  //     }
+  //   }
+  //   return () => window.removeEventListener('orientationchange', checkLandscape)
+  // }, [])
 
   const startGameButtonText = game?.players?.length < 5 ?
     `Waiting for more players` :
     game?.host === name ?  `Start Game` : `WAITING for ${game?.host} to start game`
 
   const disabled = !game || game?.players?.length < 5 || game?.host !== name
+
   return (
     <>
     {game?.status === Status.CREATED ?
@@ -107,18 +129,20 @@ export default function Lobby({name, game, setGame, isConnected}) {
         </Toolbar>
       </AppBar>
       <Box sx={{
-        marginTop: {xs: '30px', sm: '100px'},
+        marginTop: {xs: '30px', sm: '10vh', md: '10vh', lg: '10vh'},
         display: 'flex',
         justifyContent: 'center',
+
         minHeight:"100vh",
       }}>
         <Box
           sx={{
             display:"flex",
-            flexDirection:"column",
-            // flexWrap:"wrap",
-            width:320,
-            gap:{sx: 1, sm: 2, md: 3, lg: 4}
+            flexDirection: 'column',
+            alignItems: 'center',
+            // alignItems: flexDirection === 'column' ? 'center' : 'flex-start',
+            width:'80%',
+            gap:{sx: 4, sm: 4, md: 3, lg: 4}
           }}
         >
       <GameSettingsComponent game={game} name={name} handleSettingsChange={handleSettingsChange}/>
@@ -126,8 +150,9 @@ export default function Lobby({name, game, setGame, isConnected}) {
         sx={{
           display: 'flex',
           flexDirection: 'column',
+          maxWidth: 320,
           gap: 1}}>
-        <Typography variant={{xs: 'h5', sm: 'h4' }} sx={{display: 'block'}}>Players: </Typography>
+        <Typography variant='h5' sx={{display: 'block'}}>Players: </Typography>
         <ol style={{margin: '0'}}>
           {players}
         </ol>

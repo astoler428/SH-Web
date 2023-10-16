@@ -54,6 +54,10 @@ img{
   font-size: 24px;
 }
 
+.lobby-box{
+  flex-direction: column;
+}
+
 /* img{ */
   /* border-radius: 10px; */
 /* } */

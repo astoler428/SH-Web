@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useRef} from 'react'
 import { useNavigate } from "react-router-dom";
 import { useParams } from 'react-router'
 import client, {post} from '../api/api'
@@ -11,9 +11,11 @@ import Loading from '../components/Loading';
 import Chat from '../components/Chat';
 import { Typography, IconButton, Snackbar, AppBar, Toolbar, Button, Box } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import RoleModal from '../components/RoleModal';
+import RoleDialog from '../components/RoleDialog';
 import ConfirmFascDialog from '../components/ConfirmFascDialog';
 import StatusMessage from '../components/StatusMessage';
+import LogChat from '../components/LogChat';
+import PolicyPiles from '../components/PolicyPiles';
 
 export default function Game({name, game, setGame, isConnected}) {
   const navigate = useNavigate()
@@ -25,6 +27,9 @@ export default function Game({name, game, setGame, isConnected}) {
   const [confirmFascOpen, setConfirmFascOpen] = useState(false)
   const [error, setError] = useState(null)
   const [showInvCard, setShowInvCard] = useState(true)
+  const [boardDimensions, setBoardDimensions] = useState({x: 0, y: 0})
+  const boardRef = useRef(null)
+  const imageRefs = useRef([])
 
   //redundant join by just in case someone navigates directly or refreshes page
   useEffect(()=>{
@@ -140,33 +145,56 @@ export default function Game({name, game, setGame, isConnected}) {
   );
 
 
+
+  //used to get the height of the board so the logChat can match it
+  //need to check that all images are done loading first
+  useEffect(() => {
+    function handleBoardResize(){
+      if(boardRef.current && imageRefs.current.every(img => img.complete)){
+        setBoardDimensions({x: boardRef.current.offsetWidth, y: boardRef.current.offsetHeight})
+      }
+      else{
+        setTimeout(handleBoardResize, 100)
+      }
+    }
+    handleBoardResize()
+
+    window.addEventListener('resize', handleBoardResize);
+    return () => {
+      window.removeEventListener('resize', handleBoardResize)
+    }
+  }, [])
+
   return (
       <>
     {game && game.status !== Status.CREATED ?
     <>
-      <AppBar>
+      <AppBar sx={{display: 'flex', position: 'absolute', justifyContent: 'center', height: {xs: '30px', md: '56px'}}}>
         <Toolbar sx={{maxWidth: '95vw'}}>
-          <Typography component="div" sx={{flexGrow: 1, fontSize: {xs: '14px', sm: '20px'}}}>
+          <Typography component="div" sx={{flexGrow: 1, fontSize: {xs: '14px', md: '20px'}}}>
             Game ID: {id}
           </Typography>
-          <Button color="inherit" onClick={() => setRoleOpen(true)}>Role</Button>
+          <Button color="inherit" onClick={() => setRoleOpen(true)} sx={{fontSize: {xs: '14px'}}}>Role</Button>
         </Toolbar>
       </AppBar>
-      <Box sx={{marginTop: {xs:'56px', sm: '64px'}}}/>
-      <RoleModal thisPlayer={thisPlayer} game={game} roleOpen={roleOpen} setRoleOpen={setRoleOpen} setConfirmFascOpen={setConfirmFascOpen} />
-      <StatusMessage game={game} name={name}/>
-      <Board game={game} name={name} id={id} setError={setError} showInvCard={showInvCard}/>
-      <Log game={game}/>
-      <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} showInvCard={showInvCard} setShowInvCard={setShowInvCard}/>
-      <Chat game={game} name={name}/>
-      <Snackbar
+      <Box sx={{marginTop: {xs:'30px', md: '56px'}}}/>
+      <RoleDialog thisPlayer={thisPlayer} game={game} roleOpen={roleOpen} setRoleOpen={setRoleOpen} setConfirmFascOpen={setConfirmFascOpen} />
+      <Box sx={{display: 'flex', flexDirection: {xs: 'column', sm: 'row'}, height: {xs: 'calc(80vh - 30px)', sm: `${boardDimensions.y}px`}}}>
+        <Board boardRef={boardRef} imageRefs={imageRefs} game={game} name={name} id={id} setError={setError} showInvCard={showInvCard}/>
+        <LogChat game={game} name={name} boardDimensions={boardDimensions}/>
+      </Box>
+      <Box sx={{display: 'flex', alignItems: 'top', justifyContent: 'space-between'}}>
+        <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} showInvCard={showInvCard} setShowInvCard={setShowInvCard} boardDimensions={boardDimensions}/>
+        {/* <PolicyPiles game={game}/> */}
+      </Box>
+      {/* <Snackbar
         open={error !== null}
         onClose={() => setError(null)}
         message={error}
         autoHideDuration={5000}
         action={action}
-      />
-      <ConfirmFascDialog confirmFascOpen={confirmFascOpen} setConfirmFascOpen={setConfirmFascOpen} handleConfirmFasc={handleConfirmFasc}/>
+      /> */}
+      {/* <ConfirmFascDialog confirmFascOpen={confirmFascOpen} setConfirmFascOpen={setConfirmFascOpen} handleConfirmFasc={handleConfirmFasc}/> */}
     </>
     : <Loading />
      }

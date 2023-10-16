@@ -18,29 +18,14 @@ import voteBackPng from '../img/VoteBack.png'
 import errorPng from '../img/Error.png'
 import partyBack from '../img/ParyBack.png'
 //card height to width ratio = 1.36
-//visibity: hidden]
 
-/**
- * default content is cardBack
- *
- * options:
- * may be a full role if it's you or a fellow fasc
- * maybe a team party on inv
- *
- * loading if waiting on action - vote, current pres
- * Ja or Nein if time to display the vote
- *
- * end of game reveal all roles
- *
- * need to figure out how to show whether the other fasc have confirmed themselves or not
- *
- */
+
 const hitlerColor = 'darkred'
 const fascColor = 'red'
 const libColor = 'blue'
 const hiddenColor = 'black'
 
-export default function Players({name, game, handleChoosePlayer, showInvCard, setShowInvCard}) {
+export default function Players({name, game, handleChoosePlayer, showInvCard, setShowInvCard, boardDimensions}) {
   const choosing = game.currentPres === name &&
   (game.status === Status.CHOOSE_CHAN ||
    game.status === Status.INV ||
@@ -119,33 +104,11 @@ export default function Players({name, game, handleChoosePlayer, showInvCard, se
       [imgContent,nameColor] = getRoleImg(player)
     }
 
-    /**
-     * import Button from "@material-ui/core/Button";
-import { useTheme } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useEffect } from "react";
-
-const ResponsiveButton = (props) => {
-  const theme = useTheme();
-  const desktop = useMediaQuery(theme.breakpoints.up("lg"));
-  const tablet = useMediaQuery(theme.breakpoints.up("sm"));
-  const mobile = useMediaQuery(theme.breakpoints.up("xs"));
-
-  const sizes = () => {
-    if (desktop) return "large";
-    if (tablet) return "medium";
-    if (mobile) return "small";
-  };
-
-  return <Button {...props} size={sizes()}/>;
-};
-export default ResponsiveButton;
-     */
-
+    const n = game.players.length
     return (
     <Grid key={idx} item xs={12/game.players.length} sx={{}}>
       <Box sx={{opacity: player.socketId? 1 : .3, display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
-        <Typography maxWidth='80%' sx={{fontSize: {xs: '7px', sm: '16px'}, color: nameColor, whiteSpace: 'nowrap', overflow: 'hidden', textDecoration: player.name === name ? 'underline' : 'none'}}>{idx+1}. {player.name}</Typography>
+        <Typography maxWidth='80%' sx={{fontSize: `calc(100vw / ${8*n})`, color: nameColor, whiteSpace: 'nowrap', overflow: 'hidden', textDecoration: player.name === name ? 'underline' : 'none'}}>{idx+1}. {player.name}</Typography>
         <Card data-key={player.name} onClick={handleChoosePlayer} sx={{cursor: choosable ? 'pointer' : 'auto', border: choosable ? '4px solid lightgreen' : 'none', display: 'flex', flexDirection: 'column', position: 'relative'}}>
           <img className='player-card' src={imgContent} draggable='false' style={{maxWidth: "100%", }}/>
           {game.status !== Status.END_FASC && game.status !== Status.END_LIB &&
@@ -156,9 +119,7 @@ export default ResponsiveButton;
           {game.prevChan === player.name && <img src={chanPng} draggable='false' style={{opacity: .3, maxWidth: "100%", position: 'absolute', top: 0}}/>}
           {makingDecision &&
           <Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-            <CircularProgress viewBox="30 30 30 30" style={{color: 'white', width: '30px', height: '30px'}} />
-            {/* figured it out - just needed to switch to style */}
-            {/* set thickness 3.6 default */}
+            <CircularProgress thickness={2.5} style={{color: 'white', width: `calc(100vw / ${2*n})`, height: `calc(100vw / ${2*n})`}} />
           </Box>}
           {!player.alive && <CloseIcon sx={{width: '100%', height: '100%', position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', color: 'red' }}/>}
             </>
@@ -189,10 +150,10 @@ export default ResponsiveButton;
     return false
   }
 
-  let h = '100vh - 600px'
   let n = game.players.length
   return (
-    <Box maxWidth={`calc((${h})/(1.41)*${n})`} sx={{width: 'calc(100vw - 100px)'}}>
+    //not factoring on the height of the name label so can't use the 1.36
+    <Box sx={{width: '100vw', maxWidth: {xs: `calc((100vh - (30px + ${boardDimensions.y}px)) / 1.8 * ${n} )`}}}>
         <Grid container spacing={{xs: .5, sm: 1}}>
           {renderPlayers}
         </Grid>

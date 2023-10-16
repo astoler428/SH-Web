@@ -16,8 +16,9 @@ export default function GameSettingsComponent({game, name, handleSettingsChange}
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
+          // justifyContent: 'center',
           alignItems: 'start',
+          maxWidth: 320
         }}>
       <FormControl fullWidth>
         <InputLabel id="game-type-label">Game Type</InputLabel>

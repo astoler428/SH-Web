@@ -59,8 +59,8 @@ export default function StatusMessage({game, name}) {
   }
 
   return (
-    <Box sx={{height: {xs: 40, sm: 50}, width: 'calc(100vw - 100px)', maxWidth: '600px', backgroundColor: 'black', display:'flex', alignItems: 'center', justifyContent: 'center'}}>
-      <Typography variant={{xs: 'h6', sm: 'h5'}} sx={{color: 'white'}}>{message}</Typography>
+    <Box sx={{height: {xs: 30, sm: 40}, width: '100%', backgroundColor: 'black', display:'flex', alignItems: 'center'}}>
+      <Typography sx={{color: 'white', marginLeft: '10px', fontSize: {xs: '14px'}}}>{message}</Typography>
     </Box>
   )
 }

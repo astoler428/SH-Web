@@ -1,16 +1,38 @@
-import React, {useRef, useEffect} from 'react'
-import { Box, Typography, List, ListItem } from '@mui/material'
-import { Team, LogType, Role, Policy } from '../consts';
+import React, {useRef, useState, useEffect} from 'react'
+import { Box, Paper, TextField, Typography, List, ListItem } from '@mui/material'
+import { Team, Status, LogType, Role, Policy } from '../consts';
+import { socket } from '../socket'
+import StatusMessage from './StatusMessage';
 
-export default function Log({game}) {
+
+export default function LogChat({game, name, boardDimensions}) {
+  const [message, setMessage] = useState("")
   const scrollRef = useRef(undefined);
+  const messageInputRef = useRef(undefined);
+  window.addEventListener('keydown', handleKeyPress)
+
+  const disabled = (game.currentPres === name || game.currentChan === name) && (game.status === Status.PRES_DISCARD || game.status === Status.CHAN_PLAY)
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({behavior: 'smooth'})
   }, [game])
 
+  function sendMessage(e){
+    e.preventDefault()
+    if(message){
+      socket.emit('chat', {id: game.id, name, message})
+      setMessage("")
+    }
+  }
+
+  function handleKeyPress(e) {
+    if (messageInputRef?.current === document.activeElement && e.key !== "Enter" && e.key.length === 1) {
+      messageInputRef?.current?.focus()
+    }
+  }
 
   function renderPolicies(policyStr){
+    console.log(policyStr)
     return policyStr.split('').map((char, idx) => <span key={idx} style={{color: char === 'R' ? 'red' : 'blue'}}>{char}</span>)
   }
 
@@ -38,7 +60,7 @@ export default function Log({game}) {
 
     if(!entry.type){
       return(
-       <ListItem key={Math.random()} sx={{margin: '0', padding: '0', marginLeft: '5px'}}>
+       <ListItem key={i} sx={{margin: '0', padding: '0', marginLeft: '5px'}}>
         <Typography sx={{marginLeft: '5px', fontFamily: "ShoppingBasketJNL", fontSize: {xs: '12px', sm: '16px'}}}><span style={{fontWeight: 'bold'}}>{entry.name}: </span>{entry.message}</Typography>
       </ListItem>
       )
@@ -146,21 +168,35 @@ export default function Log({game}) {
         break
     }
 
-    // const temp = <span>hi</span>
     return (
-      <ListItem key={i} sx={{backgroundColor: 'white', marginBottom: '4px', padding: '2px', lineHeight: '22px'}}>
-        <Typography sx={{fontSize: {xs: '10px', sm: '17px'}}}>
-          {logEntry}
-        </Typography>
-      </ListItem>)
-  }).reverse()
-
+      <ListItem key={i} sx={{margin: '0', padding: '0', marginLeft: '5px'}}>
+        <Typography sx={{marginLeft: '5px', fontFamily: "ShoppingBasketJNL", fontSize: {xs: '12px', md: '16px'}}}>{logEntry}</Typography>
+      </ListItem>
+      )
+  })
 
   return (
-    <Box maxHeight={500} sx={{width: {xs: '100px', sm:'300px'}, height: '500px', maxHeight: 'calc(100vh-100px)', position: 'absolute', top: {xs: 56, sm: 64}, right: 0, overflow: 'auto'}}>
-      <List sx={{margin: 0, padding: 0}}>
-        {log}
-      </List>
+    <>
+    <Box sx={{position: 'relative', maxWidth: {xs: '100vw'}, height: {xs: 200, sm: `${boardDimensions.y}px`}, display: 'flex', flexDirection: 'column', flex: 1, margin: 0, padding: 0}}>
+      <StatusMessage game={game} name={name}/>
+      <Paper elevation={1} sx={{width:'100%', flex: 1, borderRadius: '0', overflow: 'auto', bgcolor: 'gray', paddingBottom: '45px'}}>
+          {log}
+          <ListItem sx={{height: '0', padding: '0', margin: '0'}} ref={scrollRef}></ListItem>
+    <form >
+      <button style={{visibility: 'hidden', width: '0px', height: '0px', position: 'absolute'}} type='submit' onClick={sendMessage}></button>
+        <TextField
+          inputRef={messageInputRef}
+          disabled={disabled}
+          value={message}
+          size='small'
+          autoComplete='off'
+          placeholder={disabled ? 'Chat disabled during government' : 'Send a message'}
+          sx={{width: '100%', borderRadius: '0', backgroundColor: 'gray', position: 'absolute', bottom: 1}}
+          onChange={(e) => setMessage(e.target.value)}
+          />
+          </form>
+      </Paper>
     </Box>
+          </>
   )
 }

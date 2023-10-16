@@ -24,7 +24,7 @@ const deckBottom = 0
 const deckLeft = 600
 
 
-export default function Board({game, name, id, setError, showInvCard}) {
+export default function Board({game, name, id, setError, showInvCard, boardRef, imageRefs}) {
   const fascBoard = game.players.length < 7 ? fasc5PlayerBoard : game.players.length < 9 ? fasc7PlayerBoard : fasc9PlayerBoard
   const [blur, setBlur] = useState(false)
 
@@ -39,11 +39,11 @@ export default function Board({game, name, id, setError, showInvCard}) {
 
   return (
     <>
-      <Box sx={{width: {xs: 'calc(100vw - 100px)'}, maxWidth: '600px', display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative'}}>
+      <Box sx={{width: {xs: '100vw', sm: '50vw'}, maxWidth: {sm: `calc((65vh - 30px) * 1.3)`, md: 600}, display: 'flex', flexDirection: 'column', position: 'relative'}}>
         <Action game={game} name={name} id={id} setError={setError} blur={blur} setBlur={setBlur} showInvCard={showInvCard}/>
-        <Box sx={{filter: blur ? 'blur(5px)' : 'blur(0)', zIndex: -1, display: 'flex', flexDirection: 'column'}}>
-          <img key={1} src={fascBoard} draggable='false' style={{ maxWidth: "100%"}}/>
-          <img key={2} src={libBoard} draggable='false' style={{ maxWidth: "100%" }}/>
+        <Box ref={boardRef} sx={{filter: blur ? 'blur(5px)' : 'blur(0)', zIndex: -1, display: 'flex', flexDirection: 'column'}}>
+          <img ref={el => imageRefs.current[0] = el} key={1} src={fascBoard} draggable='false' style={{ maxWidth: "100%"}}/>
+          <img ref={el => imageRefs.current[1] = el} key={2} src={libBoard} draggable='false' style={{ maxWidth: "100%" }}/>
           <Box sx={{position: 'absolute', bottom: fascBottom, left: fascLeft, display: 'flex', gap: .8}}>
             {fascPolicies}
           </Box>
@@ -51,18 +51,6 @@ export default function Board({game, name, id, setError, showInvCard}) {
             {libPolicies}
           </Box>
           <CircleIcon sx={{color: 'blue', position: 'absolute', bottom: trackerBottom, left: trackerLeft + game.tracker * trackerGap}}/>
-          {/* <Box sx={{position: 'absolute', bottom: deckBottom, left: deckLeft, display: 'flex', flexDirection: 'column', gap: .2}}>
-            <Box sx={{display: 'flex'}}>
-              <img src={PolicyBack} draggable='false' style={{ width: POLICY_WIDTH }}/>
-              <Box sx={{position: 'relative', top: 0, left: -POLICY_WIDTH, color: 'white', backgroundColor: 'black', textAlign: 'center', width: 25, height: 25, fontWeight: 'bold', fontSize: 18}}>{game.deck.drawPile.length}
-              </Box>
-            </Box>
-            <Box sx={{display: 'flex'}}>
-              <img src={PolicyBack} draggable='false' style={{ width: POLICY_WIDTH }}/>
-              <Box sx={{position: 'relative', top: 0, left: -POLICY_WIDTH, color: 'white', backgroundColor: 'black', textAlign: 'center', width: 25, height: 25, fontWeight: 'bold', fontSize: 18}}>{game.deck.discardPile.length}
-              </Box>
-            </Box>
-          </Box> */}
         </Box>
       </Box>
 
