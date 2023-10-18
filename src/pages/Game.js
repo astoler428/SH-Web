@@ -179,22 +179,23 @@ export default function Game({name, game, setGame, isConnected}) {
       </AppBar>
       <Box sx={{marginTop: {xs:'30px', md: '56px'}}}/>
       <RoleDialog thisPlayer={thisPlayer} game={game} roleOpen={roleOpen} setRoleOpen={setRoleOpen} setConfirmFascOpen={setConfirmFascOpen} />
-      <Box sx={{display: 'flex', flexDirection: {xs: 'column', sm: 'row'}, height: {xs: 'calc(80vh - 30px)', sm: `${boardDimensions.y}px`}}}>
-        <Board boardRef={boardRef} imageRefs={imageRefs} game={game} name={name} id={id} setError={setError} showInvCard={showInvCard}/>
+      <Box sx={{display: 'flex', flexDirection: {xs: 'column', sm: 'row'}, maxHeight: { sm: `${boardDimensions.y}px`}}}>
+        <Board boardRef={boardRef} imageRefs={imageRefs} game={game} name={name} id={id} setError={setError} showInvCard={showInvCard} boardDimensions={boardDimensions}/>
         <LogChat game={game} name={name} boardDimensions={boardDimensions}/>
       </Box>
       <Box sx={{display: 'flex', alignItems: 'top', justifyContent: 'space-between'}}>
+        {/* <Box sx={{border: '2px solid red', width: '100vw', height: '200px'}}></Box> */}
         <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} showInvCard={showInvCard} setShowInvCard={setShowInvCard} boardDimensions={boardDimensions}/>
         {/* <PolicyPiles game={game}/> */}
       </Box>
-      {/* <Snackbar
+      <Snackbar
         open={error !== null}
         onClose={() => setError(null)}
         message={error}
         autoHideDuration={5000}
         action={action}
-      /> */}
-      {/* <ConfirmFascDialog confirmFascOpen={confirmFascOpen} setConfirmFascOpen={setConfirmFascOpen} handleConfirmFasc={handleConfirmFasc}/> */}
+      />
+      <ConfirmFascDialog confirmFascOpen={confirmFascOpen} setConfirmFascOpen={setConfirmFascOpen} handleConfirmFasc={handleConfirmFasc}/>
     </>
     : <Loading />
      }

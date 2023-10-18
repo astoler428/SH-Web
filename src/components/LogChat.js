@@ -177,7 +177,7 @@ export default function LogChat({game, name, boardDimensions}) {
 
   return (
     <>
-    <Box sx={{position: 'relative', maxWidth: {xs: '100vw'}, height: {xs: 200, sm: `${boardDimensions.y}px`}, display: 'flex', flexDirection: 'column', flex: 1, margin: 0, padding: 0}}>
+    <Box sx={{position: 'relative', width: {xs: '100vw'}, minHeight: {xs: `calc(80vh - ${boardDimensions.y}px - 30px)`, sm: `${boardDimensions.y}px`}, height: {xs: `calc(80vh - ${boardDimensions.y}px - 30px)`, sm: `${boardDimensions.y}px`}, display: 'flex', flexDirection: 'column', flex: 1, margin: 0, padding: 0}}>
       <StatusMessage game={game} name={name}/>
       <Paper elevation={1} sx={{width:'100%', flex: 1, borderRadius: '0', overflow: 'auto', bgcolor: 'gray', paddingBottom: '45px'}}>
           {log}

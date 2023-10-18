@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import {Status, Role, Team, GameType, Vote} from '../consts'
 import {Card, CircularProgress, Grid, Typography, Box} from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close';
@@ -26,6 +26,9 @@ const libColor = 'blue'
 const hiddenColor = 'black'
 
 export default function Players({name, game, handleChoosePlayer, showInvCard, setShowInvCard, boardDimensions}) {
+  const [playersDimensions, setPlayersDimensions] = useState({x: 0, y: 0})
+  const [maxWidth, setMaxWidth] = useState(500)
+  const playersRef = useRef(null)
   const choosing = game.currentPres === name &&
   (game.status === Status.CHOOSE_CHAN ||
    game.status === Status.INV ||
@@ -108,7 +111,7 @@ export default function Players({name, game, handleChoosePlayer, showInvCard, se
     return (
     <Grid key={idx} item xs={12/game.players.length} sx={{}}>
       <Box sx={{opacity: player.socketId? 1 : .3, display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
-        <Typography maxWidth='80%' sx={{fontSize: `calc(100vw / ${8*n})`, color: nameColor, whiteSpace: 'nowrap', overflow: 'hidden', textDecoration: player.name === name ? 'underline' : 'none'}}>{idx+1}. {player.name}</Typography>
+        <Typography maxWidth='80%' sx={{fontSize: `calc(${playersDimensions.x}px / ${8*n})`, color: nameColor, whiteSpace: 'nowrap', overflow: 'hidden', textDecoration: player.name === name ? 'underline' : 'none'}}>{idx+1}. {player.name}</Typography>
         <Card data-key={player.name} onClick={handleChoosePlayer} sx={{cursor: choosable ? 'pointer' : 'auto', border: choosable ? '4px solid lightgreen' : 'none', display: 'flex', flexDirection: 'column', position: 'relative'}}>
           <img className='player-card' src={imgContent} draggable='false' style={{maxWidth: "100%", }}/>
           {game.status !== Status.END_FASC && game.status !== Status.END_LIB &&
@@ -119,7 +122,7 @@ export default function Players({name, game, handleChoosePlayer, showInvCard, se
           {game.prevChan === player.name && <img src={chanPng} draggable='false' style={{opacity: .3, maxWidth: "100%", position: 'absolute', top: 0}}/>}
           {makingDecision &&
           <Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-            <CircularProgress thickness={2.5} style={{color: 'white', width: `calc(100vw / ${2*n})`, height: `calc(100vw / ${2*n})`}} />
+            <CircularProgress thickness={2.5} style={{color: 'white', width: `calc(${playersDimensions.x}px / ${2.5*n} )`, height: `calc(${playersDimensions.x}px / ${2.5*n} )`}} />
           </Box>}
           {!player.alive && <CloseIcon sx={{width: '100%', height: '100%', position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', color: 'red' }}/>}
             </>
@@ -151,9 +154,28 @@ export default function Players({name, game, handleChoosePlayer, showInvCard, se
   }
 
   let n = game.players.length
+
+  useEffect(() => {
+    function handlePlayersResize(){
+      if(playersRef.current){
+        setPlayersDimensions({x: playersRef.current.offsetWidth, y: playersRef.current.offsetHeight})
+      }
+      else{
+        setTimeout(handlePlayersResize, 100)
+      }
+    }
+    handlePlayersResize()
+
+    window.addEventListener('resize', handlePlayersResize);
+    return () => {
+      window.removeEventListener('resize', handlePlayersResize)
+    }
+  }, [])
+
+
   return (
     //not factoring on the height of the name label so can't use the 1.36
-    <Box sx={{width: '100vw', maxWidth: {xs: `calc((100vh - (30px + ${boardDimensions.y}px)) / 1.8 * ${n} )`}}}>
+    <Box ref={playersRef} sx={{width: '100vw', maxHeight: {xs: '20vh'}, width: {sm: `calc((100vh - (30px + ${boardDimensions.y}px)) / 1.8 * ${n} )`}, maxWidth: 800}}>
         <Grid container spacing={{xs: .5, sm: 1}}>
           {renderPlayers}
         </Grid>

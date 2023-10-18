@@ -11,12 +11,7 @@ import PolicyBack from '../img/PolicyBack.png';
 import { POLICY_WIDTH } from '../consts';
 import Action from './Action';
 
-const boardWidth = 600
 
-const fascBottom = 285
-const fascLeft = 59
-const libBottom = 60
-const libLeft = 101
 const trackerGap = 55.5
 const trackerBottom = 30.5
 const trackerLeft = 202.3
@@ -24,18 +19,31 @@ const deckBottom = 0
 const deckLeft = 600
 
 
-export default function Board({game, name, id, setError, showInvCard, boardRef, imageRefs}) {
+export default function Board({game, name, id, setError, showInvCard, boardRef, imageRefs, boardDimensions}) {
   const fascBoard = game.players.length < 7 ? fasc5PlayerBoard : game.players.length < 9 ? fasc7PlayerBoard : fasc9PlayerBoard
   const [blur, setBlur] = useState(false)
 
+  const policyWidth = boardDimensions.x / 8.2
+  const fascBottom = boardDimensions.x / 2.12
+  const fascLeft = boardDimensions.x / 10
+  const libBottom = boardDimensions.x / 10
+  const libLeft = boardDimensions.x / 5.9
+  const trackerWidth = boardDimensions.x / 28.1
+  const trackerGap = '9.3%'
+  const trackerLeft = '33.9%'
+  const trackerBottom = '7%'
+  game.tracker = 3
+
   const fascPolicies = []
   for(let i = 0; i < game.FascPoliciesEnacted; i++){
-    fascPolicies.push(<img key={i} src={fascPolicy} style={{ width: POLICY_WIDTH }}/>)
+    fascPolicies.push(<img key={i} src={fascPolicy} style={{ width: policyWidth }}/>)
   }
   const libPolicies = []
   for(let i = 0; i < game.LibPoliciesEnacted; i++){
-    libPolicies.push(<img key={i} src={libPolicy} style={{ width: POLICY_WIDTH }}/>)
+    libPolicies.push(<img key={i} src={libPolicy} style={{ width: policyWidth }}/>)
   }
+
+
 
   return (
     <>
@@ -50,7 +58,10 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
           <Box sx={{position: 'absolute', bottom: libBottom, left: libLeft, display: 'flex', gap: 1}}>
             {libPolicies}
           </Box>
-          <CircleIcon sx={{color: 'blue', position: 'absolute', bottom: trackerBottom, left: trackerLeft + game.tracker * trackerGap}}/>
+          {/* <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}> */}
+            <div style={{backgroundColor: 'blue', width: trackerWidth, height: trackerWidth, borderRadius: '100%', position: 'absolute', bottom: trackerBottom, left: `calc(${trackerLeft} + ${game.tracker} * ${trackerGap})` }}></div>
+            {/* <CircleIcon sx={{color: 'blue', width: trackerWidth, position: 'absolute', bottom: trackerBottom, left: `calc(${trackerLeft} + ${game.tracker} * ${trackerGap})`}}/> */}
+          {/* </Box> */}
         </Box>
       </Box>
 

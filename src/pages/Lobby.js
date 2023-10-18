@@ -151,6 +151,7 @@ export default function Lobby({name, game, setGame, isConnected}) {
           display: 'flex',
           flexDirection: 'column',
           maxWidth: 320,
+          width: '100%',
           gap: 1}}>
         <Typography variant='h5' sx={{display: 'block'}}>Players: </Typography>
         <ol style={{margin: '0'}}>

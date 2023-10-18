@@ -134,21 +134,21 @@ export default function Action({game, name, id, setError, blur, setBlur, showInv
 
   function showPresClaims(){
     return (
-    <Box onClick={handlePresClaim} sx={{display: 'flex', flexDirection: 'column', width: 250, gap: 2}}>
-      <Button variant='contained' data-key={PRES3.RRR} color='error'>3 Fascist policies</Button>
-      <Button variant='contained' data-key={PRES3.RRB} color='inherit' sx={{lineHeight: '18px'}}>2 Fascist and a Liberal policy</Button>
-      <Button variant='contained' data-key={PRES3.RBB} sx={{lineHeight: '18px', backgroundColor: 'lightskyblue'}}>2 Liberal and a Fascist policy</Button>
-      <Button variant='contained' data-key={PRES3.BBB} color='primary'>3 Liberal policies</Button>
+    <Box onClick={handlePresClaim} sx={{display: 'flex', flexDirection: 'column', width: {xs: 220, sm: 250}, gap: {xs: 1, sm: 2}}}>
+      <Button variant='contained' data-key={PRES3.RRR} color='error' sx={{fontSize: {xs: '11px', sm: '14px'}}}>3 Fascist policies</Button>
+      <Button variant='contained' data-key={PRES3.RRB} color='inherit' sx={{lineHeight: '18px', fontSize: {xs: '11px', sm: '14px'}}}>2 Fascist and a Liberal policy</Button>
+      <Button variant='contained' data-key={PRES3.RBB} sx={{lineHeight: '18px', backgroundColor: 'lightskyblue', fontSize: {xs: '11px', sm: '14px'}}}>2 Liberal and a Fascist policy</Button>
+      <Button variant='contained' data-key={PRES3.BBB} color='primary' sx={{fontSize: {xs: '11px', sm: '14px'}}}>3 Liberal policies</Button>
     </Box>
     )
   }
 
   function showChanClaims(){
     return (
-    <Box onClick={handleChanClaim} sx={{display: 'flex', flexDirection: 'column', width: 250, gap: 2}}>
-      <Button variant='contained' data-key={CHAN2.RR} color='error'>2 Fascist policies</Button>
-      <Button variant='contained' data-key={CHAN2.RB} color='inherit' sx={{lineHeight: '18px'}}>A Fascist and a Liberal policy</Button>
-      <Button variant='contained' data-key={CHAN2.BB} color='primary'>2 Liberal policies</Button>
+    <Box onClick={handleChanClaim} sx={{display: 'flex', flexDirection: 'column', width: {xs: 180, sm: 250}, gap: {xs: 1, sm: 2}}}>
+      <Button variant='contained' data-key={CHAN2.RR} color='error' sx={{fontSize: {xs: '11px', sm: '14px'}}}>2 Fascist policies</Button>
+      <Button variant='contained' data-key={CHAN2.RB} color='inherit' sx={{lineHeight: '18px', fontSize: {xs: '11px', sm: '14px'}}}>A Fascist and a Liberal policy</Button>
+      <Button variant='contained' data-key={CHAN2.BB} color='primary' sx={{fontSize: {xs: '11px', sm: '14px'}}}>2 Liberal policies</Button>
     </Box>
     )
   }
@@ -299,12 +299,14 @@ export default function Action({game, name, id, setError, blur, setBlur, showInv
 
   return (
     <Box sx={{}}>
-      <Box sx={{maxWidth: 600, position: 'absolute', width: '90%', height: '100%', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 3 }}>
-        <Typography sx={{fontSize: '30px', textAlign: 'center', display: 'flex'}}>{title}</Typography>
-        <Box sx={{display: 'flex', gap:4, justifyContent: 'center', alignItems: 'center'}}>
-          {content}
+      <Box sx={{maxWidth: 600, position: 'absolute', width: '90%', height: '100%', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', gap: {xs: 1, sm: 2, md: 3} }}>
+        <Typography sx={{fontSize: {xs: '20px', sm: '30px'}, textAlign: 'center', display: 'flex'}}>{title}</Typography>
+        <Box sx={{display: 'flex', flexDirection: 'column', justifyContent:'center', alignItems: 'center', gap: 2}}>
+          <Box sx={{display: 'flex', gap:4, justifyContent: 'center', alignItems: 'center'}}>
+            {content}
+          </Box>
+          {showDefaultOption && <Button variant='contained' sx={{backgroundColor: 'orange', fontSize: {xs: '11px', sm: '14px'}}} onClick={handleDefaultAction}>Default to Role</Button>}
         </Box>
-        {showDefaultOption && <Button variant='contained' sx={{backgroundColor: 'orange'}} onClick={handleDefaultAction}>Default to Role</Button>}
       </Box>
       <DefaulDiscardDialog game={game} name={name} showDiscardDialog={showDiscardDialog} setShowDiscardDialog={setShowDiscardDialog} presDiscard={game.presDiscard}/>
     </Box>
