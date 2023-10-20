@@ -5,14 +5,13 @@ import { Status } from '../consts'
 export default function StatusMessage({game, name}) {
   let message
   const status = game.status
-  const isCurrentPres = game.currentPres === name
-  const isCurrentChan = game.currentChan === name
-  const thisPlayer = game.players.find(player => player.name === name)
-
+  // const isCurrentPres = game.currentPres === name
+  // const isCurrentChan = game.currentChan === name
+  // const thisPlayer = game.players.find(player => player.name === name)
 
   switch (status){
     case Status.CHOOSE_CHAN:
-      message = isCurrentPres ? 'Choose an eligible chancellor' : 'President to select chancellor'
+      message = 'President to select chancellor'
       break
     case Status.VOTE:
       message = 'Players to vote'
@@ -34,16 +33,16 @@ export default function StatusMessage({game, name}) {
       message = 'Waiting on president claim'
       break
     case Status.INV:
-      message = isCurrentPres ? 'Choose a player to investigate' : 'Waiting on president to investigate'
+      message = 'Waiting on president to investigate'
       break
     case Status.INV_CLAIM:
       message = 'Waiting on president to claim investigation'
       break
     case Status.SE:
-      message = isCurrentPres ? 'Choose a player to become the next president' : 'Waiting on president to special elect'
+      message = 'Waiting on president to special elect'
       break
     case Status.GUN:
-      message = isCurrentPres ? 'Choose a player to shoot' : 'Waiting on president to shoot'
+      message = 'Waiting on president to shoot'
       break
     case Status.INSPECT_TOP3:
       message = 'Waiting on president to claim the top 3 policies'

@@ -1,5 +1,5 @@
 import React, {useRef, useState, useEffect} from 'react'
-import { Box, Paper, TextField, Typography, List, ListItem } from '@mui/material'
+import { Box, Paper, TextField, Typography, List, ListItem, Button } from '@mui/material'
 import { Team, Status, LogType, Role, Policy } from '../consts';
 import { socket } from '../socket'
 import StatusMessage from './StatusMessage';
@@ -32,7 +32,6 @@ export default function LogChat({game, name, boardDimensions}) {
   }
 
   function renderPolicies(policyStr){
-    console.log(policyStr)
     return policyStr.split('').map((char, idx) => <span key={idx} style={{color: char === 'R' ? 'red' : 'blue'}}>{char}</span>)
   }
 
@@ -174,16 +173,16 @@ export default function LogChat({game, name, boardDimensions}) {
       </ListItem>
       )
   })
-
   return (
     <>
-    <Box sx={{position: 'relative', width: {xs: '100vw'}, minHeight: {xs: `calc(80vh - ${boardDimensions.y}px - 30px)`, sm: `${boardDimensions.y}px`}, height: {xs: `calc(80vh - ${boardDimensions.y}px - 30px)`, sm: `${boardDimensions.y}px`}, display: 'flex', flexDirection: 'column', flex: 1, margin: 0, padding: 0}}>
+    <Box sx={{position: 'relative', width: {xs: '100vw', sm: '50vw'}, flex: 1, minHeight: {xs: '200px', sm: `${boardDimensions.y}px`}, maxHeight: {xs: `calc(80vh - ${boardDimensions.y}px - 30px)`, sm: `${boardDimensions.y}px`}, height: {xs: `calc(80vh - ${boardDimensions.y}px - 30px)`, sm: `${boardDimensions.y}px`}, display: 'flex', flexDirection: 'column', margin: 0, padding: 0}}>
+    {/* flex 1  in box above and in paper*/}
       <StatusMessage game={game} name={name}/>
-      <Paper elevation={1} sx={{width:'100%', flex: 1, borderRadius: '0', overflow: 'auto', bgcolor: 'gray', paddingBottom: '45px'}}>
+      <Paper elevation={1} sx={{width:'100%', borderRadius: '0', overflow: 'auto', bgcolor: 'gray', paddingBottom: '45px'}}>
           {log}
           <ListItem sx={{height: '0', padding: '0', margin: '0'}} ref={scrollRef}></ListItem>
-    <form >
-      <button style={{visibility: 'hidden', width: '0px', height: '0px', position: 'absolute'}} type='submit' onClick={sendMessage}></button>
+    <form sx={{height: 0,position: 'absolute', bottom: -1}}>
+      <button style={{visibility: 'hidden', width: '0px', height: '0px', position: 'absolute', bottom: 0}} type='submit' onClick={sendMessage}></button>
         <TextField
           inputRef={messageInputRef}
           disabled={disabled}
@@ -191,7 +190,7 @@ export default function LogChat({game, name, boardDimensions}) {
           size='small'
           autoComplete='off'
           placeholder={disabled ? 'Chat disabled during government' : 'Send a message'}
-          sx={{width: '100%', borderRadius: '0', backgroundColor: 'gray', position: 'absolute', bottom: 1}}
+          sx={{width: '100%', borderRadius: '0', backgroundColor: 'gray', position: 'absolute', bottom: -1}}
           onChange={(e) => setMessage(e.target.value)}
           />
           </form>

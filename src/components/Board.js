@@ -32,7 +32,6 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
   const trackerGap = '9.3%'
   const trackerLeft = '33.9%'
   const trackerBottom = '7%'
-  game.tracker = 3
 
   const fascPolicies = []
   for(let i = 0; i < game.FascPoliciesEnacted; i++){
@@ -44,15 +43,14 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
   }
 
 
-
   return (
     <>
-      <Box sx={{width: {xs: '100vw', sm: '50vw'}, maxWidth: {sm: `calc((65vh - 30px) * 1.3)`, md: 600}, display: 'flex', flexDirection: 'column', position: 'relative'}}>
+      <Box sx={{width: {xs: '100vw', sm: '50vw'}, maxWidth: {sm: `calc((65vh - 30px) * 1.4)`, md: 600}, display: 'flex', flexDirection: 'column', position: 'relative'}}>
         <Action game={game} name={name} id={id} setError={setError} blur={blur} setBlur={setBlur} showInvCard={showInvCard}/>
         <Box ref={boardRef} sx={{filter: blur ? 'blur(5px)' : 'blur(0)', zIndex: -1, display: 'flex', flexDirection: 'column'}}>
           <img ref={el => imageRefs.current[0] = el} key={1} src={fascBoard} draggable='false' style={{ maxWidth: "100%"}}/>
           <img ref={el => imageRefs.current[1] = el} key={2} src={libBoard} draggable='false' style={{ maxWidth: "100%" }}/>
-          <Box sx={{position: 'absolute', bottom: fascBottom, left: fascLeft, display: 'flex', gap: .8}}>
+          <Box sx={{position: 'absolute', bottom: fascBottom, left: fascLeft, display: 'flex', gap: boardDimensions.x/610}}>
             {fascPolicies}
           </Box>
           <Box sx={{position: 'absolute', bottom: libBottom, left: libLeft, display: 'flex', gap: 1}}>
