@@ -81,16 +81,16 @@ export default function Lobby({name, game, setGame, isConnected}) {
     }
   }
 
-  const renderPlayerName = _name => _name === name ? _name + ` (YOU)` : _name
+  // const renderPlayerName = _name => _name === name ? _name + ` (YOU)` : _name
 
   const players = game?.players?.map(player => <li key={player.name}>
      <Box
       display="flex"
       justifyContent="flex-start"
       alignItems="center"
-      sx={{fontSize: '20px', whiteSpace: 'nowrap', overflow: 'hidden'}}
+      sx={{fontSize: '20px', whiteSpace: 'nowrap', overflow: 'hidden', fontWeight: player.name === name ? 'bold' : 'normal'}}
     >
-      {renderPlayerName(player.name)}
+      {player.name}
     </Box>
   </li>)
   // //118 need to change
@@ -153,11 +153,11 @@ export default function Lobby({name, game, setGame, isConnected}) {
           maxWidth: 320,
           width: '100%',
           gap: 1}}>
-        <Typography variant='h5' sx={{display: 'block'}}>Players: </Typography>
-        <ol style={{margin: '0'}}>
+        <Typography variant='h5' sx={{display: 'block', fontFamily: 'inter'}}>Players: </Typography>
+        <ol style={{margin: '0', fontFamily: 'inter'}}>
           {players}
         </ol>
-        <Button variant='contained' disabled={disabled} onClick={startGame}>{startGameButtonText}</Button>
+          <Button variant='contained' disabled={disabled} onClick={startGame}>{startGameButtonText}</Button>
         </Box>
         </Box>
       </Box>

@@ -21,40 +21,52 @@ import partyBack from '../img/ParyBack.png'
 
 
 const hitlerColor = 'darkred'
-const fascColor = 'red'
-const libColor = 'blue'
+const fascColor = 'orangered'
+const libColor = 'deepskyblue'
 const hiddenColor = 'black'
 
-export default function Players({name, game, handleChoosePlayer, showInvCard, setShowInvCard, boardDimensions}) {
+export default function Players({name, game, handleChoosePlayer, boardDimensions}) {
   const [playersDimensions, setPlayersDimensions] = useState({x: 0, y: 0})
   const imageRefs = useRef([])
   const [maxWidth, setMaxWidth] = useState(500)
   const playersRef = useRef(null)
-  const choosing = game.currentPres === name &&
+  const thisPlayer = game.players.find(player => player.name === name)
+  const n = game.players.length
+
+
+  const choosing = (game.currentPres === name &&
   (game.status === Status.CHOOSE_CHAN ||
    game.status === Status.INV ||
    game.status === Status.SE ||
-   game.status === Status.GUN)
+   game.status === Status.GUN))
+   || (thisPlayer.role === Role.HITLER && game.status === Status.LIB_SPY_GUESS)
 
-  const thisPlayer = game.players.find(player => player.name === name)
   const currentPres = game.players.find(player => player.name === game.currentPres)
-  const getRoleImg = (player) => player.role === Role.HITLER ? [hitlerPng,hitlerColor] : player.role === Role.FASC ? [fascistPng,fascColor] : player.role === Role.LIB_SPY ? [liberalSpyPng, libColor] : [liberalPng,libColor]
+  const getRoleImg = (player) => game.settings.type === GameType.MIXED_ROLES && player.team === Team.FASC && player.role !== Role.HITLER ? [fascistPng, getTeamImg(player)[1]] : player.role === Role.HITLER ? [hitlerPng,hitlerColor] : player.role === Role.FASC ? [fascistPng,fascColor] : player.role === Role.LIB_SPY ? [liberalSpyPng, libColor] : [liberalPng,libColor]
   const getTeamImg = (player) => player.team === Team.FASC ? [fascPartyPng, fascColor] : [libPartyPng, libColor]
   const getVote = (player) => player.vote === Vote.JA ? jaPng : player.vote === Vote.NEIN ? neinPng : errorPng
 
   const renderPlayers = game?.players?.map((player, idx) => {
-    let choosable = false, makingDecision = false, nameColor = hiddenColor
+    let choosable = false, makingDecision = false, nameColor = hiddenColor, imgContent = roleBackPng
     const thisPlayerInvestigatedPlayer = thisPlayer.investigations.some(invName => invName === player.name)
-    if(choosing && player.name !== name && player.alive){
-      if(game.status === Status.CHOOSE_CHAN){
-        if(game.prevChan !== player.name && game.prevPres !== player.name){
-          choosable = true
-        }
+    if(choosing && player.name !== name){
+      if(game.status === Status.LIB_SPY_GUESS){
+        choosable = player.team === Team.LIB || (!game.settings.hitlerKnowsFasc && player.role !== Role.HITLER)
+      }
+      else if(!player.alive){
+        choosable = false
+      }
+      else if(game.status === Status.CHOOSE_CHAN){
+        choosable = game.prevChan !== player.name && game.prevPres !== player.name
+        // if(game.prevChan !== player.name && game.prevPres !== player.name){
+        //   choosable = true
+        // }
       }
       else if(game.status === Status.INV){
-        if(!player.investigated){
-          choosable = true
-        }
+        choosable = !player.investigated
+        // if(!player.investigated){
+        //   choosable = true
+        // }
       }
       else{
         choosable = true
@@ -74,48 +86,54 @@ export default function Players({name, game, handleChoosePlayer, showInvCard, se
     if(game.status === Status.VOTE && !player.vote && player.alive){
       makingDecision = true
     }
+    if(game.status === Status.LIB_SPY_GUESS && player.role === Role.HITLER){
+      makingDecision = true
+    }
 
-    let imgContent =  roleBackPng
+    let showDueToInv = false
     //your own role
     if(player.name === name){
       [imgContent, nameColor] = showOwnRole(player) ? getRoleImg(player) : [roleBackPng, hiddenColor]
     }
     //fasc see other fasc
     else if(player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)){
-      [imgContent, nameColor] = getRoleImg(player)
-      // if(player.confirmedFasc){
-      //   cls += ` confirmed `
-      // }
+      [, nameColor] = getRoleImg(player)
     }
     else if(thisPlayerInvestigatedPlayer){
       [imgContent, nameColor] = getTeamImg(player)
+      showDueToInv = true
     }
-    if(game.status === Status.VOTE){
+    if(game.status === Status.STARTED){
+      if(player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)){
+        [imgContent, nameColor] = getRoleImg(player)
+      }
+    }
+    else if(game.status === Status.VOTE){
       imgContent = voteBackPng
     }
-
-    if(game.status === Status.VOTE_RESULT && player.alive){
+    else if(game.status === Status.VOTE_RESULT && player.alive){
       imgContent = getVote(player)
     }
-
-    if(game.status === Status.INV_CLAIM && player.name === currentPres.investigations.slice(-1)[0] && showInvCard){
+    else if(game.status === Status.SHOW_INV_CHOICE && player.name === currentPres.investigations.slice(-1)[0]){
       imgContent = partyBack
-      nameColor = hiddenColor
-      setTimeout(()=>{
-        setShowInvCard(false)
-      },2000)
+      nameColor = showDueToInv ? hiddenColor : nameColor
     }
-
-    if(game.status === Status.END_FASC || game.status === Status.END_LIB){
+    else if(game.status === Status.LIB_SPY_GUESS && player.role === Role.HITLER){
+      [imgContent, nameColor] = getRoleImg(player)
+    }
+    else if(game.status === Status.SHOW_LIB_SPY_GUESS && player.guessedToBeLibSpy){
+      imgContent = partyBack
+    }
+    else if(game.status === Status.END_FASC || game.status === Status.END_LIB){
       [imgContent,nameColor] = getRoleImg(player)
     }
 
-    const n = game.players.length
+    // const n = game.players.length
     return (
     <Grid key={idx} item xs={12/game.players.length} sx={{}}>
       <Box sx={{opacity: player.socketId? 1 : .3, display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
-        <Typography maxWidth='80%' sx={{fontSize: `calc(${playersDimensions.x}px / ${8*n})`, color: nameColor, whiteSpace: 'nowrap', overflow: 'hidden', textDecoration: player.name === name ? 'underline' : 'none'}}>{idx+1}. {player.name}</Typography>
-        <Card data-key={player.name} onClick={handleChoosePlayer} sx={{cursor: choosable ? 'pointer' : 'auto', border: choosable ? '4px solid lightgreen' : 'none', display: 'flex', flexDirection: 'column', position: 'relative'}}>
+        <Typography maxWidth='80%' sx={{fontSize: `calc(${playersDimensions.x}px / ${8*n})`, color: nameColor, whiteSpace: 'nowrap', fontFamily: 'inter', fontWeight: 400, overflow: 'hidden'}}>{idx+1}. {player.name}</Typography>
+        <Card data-key={player.name} onClick={choosing && choosable ? handleChoosePlayer : ()=>{}} sx={{cursor: choosable ? 'pointer' : 'auto', boxShadow: choosable ? '0 0 0 3px orange' : 'none', display: 'flex', flexDirection: 'column', position: 'relative'}}>
           <img ref={el => imageRefs.current[idx] = el} className='player-card' src={imgContent} draggable='false' style={{maxWidth: "100%", }}/>
           {game.status !== Status.END_FASC && game.status !== Status.END_LIB &&
             <>
@@ -135,11 +153,13 @@ export default function Players({name, game, handleChoosePlayer, showInvCard, se
     </Grid> )
   })
 
+
   function showOwnRole(player){
     return game.settings.type !== GameType.BLIND || player.confirmedFasc
   }
 
   function showOtherFasc(fascPlayer, otherFasc){
+    //in lib spy game, hitler doesnt know fasc
     if(game.settings.type !== GameType.BLIND){
       return fascPlayer.role !== Role.HITLER || game.settings.hitlerKnowsFasc
     }
@@ -151,12 +171,11 @@ export default function Players({name, game, handleChoosePlayer, showInvCard, se
     }
     if(fascPlayer.role !== Role.HITLER || game.settings.hitlerKnowsFasc){
       //just return true if fasc see all other fasc
-      return otherFasc.confirmedFasc || otherFasc.role === Role.HITLER ? true : false
+      return otherFasc.confirmedFasc || otherFasc.role === Role.HITLER
     }
     return false
   }
 
-  let n = game.players.length
 
   useEffect(() => {
     function handlePlayersResize(){
@@ -175,10 +194,9 @@ export default function Players({name, game, handleChoosePlayer, showInvCard, se
     }
   }, [])
 
-
   return (
-    //not factoring on the height of the name label so can't use the 1.36
-    <Box ref={playersRef} sx={{width: '100vw', maxHeight: {xs: '20vh'}, width: {sm: `calc((100vh - (30px + ${boardDimensions.y}px)) / 1.8 * ${n} )`}, maxWidth: 800}}>
+    //not factoring on the height of the name label so can't use the 1.36, minWidth: 400?
+    <Box ref={playersRef} sx={{width: {xs: `calc(20vh / 2.2 * ${n})`, sm: `calc((100vh - (56px + ${boardDimensions.y}px)) / 1.8 * ${n} )`}, minWidth: {sm: 600, md: 800}, maxWidth: `calc(140px * ${n})`}}>
         <Grid container spacing={{xs: .5, sm: 1}}>
           {renderPlayers}
         </Grid>

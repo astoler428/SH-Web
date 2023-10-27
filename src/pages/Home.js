@@ -42,35 +42,21 @@ export default function Home({name, setName, isConnected, setIsLoading}) {
     nameInputRef.current.select()
   }, [])
 
+
+
+  // const playerColors = ['blueViolet','magenta', 'orange', 'yellowGreen', 'darkgreen']
+  // const playerColors = ['#50C878', '#9c51b6', '#FF7F50','teal']
   return (
-    <>
-    {/* <Box sx={{maxWidth: 600, opacity: 1}}>
-     <Box sx={{position: 'relative', width: 600, height: 600}}>
-    <Box style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100%' }}>
-      <Box sx={{width: '100%'}}>
-        <Typography sx={{width: '100%', fontSize: '25px', textAlign: 'center'}}>CHOOSE A POLICY TO PLAY</Typography>
-      </Box>
-
-      <Box sx={{ display: 'flex', gap:4, justifyContent: 'center', alignItems: 'center'}}>
-      <Box sx={{height: '100%', display: 'flex'}}>
-        <img src={libPolicy} style={{width: POLICY_WIDTH, borderRadius: '10px', cursor: 'pointer' }}/>
-      </Box>
-      <Box sx={{height: '100%', display: 'flex'}}>
-        <img src={libPolicy} style={{width: POLICY_WIDTH, borderRadius: '10px', cursor: 'pointer' }}/>
-      </Box>
-      <Box sx={{height: '100%', display: 'flex'}}>
-        <img src={libPolicy} style={{width: POLICY_WIDTH, borderRadius: '10px', cursor: 'pointer' }}/>
-      </Box>
-
-      </Box>
-    </Box>
-    </Box>
-    </Box> */}
+      <>
       <Box sx={{
         position: 'absolute',
         left: 12,
         top: 12
       }}>
+        {/* <Box>
+          {playerColors.map(color => <div style={{color: color, width: 100, height: 30, fontFamily: 'inter', fontWeight: 700}}>hello</div>)}
+
+        </Box> */}
         <Typography>
         {isConnected ? '🟢 online' : '🔴 offline'}
         </Typography>

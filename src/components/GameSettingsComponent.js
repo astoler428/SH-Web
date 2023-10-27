@@ -3,11 +3,8 @@ import { Typography, Box, Container, FormGroup, Card, List, FormControlLabel, Ch
 import { GameType, GameSettings } from '../consts';
 
 export default function GameSettingsComponent({game, name, handleSettingsChange}) {
-  // useEffect(() => {
-  //   if(game.settings.hitlerKnowsFasc && game.players.length < 7){
-  //     handleSettingsChange(GameSettings.HITLERKNOWSFASC)
-  //   }
-  // }, [game])
+
+  const styles = {fontSize: 16,  fontWeight: 'normal', fontFamily: 'inter'}
 
   return (
     <>
@@ -16,7 +13,6 @@ export default function GameSettingsComponent({game, name, handleSettingsChange}
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          // justifyContent: 'center',
           alignItems: 'start',
           maxWidth: 320
         }}>
@@ -59,30 +55,34 @@ export default function GameSettingsComponent({game, name, handleSettingsChange}
             />}
             label="Simple Blind"
             />
-        <FormControlLabel
+        {/* <FormControlLabel
           disabled={game.settings?.type !== GameType.LIB_SPY}
           control={<Checkbox
             checked={game.settings?.teamLibSpy}
             onChange={() => handleSettingsChange(GameSettings.TEAMLIBSPY)}
             />}
             label="Team Liberal spy condition"
-            />
+            /> */}
         </FormGroup>
       </Box>
       :
-       <Card >
+       <Card>
           <List>
             <ListItem>
-              <ListItemText primary={`Game Type: ${game.settings.type.toUpperCase()}`} />
+              <Typography variant='h6'>Game Type: <span style={styles}>{game.settings.type.toUpperCase()}</span></Typography>
+              {/* <ListItemText primary={`Game Type: ${game.settings.type.toUpperCase()}`} /> */}
             </ListItem>
             <ListItem>
-            <ListItemText primary={`Start with red down: ${game.settings.redDown ? 'YES' : 'NO'}`} />
+              <Typography variant='h6'>Start with red down: <span style={styles}>{game.settings.redDown ? 'YES' : 'NO'}</span></Typography>
+            {/* <ListItemText primary={`Start with red down: ${game.settings.redDown ? 'YES' : 'NO'}`} /> */}
             </ListItem>
             <ListItem>
-            <ListItemText primary={`Hitler knows Fascists in 7+: ${game.settings.hitlerKnowsFasc ? 'YES' : 'NO'}`} />
+              <Typography variant='h6'>Hitler knows Fascists in 7+: <span style={styles}>{game.settings.hitlerKnowsFasc ? 'YES' : 'NO'}</span></Typography>
+            {/* <ListItemText primary={`Hitler knows Fascists in 7+: ${game.settings.hitlerKnowsFasc ? 'YES' : 'NO'}`} /> */}
             </ListItem>
             <ListItem>
-            <ListItemText primary={`Simple blind: ${game.settings.simpleBlind ? 'YES' : 'NO'}`} />
+              <Typography variant='h6'>Simple blind: <span style={styles}>{game.settings.simpleBlind ? 'YES' : 'NO'}</span></Typography>
+            {/* <ListItemText primary={`Simple blind: ${game.settings.simpleBlind ? 'YES' : 'NO'}`} /> */}
             </ListItem>
           </List>
       </Card>

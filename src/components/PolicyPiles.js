@@ -1,20 +1,37 @@
 import React from 'react'
 import {CardHeader, Paper, List, Card, ListItemButton, ListItemIcon, Typography, IconButton, Container, Box, CardContent, TextField, ListItem, ListItemText, Badge, Modal } from '@mui/material'
 import PolicyBack from '../img/PolicyBack.png';
-import { POLICY_WIDTH } from '../consts';
 
-export default function PolicyPiles({game}) {
+export default function PolicyPiles({game, boardDimensions}) {
+  const horizontal = boardDimensions.x/35
+  const vertical = boardDimensions.x/3.3 //2.1
+  const width = boardDimensions.x/9
+  const countStyles = {position: 'absolute',
+  top: 0,
+  left: 0, color:
+  'white',
+  backgroundColor: 'black',
+  fontFamily: 'inter',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: boardDimensions.x/27,
+  height: boardDimensions.x/27,
+  fontWeight: 'bold',
+  borderRadius: boardDimensions.x/1200,
+  fontSize: boardDimensions.x/36}
+
   return (
-      <Box sx={{position: 'relative', display: 'flex', gap: 1}}>
-        <Box sx={{position: 'relative'}}>
-          <img src={PolicyBack} draggable='false' style={{ width: POLICY_WIDTH }}/>
-          <Box sx={{position: 'absolute', top: 0, left: 0, color: 'white', backgroundColor: 'black', textAlign: 'center', width: 25, height: 25, fontWeight: 'bold', fontSize: 18}}>
+      <Box sx={{display: 'flex', gap: 1}}>
+        <Box sx={{position: 'absolute', left: horizontal, top: vertical, width}}>
+          <img src={PolicyBack} draggable='false' style={{ width: '100%', borderRadius: boardDimensions.x/200 }}/>
+          <Box sx={countStyles}>
             {game.deck.drawPile.length}
           </Box>
         </Box>
-        <Box sx={{position: 'relative'}}>
-          <img src={PolicyBack} draggable='false' style={{ width: POLICY_WIDTH }}/>
-          <Box sx={{position: 'absolute', top: 0, left: 0, color: 'white', backgroundColor: 'black', textAlign: 'center', width: 25, height: 25, fontWeight: 'bold', fontSize: 18}}>
+        <Box sx={{position: 'absolute', right: horizontal, top: vertical, width}}>
+          <img src={PolicyBack} draggable='false' style={{ width: '100%', borderRadius: boardDimensions.x/200 }}/>
+          <Box sx={countStyles}>
             {game.deck.discardPile.length}
           </Box>
         </Box>

@@ -10,13 +10,7 @@ import fascPolicy from '../img/FascPolicy.png'
 import PolicyBack from '../img/PolicyBack.png';
 import { POLICY_WIDTH } from '../consts';
 import Action from './Action';
-
-
-const trackerGap = 55.5
-const trackerBottom = 30.5
-const trackerLeft = 202.3
-const deckBottom = 0
-const deckLeft = 600
+import PolicyPiles from './PolicyPiles';
 
 
 export default function Board({game, name, id, setError, showInvCard, boardRef, imageRefs, boardDimensions}) {
@@ -43,10 +37,11 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
   }
 
 
+  //sm: `calc((65vh - 30px) * 1.4)`
   return (
     <>
-      <Box sx={{width: {xs: '100vw', sm: '50vw'}, maxWidth: {sm: `calc((65vh - 30px) * 1.4)`, md: 600}, display: 'flex', flexDirection: 'column', position: 'relative'}}>
-        <Action game={game} name={name} id={id} setError={setError} blur={blur} setBlur={setBlur} showInvCard={showInvCard}/>
+      <Box sx={{width: {xs: '100vw', sm: '50vw'}, maxWidth: {sm: 700}, display: 'flex', flexDirection: 'column', position: 'relative'}}>
+        <Action game={game} name={name} id={id} setError={setError} blur={blur} setBlur={setBlur} showInvCard={showInvCard} boardDimensions={boardDimensions}/>
         <Box ref={boardRef} sx={{filter: blur ? 'blur(5px)' : 'blur(0)', zIndex: -1, display: 'flex', flexDirection: 'column'}}>
           <img ref={el => imageRefs.current[0] = el} key={1} src={fascBoard} draggable='false' style={{ maxWidth: "100%"}}/>
           <img ref={el => imageRefs.current[1] = el} key={2} src={libBoard} draggable='false' style={{ maxWidth: "100%" }}/>
@@ -56,10 +51,8 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
           <Box sx={{position: 'absolute', bottom: libBottom, left: libLeft, display: 'flex', gap: 1}}>
             {libPolicies}
           </Box>
-          {/* <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}> */}
             <div style={{backgroundColor: 'blue', width: trackerWidth, height: trackerWidth, borderRadius: '100%', position: 'absolute', bottom: trackerBottom, left: `calc(${trackerLeft} + ${game.tracker} * ${trackerGap})` }}></div>
-            {/* <CircleIcon sx={{color: 'blue', width: trackerWidth, position: 'absolute', bottom: trackerBottom, left: `calc(${trackerLeft} + ${game.tracker} * ${trackerGap})`}}/> */}
-          {/* </Box> */}
+            <PolicyPiles game={game} boardDimensions={boardDimensions}/>
         </Box>
       </Box>
 

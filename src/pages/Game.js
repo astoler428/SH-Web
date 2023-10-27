@@ -26,7 +26,6 @@ export default function Game({name, game, setGame, isConnected}) {
   const [roleOpen, setRoleOpen] = useState(false);
   const [confirmFascOpen, setConfirmFascOpen] = useState(false)
   const [error, setError] = useState(null)
-  const [showInvCard, setShowInvCard] = useState(true)
   const [boardDimensions, setBoardDimensions] = useState({x: 0, y: 0})
   const boardRef = useRef(null)
   const imageRefs = useRef([])
@@ -71,9 +70,9 @@ export default function Game({name, game, setGame, isConnected}) {
     let chosenName = card.getAttribute('data-key')
     let chosenPlayer = game.players.find(player => player.name === chosenName)
     //perhaps in blind version you can choose yourself to inv
-    if(!isCurrentPres || chosenPlayer.name === thisPlayer.name || !chosenPlayer.alive){
-      return
-    }
+    // if(!isCurrentPres || chosenPlayer.name === thisPlayer.name || !chosenPlayer.alive){
+    //   return
+    // }
     if(game.status === Status.CHOOSE_CHAN){
       handleChooseChan(chosenPlayer)
     }
@@ -85,6 +84,9 @@ export default function Game({name, game, setGame, isConnected}) {
     }
     else if(game.status === Status.GUN){
       handleChooseGun(chosenPlayer)
+    }
+    else if(game.status === Status.LIB_SPY_GUESS){
+      handleChooseLibSpy(chosenPlayer)
     }
   }
 
@@ -112,6 +114,10 @@ export default function Game({name, game, setGame, isConnected}) {
     await post(`/game/chooseGun/${id}`, {shotName: chosenPlayer.name})
   }
 
+  async function handleChooseLibSpy(chosenPlayer){
+    await post(`/game/chooseLibSpy/${id}`, {spyName: chosenPlayer.name})
+  }
+
   async function handleConfirmFasc(){
     setConfirmFascOpen(false)
     await post(`/game/confirmFasc/${id}`, {name: thisPlayer.name})
@@ -122,13 +128,6 @@ export default function Game({name, game, setGame, isConnected}) {
       setRoleOpen(false)
     }
   }, [game])
-
-  useEffect(() => {
-    if(game?.status !== Status.INV_CLAIM){
-      setShowInvCard(true)
-    }
-  }, [game?.status])
-
 
 
   const action = (
@@ -169,23 +168,23 @@ export default function Game({name, game, setGame, isConnected}) {
       <>
     {game && game.status !== Status.CREATED ?
     <>
-      <AppBar sx={{display: 'flex', position: 'absolute', justifyContent: 'center', height: {xs: '30px', md: '56px'}}}>
+      <AppBar sx={{display: 'flex', position: 'absolute', justifyContent: 'center', height: {xs: '30px', sm: '56px'}}}>
         <Toolbar sx={{maxWidth: '95vw'}}>
-          <Typography component="div" sx={{flexGrow: 1, fontSize: {xs: '14px', md: '20px'}}}>
+          <Typography component="div" sx={{flexGrow: 1, fontFamily: 'inter', fontSize: {xs: '14px', sm: '20px'}}}>
             Game ID: {id}
           </Typography>
-          <Button color="inherit" onClick={() => setRoleOpen(true)} sx={{fontSize: {xs: '14px'}}}>Role</Button>
+          <Button color="inherit" onClick={() => setRoleOpen(true)} sx={{fontFamily: 'inter', fontSize: {xs: '14px'}}}>Role</Button>
         </Toolbar>
       </AppBar>
-      <Box sx={{marginTop: {xs:'30px', md: '56px'}}}/>
+      <Box sx={{marginTop: {xs:'30px', sm: '56px'}}}/>
       <RoleDialog thisPlayer={thisPlayer} game={game} roleOpen={roleOpen} setRoleOpen={setRoleOpen} setConfirmFascOpen={setConfirmFascOpen} />
-      <Box sx={{display: 'flex', flexDirection: {xs: 'column', sm: 'row'}, maxHeight: { sm: `${boardDimensions.y}px`}}}>
-        <Board boardRef={boardRef} imageRefs={imageRefs} game={game} name={name} id={id} setError={setError} showInvCard={showInvCard} boardDimensions={boardDimensions}/>
+      <Box sx={{display: 'flex', flexDirection: {xs: 'column', sm: 'row'}, maxHeight: {sm: `${boardDimensions.y}px`}}}>
+        <Board boardRef={boardRef} imageRefs={imageRefs} game={game} name={name} id={id} setError={setError} boardDimensions={boardDimensions}/>
         <LogChat game={game} name={name} boardDimensions={boardDimensions}/>
       </Box>
       <Box sx={{display: 'flex', alignItems: 'top', justifyContent: 'space-between'}}>
         {/* <Box sx={{border: '2px solid red', width: '100vw', height: '200px'}}></Box> */}
-        <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} showInvCard={showInvCard} setShowInvCard={setShowInvCard} boardDimensions={boardDimensions}/>
+        <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} boardDimensions={boardDimensions}/>
         {/* <PolicyPiles game={game}/> */}
       </Box>
       <Snackbar

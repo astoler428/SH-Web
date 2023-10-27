@@ -10,6 +10,9 @@ export default function StatusMessage({game, name}) {
   // const thisPlayer = game.players.find(player => player.name === name)
 
   switch (status){
+    case Status.STARTED:
+      message = 'Showing roles'
+      break
     case Status.CHOOSE_CHAN:
       message = 'President to select chancellor'
       break
@@ -45,10 +48,13 @@ export default function StatusMessage({game, name}) {
       message = 'Waiting on president to shoot'
       break
     case Status.INSPECT_TOP3:
-      message = 'Waiting on president to claim the top 3 policies'
+      message = 'Waiting on president to claim top 3 policies'
       break
     case Status.VETO_REPLY:
       message = 'Waiting on president to decide on veto'
+      break
+    case Status.LIB_SPY_GUESS:
+      message = 'Waiting on Hitler to guess the liberal spy'
       break
     case Status.END_FASC:
     case Status.END_LIB:
@@ -58,8 +64,8 @@ export default function StatusMessage({game, name}) {
   }
 
   return (
-    <Box sx={{height: {xs: 30, sm: 40}, width: '100%', backgroundColor: 'black', display:'flex', alignItems: 'center'}}>
-      <Typography sx={{color: 'white', marginLeft: '10px', fontSize: {xs: '14px'}}}>{message}</Typography>
+    <Box sx={{height: {xs: 30, sm: 40}, width: '100%', backgroundColor: 'black', borderBottom: '2px outset gray', display:'flex', alignItems: 'center'}}>
+      <Typography sx={{color: 'mediumblue', marginLeft: '4px', whiteSpace: 'nowrap', overflow: 'hidden', fontSize: {xs: '18px', sm: '20px'}}}>{message}</Typography>
     </Box>
   )
 }
