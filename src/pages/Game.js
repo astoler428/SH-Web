@@ -6,7 +6,6 @@ import { socket } from '../socket'
 import {GameType, Status, UPDATE} from '../consts'
 import Players from '../components/Players';
 import Board from '../components/Board';
-import Log from '../components/Log';
 import Loading from '../components/Loading';
 import Chat from '../components/Chat';
 import { Typography, IconButton, Snackbar, AppBar, Toolbar, Button, Box } from '@mui/material';

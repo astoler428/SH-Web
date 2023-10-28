@@ -12,7 +12,7 @@ export default function LogChat({game, name, boardDimensions}) {
   const messageInputRef = useRef(undefined);
   window.addEventListener('keydown', handleKeyPress)
 
-  const disabled = (game.currentPres === name || game.currentChan === name) && (game.status === Status.PRES_DISCARD || game.status === Status.CHAN_PLAY)
+  const disabled = ((game.currentPres === name || game.currentChan === name) && (game.status === Status.PRES_DISCARD || game.status === Status.CHAN_PLAY)) || game.status === Status.LIB_SPY_GUESS
   const thisPlayer = game.players.find(player => player.name === name)
 
   useEffect(() => {
@@ -231,7 +231,7 @@ export default function LogChat({game, name, boardDimensions}) {
           value={message}
           size='small'
           autoComplete='off'
-          placeholder={disabled ? 'Chat disabled during government' : 'Send a message'}
+          placeholder={!disabled ? 'Send a message' : game.status === Status.LIB_SPY_GUESS ? 'Chat disabled during guess' : 'Chat disabled during government' }
           // color='secondary'
           // inputProps={{style: {color: 'white', borderRadius: '3px', outline: isFocused ? 'none' : '2px solid gray'}}}
           sx={{width: '100%', borderRadius: '3px', bgcolor: 'white', position: 'absolute', bottom: 0}}

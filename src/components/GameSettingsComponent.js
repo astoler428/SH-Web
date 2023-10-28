@@ -1,21 +1,23 @@
 import React, {useEffect} from 'react'
 import { Typography, Box, Container, FormGroup, Card, List, FormControlLabel, Checkbox, FormControl, InputLabel, Select, MenuItem, Button, CardContent, ListItem, ListItemText } from '@mui/material';
 import { GameType, GameSettings } from '../consts';
+import Loading from './Loading';
 
 export default function GameSettingsComponent({game, name, handleSettingsChange}) {
 
-  const styles = {fontSize: 16,  fontWeight: 'normal', fontFamily: 'inter'}
+  const styles = {fontSize: 18,  fontWeight: 'normal', fontFamily: 'inter'}
+  if(game){
 
-  return (
-    <>
+    return (
+      <>
     {game.host === name ?
       <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'start',
-          maxWidth: 320
-        }}>
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'start',
+        maxWidth: 320
+      }}>
       <FormControl fullWidth>
         <InputLabel id="game-type-label">Game Type</InputLabel>
         <Select
@@ -62,26 +64,26 @@ export default function GameSettingsComponent({game, name, handleSettingsChange}
             onChange={() => handleSettingsChange(GameSettings.TEAMLIBSPY)}
             />}
             label="Team Liberal spy condition"
-            /> */}
+          /> */}
         </FormGroup>
       </Box>
       :
        <Card>
           <List>
             <ListItem>
-              <Typography variant='h6'>Game Type: <span style={styles}>{game.settings.type.toUpperCase()}</span></Typography>
+              <Typography variant='h6'>Game Type: <span style={{...styles}}>{game.settings.type.toUpperCase()}</span></Typography>
               {/* <ListItemText primary={`Game Type: ${game.settings.type.toUpperCase()}`} /> */}
             </ListItem>
             <ListItem>
-              <Typography variant='h6'>Start with red down: <span style={styles}>{game.settings.redDown ? 'YES' : 'NO'}</span></Typography>
+              <Typography variant='h7'>Start with red down: <span style={styles}>{game.settings.redDown ? 'YES' : 'NO'}</span></Typography>
             {/* <ListItemText primary={`Start with red down: ${game.settings.redDown ? 'YES' : 'NO'}`} /> */}
             </ListItem>
             <ListItem>
-              <Typography variant='h6'>Hitler knows Fascists in 7+: <span style={styles}>{game.settings.hitlerKnowsFasc ? 'YES' : 'NO'}</span></Typography>
+              <Typography variant='h7'>Hitler knows Fascists in 7+: <span style={styles}>{game.settings.hitlerKnowsFasc ? 'YES' : 'NO'}</span></Typography>
             {/* <ListItemText primary={`Hitler knows Fascists in 7+: ${game.settings.hitlerKnowsFasc ? 'YES' : 'NO'}`} /> */}
             </ListItem>
             <ListItem>
-              <Typography variant='h6'>Simple blind: <span style={styles}>{game.settings.simpleBlind ? 'YES' : 'NO'}</span></Typography>
+              <Typography variant='h7'>Simple blind: <span style={styles}>{game.settings.simpleBlind ? 'YES' : 'NO'}</span></Typography>
             {/* <ListItemText primary={`Simple blind: ${game.settings.simpleBlind ? 'YES' : 'NO'}`} /> */}
             </ListItem>
           </List>
@@ -89,6 +91,10 @@ export default function GameSettingsComponent({game, name, handleSettingsChange}
   }
   </>
   )
+}
+else{
+  return <Loading/>
+}
 }
 
 

@@ -17,7 +17,6 @@ export default function Lobby({name, game, setGame, isConnected}) {
   const params = useParams()
   const id = params.id
   const enteringGameRef = useRef(false)
-  const [flexDirection, setFlexDirection] = useState('column')
 
   //join game (redundant but just in case someone navigates directly to the url)
   useEffect(()=>{
@@ -50,8 +49,9 @@ export default function Lobby({name, game, setGame, isConnected}) {
     function handleUpdate(game){
       setGame(game)
       if(game && game.status !== Status.CREATED){
-        enteringGameRef.current = true
-        navigate(`/game/${id}`)
+        // enteringGameRef.current = true
+        // navigate(`/game/${id}`)
+        goToGame()
       }
     }
 
@@ -67,7 +67,6 @@ export default function Lobby({name, game, setGame, isConnected}) {
   }, []) //will these be an issue causing dismout and leave game to be called?
 
 
-  //don't think this will ever get used since they should always get navigated to game
   function goToGame(){
     enteringGameRef.current = true
     navigate(`/game/${id}`)
@@ -81,35 +80,16 @@ export default function Lobby({name, game, setGame, isConnected}) {
     }
   }
 
-  // const renderPlayerName = _name => _name === name ? _name + ` (YOU)` : _name
-
   const players = game?.players?.map(player => <li key={player.name}>
      <Box
       display="flex"
       justifyContent="flex-start"
       alignItems="center"
-      sx={{fontSize: '20px', whiteSpace: 'nowrap', overflow: 'hidden', fontWeight: player.name === name ? 'bold' : 'normal'}}
+      sx={{fontSize: '20px', marginBottom: {sm: '4px'}, whiteSpace: 'nowrap', overflow: 'hidden', fontWeight: player.name === name ? 'bold' : 'normal'}}
     >
       {player.name}
     </Box>
   </li>)
-  // //118 need to change
-
-  // useEffect(() => {
-  //   window.addEventListener('orientationchange', checkLandscape)
-  //   checkLandscape()
-
-  //   function checkLandscape(){
-  //     const wasLandscape = window.matchMedia('(orientation: landscape)').matches
-  //     if(wasLandscape){
-  //       setFlexDirection('column')
-  //     }
-  //     else if(!wasLandscape){
-  //       setFlexDirection('row')
-  //     }
-  //   }
-  //   return () => window.removeEventListener('orientationchange', checkLandscape)
-  // }, [])
 
   const startGameButtonText = game?.players?.length < 5 ?
     `Waiting for more players` :
@@ -118,8 +98,6 @@ export default function Lobby({name, game, setGame, isConnected}) {
   const disabled = !game || game?.players?.length < 5 || game?.host !== name
 
   return (
-    <>
-    {game?.status === Status.CREATED ?
     <>
       <AppBar position="static">
         <Toolbar>
@@ -161,9 +139,6 @@ export default function Lobby({name, game, setGame, isConnected}) {
         </Box>
         </Box>
       </Box>
-    </> :
-    <Button onClick={goToGame}>Go to game</Button> }
-
     </>
   )
 }

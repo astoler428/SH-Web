@@ -19,7 +19,7 @@ export default function StatusMessage({game, name}) {
     case Status.VOTE:
       message = 'Players to vote'
       break
-    case Status.VOTE_RESULT:
+    case Status.SHOW_VOTE_RESULT:
       message = 'Tallying vote results'
       break
     case Status.PRES_DISCARD:

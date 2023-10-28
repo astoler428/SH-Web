@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react'
-import {Status, Role, Team, GameType, Vote} from '../consts'
+import {Status, Role, Team, GameType, Vote, DisplayType} from '../consts'
 import {Card, CircularProgress, Grid, Typography, Box} from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -100,7 +100,7 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
       [, nameColor] = getRoleImg(player)
     }
     else if(thisPlayerInvestigatedPlayer){
-      [imgContent, nameColor] = getTeamImg(player)
+      [, nameColor] = getTeamImg(player)
       showDueToInv = true
     }
     if(game.status === Status.STARTED){
@@ -111,12 +111,17 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
     else if(game.status === Status.VOTE){
       imgContent = voteBackPng
     }
-    else if(game.status === Status.VOTE_RESULT && player.alive){
+    else if(game.status === Status.SHOW_VOTE_RESULT && player.alive){
       imgContent = getVote(player)
     }
     else if(game.status === Status.SHOW_INV_CHOICE && player.name === currentPres.investigations.slice(-1)[0]){
       imgContent = partyBack
       nameColor = showDueToInv ? hiddenColor : nameColor
+    }
+    //during inv claim, pres who chose the player to inv sees their party back and their name color unless hitler, keep as is
+    else if(game.status === Status.INV_CLAIM && thisPlayer.name === currentPres.name && player.name === currentPres.investigations.slice(-1)[0]){
+      imgContent = getTeamImg(player)[0]
+      nameColor = nameColor === hitlerColor ? nameColor : getTeamImg(player)[1]
     }
     else if(game.status === Status.LIB_SPY_GUESS && player.role === Role.HITLER){
       [imgContent, nameColor] = getRoleImg(player)
