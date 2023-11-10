@@ -12,6 +12,9 @@ import { orange } from '@mui/material/colors'
 
 export default function Action({game, name, id, setError, blur, setBlur, boardDimensions}) {
   const [showDiscardDialog, setShowDiscardDialog] = useState(false)
+  const [centerContent, setCenterContent] = useState(false)
+  const [actionContent, setActionContent] = useState(false)
+  const [actionTitle, setActionTitle] = useState(false)
   const [showTop3PoliciesNotClaim, setShowTop3PoliciesNotClaim] = useState(true) //first show policies
   const isCurrentPres = game.currentPres === name
   const isCurrentChan = game.currentChan === name
@@ -100,6 +103,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
       case Status.CHAN_CLAIM:
         title = 'AS CHANCELLOR, I RECEIVED...'
         content = showChanClaims()
+        _blur = false //in use effect it get set
         break
       default:
         _blur = false
@@ -112,10 +116,32 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
 
 
   useEffect(()=>{
-    if(blur !== _blur){
-      setBlur(_blur)
+    setActionContent(content)
+    setActionTitle(title)
+    setCenterContent(false)
+    if(game.status !== Status.CHAN_CLAIM || !isCurrentChan){
+      setTimeout(() => {
+        setCenterContent(true)
+        if(blur !== _blur){
+          setBlur(_blur)
+        }
+      }, 50)
     }
-  })
+
+    if(game.status === Status.CHAN_CLAIM && isCurrentChan){
+      setCenterContent(false)
+      setBlur(false)
+      setTimeout(() => {
+        setCenterContent(true)
+        setBlur(true)
+      }, 3000)
+    }
+
+
+  }, [game, showTop3PoliciesNotClaim])
+
+
+
 
 
   function showVoteCards(){
@@ -210,7 +236,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
         <Box onClick={handleInspect3Claim} sx={{display: 'flex', flexDirection: 'column', width: '80%', maxWidth: 250, gap: {xs: 1, sm: .5, md: 2}}}>
           <Button variant='contained' data-key={PRES3.RRR} color='error' sx={{fontSize: {xs: '1em', md: '14px'}}}>3 Fascist policies</Button>
           <Button variant='contained' data-key={PRES3.RRB} color='inherit' sx={{lineHeight: {sm: '12px', md: '16px'}, fontSize: {xs: '1em', md: '14px'}}}>2 Fascist and a Liberal policy</Button>
-          <Button variant='contained' data-key={PRES3.RBB} sx={{lineHeight: {sm: '12px', md: '16px'}, fontSize: {xs: '1em', md: '14px'}, backgroundColor: 'lightskyblue'}}>2 Liberal and a Fascist policy</Button>
+          <Button variant='contained' data-key={PRES3.RBB} sx={{'&:hover': {backgroundColor: '#6fbbea'}, lineHeight: {sm: '12px', md: '16px'}, fontSize: {xs: '1em', md: '14px'}, backgroundColor: 'lightskyblue'}}>2 Liberal and a Fascist policy</Button>
           <Button variant='contained' data-key={PRES3.BBB} color='primary' sx={{fontSize: {xs: '1em', md: '14px'}}}>3 Liberal policies</Button>
         </Box>
       </>
@@ -336,13 +362,14 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
 //maxWidth: 600
 //{xs: '23px', sm: '25px', md: '30px'}
 //fontSize: `calc(${playersDimensions.x}px / ${8*n})
+
   return (
     <Box sx={{}}>
-      <Box sx={{position: 'absolute', width: '100%', height: '100%', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', gap: {xs: 1, sm: 1, md: 3} }}>
-        <Typography sx={{fontSize: `calc(${boardDimensions.x}px / 18)`, width: '90%', textAlign: 'center', justifyContent: 'center', display: 'flex', fontWeight: 'bold'}}>{title}</Typography>
+      <Box sx={{position: 'absolute', width: '100%', height: '100%', top: '50%', left: centerContent ? '50%' : '-50%', transform: 'translate(-50%, -50%)', transition: centerContent ? 'left .75s' : '', display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', gap: {xs: 1, sm: 1, md: 3} }}>
+        <Typography sx={{fontSize: `calc(${boardDimensions.x}px / 18)`, width: '90%', textAlign: 'center', justifyContent: 'center', display: 'flex', fontWeight: 'bold'}}>{actionTitle}</Typography>
         <Box sx={{display: 'flex', flexDirection: 'column', justifyContent:'center', alignItems: 'center', gap: {xs: 1, md: 2}, fontSize: `calc(${boardDimensions.x}px / 36)`, width: '100%'}}>
           <Box sx={{display: 'flex', gap: 4, justifyContent: 'center', alignItems: 'center', width: '60%'}}>
-            {content}
+            {actionContent}
           </Box>
           <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
             {inVetoZone && isCurrentChan && game.status === Status.CHAN_PLAY && <Button variant='contained' sx={{fontSize: {xs: '1em', md: '14px'} }} onClick={handleVetoRequest}>Request Veto</Button>}

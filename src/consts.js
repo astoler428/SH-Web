@@ -62,6 +62,7 @@ export const LogType = {
   CONFIRM_FASC: 'CONFIRM_FASC',
   DECK: 'DECK',
   LIB_SPY_GUESS: 'LIB_SPY_GUESS',
+  SHUFFLE_DECK: 'SHUFFLE_DECK',
    //these don't require data
   ELECTION_FAIL: 'ELECTION_FAIL',
   TOP_DECK: 'TOP_DECK',
@@ -155,3 +156,148 @@ export const PRES3 = {
 
 export const inGov = (game, name) => (game.currentPres === name || game.currentChan === name) &&
 (game.status === Status.PRES_DISCARD || game.status === Status.CHAN_PLAY || game.status === Status.CHAN_CLAIM || game.status === Status.PRES_CLAIM || game.status === Status.VETO_DECLINED || game.status === Status.VETO_REPLY)
+
+
+export const upAnimation = (playerHeight) =>`
+@keyframes up {
+  0% {
+    bottom: ${-playerHeight}px;
+  }
+  100% {
+    bottom: 0px;
+  }
+}
+`
+
+
+export const flipAndDownAnimation = (playerHeight) => `
+  @keyframes flipAndDown {
+    0% {
+      bottom: 0px;
+      transform: rotateY(0deg);
+    }
+    30% {
+      bottom: 0px;
+      transform: rotateY(180deg);
+    }
+    70% {
+      bottom: 0px;
+      transform: rotateY(180deg);
+    }
+    100% {
+      bottom: ${-playerHeight}px;
+      transform: rotateY(180deg);
+    }
+  }
+  `
+
+export const upAndDownAnimation = (playerHeight) => `
+  @keyframes upAndDown {
+    0% {
+      bottom: ${-playerHeight}px;
+    }
+    33% {
+      bottom: 0px;
+    }
+    66% {
+      bottom: 0px;
+    }
+    100% {
+      bottom: ${-playerHeight}px;
+    }
+  }
+`
+export const flipAnimation = () => `
+  @keyframes flip {
+    0% {
+      bottom: 0px;
+      transform: rotateY(0deg);
+    }
+    50% {
+      bottom: 0px;
+      transform: rotateY(180deg);
+    }
+    100% {
+        bottom: 0px;
+        transform: rotateY(180deg);
+      }
+  }
+`
+export const flipAndUnflipAnimation = () => `
+  @keyframes flipAndUnflip {
+    0% {
+      bottom: 0px;
+      transform: rotateY(0deg);
+    }
+    30% {
+      bottom: 0px;
+      transform: rotateY(180deg);
+    }
+    50% {
+        bottom: 0px;
+        transform: rotateY(180deg);
+      }
+    100% {
+      bottom: 0px;
+      transform: rotateY(0deg);
+    }
+  }
+`
+export const stillAnimation = () => `
+  @keyframes still {
+    0% {
+      bottom: 0px;
+    }
+    100% {
+      bottom: 0px;
+    }
+  }
+`
+
+
+
+
+export const enactPolicyAnimation = (policyWidth, left, bottom, policyGap, policyNum) => {
+ return `
+  @keyframes enact {
+    0% {
+      width: ${policyWidth*1.4}px;
+      left: ${-policyWidth*1.4}px;
+      bottom: 50%;
+      transform: translate(0%, 50%) rotateY(0deg);
+    }
+    20% {
+      width: ${policyWidth*1.4}px;
+      left: ${policyWidth/2}px;
+      bottom: 50%;
+      transform: translate(0%, 50%) rotateY(0deg);
+    }
+    40% {
+      width: ${policyWidth*1.4}px;
+      left: ${policyWidth/2}px;
+      bottom: 50%;
+      transform: translate(0%, 50%) rotateY(180deg);
+    }
+    70% {
+      width: ${policyWidth*1.4}px;
+      left: ${left + (policyNum - 1)*(policyWidth + policyGap)}px;
+      bottom: ${bottom}px;
+      transform: rotateY(180deg);
+    }
+    100% {
+      width: ${policyWidth}px;
+      left: ${left + (policyNum - 1)*(policyWidth + policyGap)}px;
+      bottom: ${bottom}px;
+      transform: rotateY(180deg);
+    }
+
+
+  }
+  `;
+}
+
+/**
+ *
+ *
+ *
+ */

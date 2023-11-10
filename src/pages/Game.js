@@ -20,12 +20,12 @@ export default function Game({name, game, setGame, isConnected}) {
   const navigate = useNavigate()
   const params = useParams()
   const id = params.id
-  const isCurrentPres = game?.currentPres === name
   const thisPlayer = game?.players.find(player => player.name === name)
   const [roleOpen, setRoleOpen] = useState(false);
   const [confirmFascOpen, setConfirmFascOpen] = useState(false)
   const [error, setError] = useState(null)
   const [boardDimensions, setBoardDimensions] = useState({x: 0, y: 0})
+  const [opacity, setOpacity] = useState(0)
   const boardRef = useRef(null)
   const imageRefs = useRef([])
 
@@ -163,10 +163,14 @@ export default function Game({name, game, setGame, isConnected}) {
     }
   }, [])
 
+  useEffect(() => {
+    setTimeout(() => setOpacity(1), 300)
+  }, [])
+
   return (
       <>
     {game && game.status !== Status.CREATED ?
-    <>
+    <Box sx={{opacity, transition: 'opacity 1.5s cubic-bezier(0.16, 0.62, 1, 1)'}}>
       <AppBar sx={{display: 'flex', position: 'absolute', justifyContent: 'center', height: {xs: '30px', sm: '56px'}}}>
         <Toolbar sx={{maxWidth: '95vw'}}>
           <Typography component="div" sx={{flexGrow: 1, fontFamily: 'inter', fontSize: {xs: '14px', sm: '20px'}}}>
@@ -194,7 +198,7 @@ export default function Game({name, game, setGame, isConnected}) {
         action={action}
       />
       <ConfirmFascDialog confirmFascOpen={confirmFascOpen} setConfirmFascOpen={setConfirmFascOpen} handleConfirmFasc={handleConfirmFasc}/>
-    </>
+    </Box>
     : <Loading />
      }
     </>

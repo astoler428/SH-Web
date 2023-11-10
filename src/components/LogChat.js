@@ -12,8 +12,8 @@ export default function LogChat({game, name, boardDimensions}) {
   const messageInputRef = useRef(undefined);
   window.addEventListener('keydown', handleKeyPress)
 
-  const disabled = ((game.currentPres === name || game.currentChan === name) && (game.status === Status.PRES_DISCARD || game.status === Status.CHAN_PLAY)) || game.status === Status.LIB_SPY_GUESS
   const thisPlayer = game.players.find(player => player.name === name)
+  const disabled = (!thisPlayer.alive || (game.currentPres === name || game.currentChan === name) && (game.status === Status.PRES_DISCARD || game.status === Status.CHAN_PLAY)) || game.status === Status.LIB_SPY_GUESS
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({behavior: 'smooth'})
@@ -34,6 +34,9 @@ export default function LogChat({game, name, boardDimensions}) {
   }
 
   function renderPolicies(policyStr){
+    if(!policyStr){
+      return
+    }
     return policyStr.split('').map((char, idx) => <span key={idx} style={{fontWeight: 700, color: char === 'R' ? 'orangered' : 'deepskyblue'}}>{char}</span>)
   }
 
@@ -43,8 +46,8 @@ export default function LogChat({game, name, boardDimensions}) {
     return <span style={{fontWeight: 700, color: thisPlayer.color}}>{name} &#123;{playerNum}&#125;</span>
   }
 
-  function renderRole(role, plural = false){
-    return <span style={{fontWeight: 700, color: role === Role.HITLER ? 'darkred' : role === Role.FASC ? 'orangered' : 'deepskyblue'}}>{role}{plural ? 's' : ''}</span>
+  function renderRole(role, plural = false, opts = ""){
+    return <span style={{fontWeight: 700, color: role === Role.HITLER ? 'darkred' : role === Role.FASC ? 'orangered' : 'deepskyblue'}}>{opts}{role}{plural ? 's' : ''}</span>
   }
 
   function renderDate(date){
@@ -90,7 +93,7 @@ export default function LogChat({game, name, boardDimensions}) {
 
     switch (entry.type){
       case LogType.INTRO_DECK:
-        logEntry = <span>Deck shuffled: 6 {liberalStr} and 11 {fascistStr} policies.</span>
+        logEntry = <span>Deck shuffled: {renderRole(Role.LIB, false, `6 `)} and {renderRole(Role.FASC, false, `11 `)}  policies.</span>
         break
       case LogType.INTRO_ROLES:
         logEntry = <span>The roles are dealt with {Math.ceil((game.players.length+1)/2)} {liberalsStr} and {Math.floor((game.players.length-1)/2)} {fascistsStr}.</span>
@@ -136,10 +139,16 @@ export default function LogChat({game, name, boardDimensions}) {
         logEntry = <span>A {policy === Policy.FASC ? fascistStr : liberalStr} policy is enacted.</span>
         break
       case LogType.CHAN_CLAIM:
-        logEntry = <span>{chancellorStr} {chan} {claimsStr} {renderPolicies(entry.payload.claim)}.</span>
+        if(!claim){
+          console.log('chan claim error')
+        }
+        logEntry = <span>{chancellorStr} {chan} {claimsStr} {renderPolicies(claim)}.</span>
         break
       case LogType.PRES_CLAIM:
-        logEntry = <span>{presidentStr} {pres} {claimsStr} {renderPolicies(entry.payload.claim)}.</span>
+        if(!claim){
+          console.log('pres claim error')
+        }
+        logEntry = <span>{presidentStr} {pres} {claimsStr} {renderPolicies(claim)}.</span>
         break
       case LogType.INV:
         logEntry = <span>{presidentStr} {pres} investigates {investigatee}.</span>
@@ -155,6 +164,9 @@ export default function LogChat({game, name, boardDimensions}) {
         logEntry = <span>{presidentStr} {pres} looks at the top 3 policies.</span>
         break
       case LogType.INSPECT_TOP3_CLAIM:
+        if(!claim){
+          console.log('inspect 3 error')
+        }
         logEntry = <span>{presidentStr} {pres} claims the top 3 policies are {renderPolicies(claim)}. The 3 policies are shuffled and then returned to the top of the deck.</span>
         break
       case LogType.GUN:
@@ -176,11 +188,18 @@ export default function LogChat({game, name, boardDimensions}) {
         logEntry = <span>The election fails and the election tracker moves forward.</span>
         break
       case LogType.TOP_DECK:
-        logEntry = <span>Top decking.</span>
+        logEntry = <span>Three failed elections. Top decking.</span>
         break
       case LogType.LIB_SPY_GUESS:
         const spyName = renderName(entry.payload.spyName)
         logEntry = <span>{hitlerStr} guesses {spyName} to be the liberal spy.</span>
+        break
+      case LogType.SHUFFLE_DECK:
+        const libCount = renderRole(Role.LIB, false, `${entry.payload.libCount} `)
+        const fascCount = renderRole(Role.FASC, false, `${entry.payload.fascCount} `)
+        // const libCount = entry.payload.libCount
+        // const fascCount = entry.payload.fascCount
+        logEntry = <span>The deck is shuffled: {libCount} and {fascCount} policies.</span>
         break
       case LogType.LIB_WIN:
         logEntry = <span>{liberalsStr} win the game.</span>
@@ -202,8 +221,12 @@ export default function LogChat({game, name, boardDimensions}) {
         logEntry = <span>{hitlerStr} has been shot.</span>
         break
       case LogType.DECK:
+        if(!entry.payload.remainingPolicies){
+          console.log('deck error')
+        }
         const remainingPolicies = renderPolicies(entry.payload.remainingPolicies)
-        logEntry = <span>The remaining policies are {remainingPolicies}</span>
+        logEntry = remainingPolicies.length === 1 ? <span>The remaining policy in the draw pile is {remainingPolicies}</span> :
+        <span>The remaining policies in the draw pile are {remainingPolicies}</span>
         break
     }
 
@@ -213,6 +236,7 @@ export default function LogChat({game, name, boardDimensions}) {
       </ListItem>
       )
   })
+
 
   return (
     <>
@@ -231,7 +255,7 @@ export default function LogChat({game, name, boardDimensions}) {
           value={message}
           size='small'
           autoComplete='off'
-          placeholder={!disabled ? 'Send a message' : game.status === Status.LIB_SPY_GUESS ? 'Chat disabled during guess' : 'Chat disabled during government' }
+          placeholder={!disabled ? 'Send a message' : !thisPlayer.alive ? 'Dead cannnot speak' : game.status === Status.LIB_SPY_GUESS ? 'Chat disabled during guess' : 'Chat disabled during government' }
           // color='secondary'
           // inputProps={{style: {color: 'white', borderRadius: '3px', outline: isFocused ? 'none' : '2px solid gray'}}}
           sx={{width: '100%', borderRadius: '3px', bgcolor: 'white', position: 'absolute', bottom: 0}}

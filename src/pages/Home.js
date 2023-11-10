@@ -42,8 +42,6 @@ export default function Home({name, setName, isConnected, setIsLoading}) {
     nameInputRef.current.select()
   }, [])
 
-
-
   // const playerColors = ['blueViolet','magenta', 'orange', 'yellowGreen', 'darkgreen']
   // const playerColors = ['#50C878', '#9c51b6', '#FF7F50','teal']
   return (
@@ -53,10 +51,6 @@ export default function Home({name, setName, isConnected, setIsLoading}) {
         left: 12,
         top: 12
       }}>
-        {/* <Box>
-          {playerColors.map(color => <div style={{color: color, width: 100, height: 30, fontFamily: 'inter', fontWeight: 700}}>hello</div>)}
-
-        </Box> */}
         <Typography>
         {isConnected ? '🟢 online' : '🔴 offline'}
         </Typography>
