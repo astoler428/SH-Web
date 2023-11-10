@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react'
-import {Status, Role, Team, GameType, Vote, upAndDownAnimation, flipAndDownAnimation, upAnimation, flipAnimation, flipAndUnflipAnimation, stillAnimation} from '../consts'
+import {Status, Role, Team, GameType, Vote, choosableAnimation, upAndDownAnimation, flipAndDownAnimation, upAnimation, flipAnimation, flipAndUnflipAnimation, stillAnimation} from '../consts'
 import {Card, CircularProgress, Grid, Typography, Box} from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -26,7 +26,8 @@ const libColor = 'deepskyblue'
 const hiddenColor = 'black'
 
 export default function Players({name, game, handleChoosePlayer, boardDimensions}) {
-
+  // game.status = Status.END_FASC
+  // game.status = Status.STARTED
   const [playersDimensions, setPlayersDimensions] = useState({x: 0, y: 0})
   const imageRefs = useRef([])
   const playersRef = useRef(null)
@@ -50,11 +51,13 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
     let choosable = false
     let makingDecision = false
     let nameColor = hiddenColor
-    let imgContent = roleBackPng
-    let hideImgContent = gameOver
+    let roleContent = roleBackPng
+    let roleContentFlip = roleBackPng
     let overlayContent = null
     let overlayContentFlip = null
     let animation = ''
+    let roleAnimation = ''
+    let chooseAnimation = ''
 
     const thisPlayerInvestigatedPlayer = thisPlayer.investigations.some(invName => invName === player.name)
 
@@ -74,6 +77,10 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
       else{
         choosable = true
       }
+    }
+
+    if(choosable){
+      chooseAnimation = 'choosable 1.5s infinite'
     }
 
     if(game.currentPres === player.name){
@@ -96,7 +103,7 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
     let showDueToInv = false
     //your own role
     if(player.name === name){
-      [imgContent, nameColor] = showOwnRole(player) ? getRoleImg(player) : [roleBackPng, hiddenColor]
+      [roleContent, nameColor] = showOwnRole(player) ? getRoleImg(player) : [roleBackPng, hiddenColor]
     }
     //fasc see other fasc
     else if(player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)){
@@ -107,49 +114,20 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
       showDueToInv = true
     }
 
-    if(game.status === Status.STARTED){
-      if(player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)){
-        [imgContent, nameColor] = getRoleImg(player)
-      }
-    }
-    // else if(game.status === Status.VOTE){
-    //   imgContent = voteBackPng
-    // }
-    // else if(game.status === Status.SHOW_VOTE_RESULT && player.alive){
-    //   imgContent = getVote(player)
-    // }
-    // else if(game.status === Status.SHOW_INV_CHOICE && player.name === currentPres.investigations.slice(-1)[0]){
-    //   imgContent = partyBack
-    //   nameColor = showDueToInv ? hiddenColor : nameColor
-    // }
-    //during inv claim, pres who chose the player to inv sees their party back and their name color unless hitler, keep as is
-    // else if(game.status === Status.INV_CLAIM && thisPlayer.name === currentPres.name && player.name === currentPres.investigations.slice(-1)[0]){
-    //   imgContent = getTeamImg(player)[0]
-    //   nameColor = nameColor === hitlerColor ? nameColor : getTeamImg(player)[1]
-    // }
-    // else if(game.status === Status.LIB_SPY_GUESS && player.role === Role.HITLER){
-    //   [imgContent, nameColor] = getRoleImg(player)
-    // }
-    // else if(game.status === Status.SHOW_LIB_SPY_GUESS && player.guessedToBeLibSpy){
-    //   imgContent = partyBack
-    // }
-    else if(gameOver){
-      [,nameColor] = getRoleImg(player)
-    }
+
+    //animations
 
 
     if(game.status === Status.STARTED){
       if(player.name === name){
-        overlayContent = roleBackPng
-        overlayContentFlip = getRoleImg(player)[0]
-        hideImgContent = true
-        animation = 'flip 4s forwards 1s'
+        roleContent = roleBackPng
+        roleContentFlip = getRoleImg(player)[0]
+        roleAnimation = 'flip 6s forwards 2s'
       }
-      if(player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)){
-        overlayContent = roleBackPng
-        overlayContentFlip = getRoleImg(player)[0]
-        hideImgContent = true
-        animation = 'flipAndUnflip 4s forwards 1s'
+      else if(player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)){
+        roleContent = roleBackPng
+        roleContentFlip = getRoleImg(player)[0]
+        roleAnimation = 'flipAndUnflip 6s forwards 4s'
       }
     }
     else if(game.status === Status.VOTE){
@@ -177,31 +155,31 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
     }
     else if(game.status === Status.LIB_SPY_GUESS && player.role === Role.HITLER){
       nameColor = hitlerColor
-      overlayContent = roleBackPng
-      overlayContentFlip = hitlerPng
-      animation = 'flip 2s forwards'
-      hideImgContent = true
+      roleContent = roleBackPng
+      roleContentFlip = hitlerPng
+      roleAnimation = 'flip 2s forwards'
     }
     else if(game.status === Status.SHOW_LIB_SPY_GUESS){
       const spyGuessedPlayer = game.players.find(player => player.guessedToBeLibSpy)
       if(spyGuessedPlayer.name === player.name){
-        overlayContent = roleBackPng
-        overlayContentFlip = getRoleImg(player)[0]
-        animation = 'flip 2s forwards'
-        hideImgContent = true
-      }
+        roleContent = roleBackPng
+        roleContentFlip = getRoleImg(player)[0]
+        roleAnimation = 'flip 2s forwards'
+        }
     }
     else if(gameOver){
+      [,nameColor] = getRoleImg(player)
+
       //flip over everyone elses role, unless blind in which case your needs flipping too if not confirmed
       if(player.name !== name || (game.settings.type === GameType.BLIND && !player.confirmedFasc)){
-        overlayContent = roleBackPng
-        overlayContentFlip = getRoleImg(player)[0]
-        animation = 'flip 4s forwards 1s'
+        roleContent = roleBackPng
+        roleContentFlip = getRoleImg(player)[0]
+        roleAnimation = 'flip 6s forwards 2.5s'
       }
       else{
-        overlayContent = getRoleImg(player)[0]
-        overlayContentFlip = getRoleImg(player)[0]
-        animation = 'still .1s forwards'
+        roleContent = getRoleImg(player)[0]
+        roleContentFlip = getRoleImg(player)[0]
+        roleAnimation = 'still .1s forwards'
       }
     }
 
@@ -209,21 +187,28 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
     const upKeyFrameStyles = upAnimation(playersDimensions.y)
     const flipKeyFrameStyles = flipAnimation()
     const upAndDownKeyFrameStyles = upAndDownAnimation(playersDimensions.y)
-    const flipAndUnflipStyles = flipAndUnflipAnimation()
+    const flipAndUnflipKeyFrameStyles = flipAndUnflipAnimation()
     const stillKeyFrameStyles = stillAnimation()
+    const choosableKeyFrameStyles = choosableAnimation(playersDimensions.y < 110 ? 2 : 4)
 
     return (
     <Grid key={idx} item xs={12/game.players.length} sx={{}}>
       <Box sx={{opacity: player.socketId? 1 : .3, display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
         <Typography maxWidth='80%' sx={{fontSize: `calc(${playersDimensions.x}px / ${8*n})`, color: nameColor, whiteSpace: 'nowrap', fontFamily: 'inter', fontWeight: 400, overflow: 'hidden'}}>{idx+1}. {player.name}</Typography>
-        <Card data-key={player.name} onClick={choosing && choosable ? handleChoosePlayer : ()=>{}} sx={{cursor: choosable ? 'pointer' : 'auto', boxShadow: choosable ? '0 0 0 3px orange' : 'none', display: 'flex', flexDirection: 'column', position: 'relative', backgroundColor: 'rgb(46, 109, 28)'}}>
+        <Card data-key={player.name} onClick={choosing && choosable ? handleChoosePlayer : ()=>{}} sx={{cursor: choosable ? 'pointer' : 'auto', boxShadow: choosable ? '0 0 0 3px orange' : 'none', animation: chooseAnimation, display: 'flex', flexDirection: 'column', position: 'relative', backgroundColor: 'rgb(46, 109, 28)'}}>
           <style>{flipAndDownkeyFrameStyles}</style>
           <style>{upKeyFrameStyles}</style>
           <style>{flipKeyFrameStyles}</style>
           <style>{upAndDownKeyFrameStyles}</style>
-          <style>{flipAndUnflipStyles}</style>
+          <style>{flipAndUnflipKeyFrameStyles}</style>
           <style>{stillKeyFrameStyles}</style>
-          <img ref={el => imageRefs.current[idx] = el} className='player-card' src={imgContent} draggable='false' style={{maxWidth: "100%", borderRadius: playersDimensions.y/32, visibility: hideImgContent ? 'hidden' : 'visible' }}/>
+          <style>{choosableKeyFrameStyles}</style>
+          {/* first rolebackimg is just a place holder */}
+            <img src={roleBackPng} draggable='false' style={{maxWidth: "100%", borderRadius: playersDimensions.y/32, visibility: 'hidden'}}/>
+          <div style={{position: 'absolute', width: '100%', height: '100%', backgroundColor: 'transparent', perspective: 1000, bottom: 0, transformStyle: 'preserve-3d', animation: roleAnimation}}>
+            <img ref={el => imageRefs.current[idx] = el} src={roleContent} draggable='false' style={{maxWidth: "100%", borderRadius: playersDimensions.y/32, position: 'absolute', backfaceVisibility: 'hidden'}}/>
+            <img src={roleContentFlip} draggable='false' style={{maxWidth: "100%", borderRadius: playersDimensions.y/32, position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden'}}/>
+          </div>
           <div style={{position: 'absolute', width: '100%', height: '100%', backgroundColor: 'transparent', perspective: 1000, bottom: -playersDimensions.y, transformStyle: 'preserve-3d', animation}}>
             <img src={overlayContent} draggable='false' style={{maxWidth: "100%", borderRadius: playersDimensions.y/32, position: 'absolute', backfaceVisibility: 'hidden'}}/>
             <img src={overlayContentFlip} draggable='false' style={{maxWidth: "100%", borderRadius: playersDimensions.y/32, position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden',  }}/>

@@ -125,7 +125,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
         if(blur !== _blur){
           setBlur(_blur)
         }
-      }, 50)
+      }, 100)
     }
 
     if(game.status === Status.CHAN_CLAIM && isCurrentChan){

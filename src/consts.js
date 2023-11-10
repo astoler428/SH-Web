@@ -158,6 +158,20 @@ export const inGov = (game, name) => (game.currentPres === name || game.currentC
 (game.status === Status.PRES_DISCARD || game.status === Status.CHAN_PLAY || game.status === Status.CHAN_CLAIM || game.status === Status.PRES_CLAIM || game.status === Status.VETO_DECLINED || game.status === Status.VETO_REPLY)
 
 
+export const choosableAnimation = (width) =>`
+@keyframes choosable {
+  0% {
+    box-shadow: 0 0 0 ${width}px orange;
+  }
+  60% {
+    box-shadow: 0 0 0 ${width}px orange;
+  }
+  100% {
+    box-shadow: none;
+  }
+
+}
+`
 export const upAnimation = (playerHeight) =>`
 @keyframes up {
   0% {
@@ -213,7 +227,7 @@ export const flipAnimation = () => `
       bottom: 0px;
       transform: rotateY(0deg);
     }
-    50% {
+    20% {
       bottom: 0px;
       transform: rotateY(180deg);
     }
@@ -229,11 +243,11 @@ export const flipAndUnflipAnimation = () => `
       bottom: 0px;
       transform: rotateY(0deg);
     }
-    30% {
+    20% {
       bottom: 0px;
       transform: rotateY(180deg);
     }
-    50% {
+    85% {
         bottom: 0px;
         transform: rotateY(180deg);
       }

@@ -9,7 +9,7 @@ import fascPolicyPng from '../img/FascPolicy.png'
 import policyBackPng from '../img/PolicyBack.png';
 import Action from './Action';
 import PolicyPiles from './PolicyPiles';
-import { enactPolicyAnimation, Policy } from '../consts'
+import { enactPolicyAnimation, Policy, Status } from '../consts'
 
 
 //set policy border radius relative to the policyWidth here and everywhere
@@ -109,7 +109,7 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
             <img src={policyBackPng} style={{width: '100%', position: 'absolute', backfaceVisibility: 'hidden', borderRadius: boardDimensions.x/200}}/>
             <img src={enactPolicyImg} style={{width: '100%', position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden', borderRadius: boardDimensions.x/200}}/>
           </div>
-            <div style={{backgroundColor: 'blue', width: trackerWidth, height: trackerWidth, borderRadius: '100%', position: 'absolute', bottom: trackerBottom, left: `calc(${trackerLeft} + ${boardState.tracker} * ${trackerGap})`, transition: '1s' }}></div>
+            <div style={{backgroundColor: 'blue', width: trackerWidth, height: trackerWidth, borderRadius: '100%', position: 'absolute', bottom: trackerBottom, left: `calc(${trackerLeft} + ${boardState.tracker} * ${trackerGap})`, transition: game.status === Status.STARTED ? 'none' : '1s' }}></div>
             <PolicyPiles game={game} boardDimensions={boardDimensions}/>
         </Box>
       </Box>
