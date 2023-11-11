@@ -3,20 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from 'react-router'
 import client, {post} from '../api/api'
 import { socket } from '../socket'
-import {GameType, Status, UPDATE} from '../consts'
+import {Status, UPDATE} from '../consts'
 import Players from '../components/Players';
 import Board from '../components/Board';
 import Loading from '../components/Loading';
-import Chat from '../components/Chat';
 import { Typography, IconButton, Snackbar, AppBar, Toolbar, Button, Box } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import RoleDialog from '../components/RoleDialog';
 import ConfirmFascDialog from '../components/ConfirmFascDialog';
-import StatusMessage from '../components/StatusMessage';
 import LogChat from '../components/LogChat';
-import PolicyPiles from '../components/PolicyPiles';
 
 export default function Game({name, game, setGame, isConnected}) {
+    // game.status = Status.CHOOSE_CHAN
+  // game.status = Status.STARTED
   const navigate = useNavigate()
   const params = useParams()
   const id = params.id
@@ -57,7 +56,7 @@ export default function Game({name, game, setGame, isConnected}) {
       socket.off(UPDATE, (game) => setGame(game));
       leaveGame()
     };
-  }, []) //will these be an issue causing dismout and leave game to be called?
+  }, [])
 
   useEffect(() => {
     document.body.style.backgroundColor = 'rgb(46, 109, 28)'
@@ -69,9 +68,7 @@ export default function Game({name, game, setGame, isConnected}) {
     let chosenName = card.getAttribute('data-key')
     let chosenPlayer = game.players.find(player => player.name === chosenName)
     //perhaps in blind version you can choose yourself to inv
-    // if(!isCurrentPres || chosenPlayer.name === thisPlayer.name || !chosenPlayer.alive){
-    //   return
-    // }
+
     if(game.status === Status.CHOOSE_CHAN){
       handleChooseChan(chosenPlayer)
     }
@@ -89,19 +86,20 @@ export default function Game({name, game, setGame, isConnected}) {
     }
   }
 
+  //These setErrors no longer happen since caught in players who is choosable and who is not
   async function handleChooseChan(chosenPlayer){
-    if(chosenPlayer.name === game.prevPres || chosenPlayer.name === game.prevChan){
-      setError('You must choose an eligible chancellor.')
-      return
-    }
+    // if(chosenPlayer.name === game.prevPres || chosenPlayer.name === game.prevChan){
+    //   setError('You must choose an eligible chancellor.')
+    //   return
+    // }
     await post(`/game/chooseChan/${id}`, {chanName: chosenPlayer.name})
   }
 
   async function handleChooseInv(chosenPlayer){
-    if(chosenPlayer.investigated){
-      setError("This player has already been investigated.")
-      return
-    }
+    // if(chosenPlayer.investigated){
+    //   setError("This player has already been investigated.")
+    //   return
+    // }
     await post(`/game/chooseInv/${id}`, {invName: chosenPlayer.name})
   }
 
@@ -185,11 +183,10 @@ export default function Game({name, game, setGame, isConnected}) {
         <Board boardRef={boardRef} imageRefs={imageRefs} game={game} name={name} id={id} setError={setError} boardDimensions={boardDimensions}/>
         <LogChat game={game} name={name} boardDimensions={boardDimensions}/>
       </Box>
-      <Box sx={{display: 'flex', alignItems: 'top', justifyContent: 'space-between'}}>
-        {/* <Box sx={{border: '2px solid red', width: '100vw', height: '200px'}}></Box> */}
+      {/* <Box sx={{display: 'flex', alignItems: 'top', justifyContent: 'space-between'}}> */}
         <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} boardDimensions={boardDimensions}/>
-        {/* <PolicyPiles game={game}/> */}
-      </Box>
+      {/* </Box> */}
+      {/* Snackbar is used in mixed role to let know if you can't discard */}
       <Snackbar
         open={error !== null}
         onClose={() => setError(null)}
@@ -204,9 +201,3 @@ export default function Game({name, game, setGame, isConnected}) {
     </>
   )
 }
-
-
-/**
- * currently showing role on blind to see
- * currently only 1 vote and it either passes or fails
- */

@@ -1,10 +1,6 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import {Card, CardHeader, IconButton, Dialog, DialogActions, DialogContent} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import {Box, Dialog, DialogActions, DialogContent} from '@mui/material';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
 import hitlerPng from '../img/Hitler.png'
 import liberalPng from '../img/Liberal.png'
 import liberalSpyPng from '../img/LiberalSpy.png'
@@ -12,9 +8,10 @@ import fascistPng from '../img/Fascist.png'
 import roleBackPng from '../img/RoleBack.png'
 import libParty from '../img/LibParty.png'
 import fascParty from '../img/FascParty.png'
-import { Role, GameType, Team, Status, inGov, POLICY_WIDTH } from '../consts';
+import { Role, GameType, Team, Status, inGov, claiming } from '../consts';
 
 export default function RoleDialog({thisPlayer, game, roleOpen, setRoleOpen, setConfirmFascOpen}) {
+
   const gameOver = game?.status === Status.END_FASC || game?.status === Status.END_LIB
   let roleImg, teamImg
   switch (thisPlayer?.role) {
@@ -46,51 +43,34 @@ export default function RoleDialog({thisPlayer, game, roleOpen, setRoleOpen, set
       break
   }
 
-  const disableConfirmFasc = inGov(game, thisPlayer.name)
+  const disableConfirmFasc = inGov(game, thisPlayer.name) || game.currentPres === thisPlayer.name && game.status === Status.CHAN_CLAIM || claiming(game, thisPlayer.name)
   const confirmFascText = disableConfirmFasc ? 'Cannot confirm fasc until after claims' : 'confirm fasc'
 
   return (
-      <div>
-
     <Dialog
-        open={roleOpen}
-        onClose={() => setRoleOpen(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        >
-        <DialogContent sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-          {game.settings.type === GameType.MIXED_ROLES && <img src={teamImg} draggable='false' style={{ maxWidth: "100%", width: POLICY_WIDTH*2, maxHeight: "calc(100vh - 64px)" }}/>}
-          <img src={roleImg} draggable='false' style={{width: POLICY_WIDTH*2}}/>
-        </DialogContent>
-        <DialogActions sx={{display: 'flex', justifyContent: 'center'}}>
-          {game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver && <Button disabled={disableConfirmFasc} onClick={()=>setConfirmFascOpen(true)} variant='contained' color='error'>{confirmFascText}</Button>}
-        </DialogActions>
-      </Dialog>
-        </div>
-
-
-    // <div >
-    //   <Modal sx={{}}
-    //     open={roleOpen}
-    //     onClose={() => setRoleOpen(false)}
-    //     aria-labelledby="modal-modal-title"
-    //     aria-describedby="modal-modal-description"
-    //   >
-    //     <Box sx={style}>
-    //       <IconButton onClick={()=>setRoleOpen(false)} aria-label="close" sx={{position: 'absolute', right: 2, top: 2}}>
-    //           <CloseIcon/>
-    //       </IconButton>
-    //       {game.settings.type === GameType.MIXED_ROLES && <img src={teamImg} draggable='false' style={{ maxWidth: "100%", width: '200px', maxHeight: "calc(100vh - 64px)" }}/>}
-    //       <img src={roleImg} draggable='false' style={{ maxWidth: "100%", width: '200px' }}/>
-    //       {game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver && <Button disabled={disableConfirmFasc} onClick={()=>setConfirmFascOpen(true)} variant='contained' color='error'>{confirmFascText}</Button>}
-    //     </Box>
-    //   </Modal>
-    // </div>
+      open={roleOpen}
+      onClose={() => setRoleOpen(false)}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogContent sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        {
+        game.settings.type === GameType.MIXED_ROLES &&
+        <Box sx={{width: {xs: 134.5, sm: 196}}}>
+          <img src={teamImg} draggable='false' style={{ width: '100%', borderRadius: 12}}/>
+        </Box>
+        }
+        <Box sx={{width: {xs: 140, sm: 200}}}>
+          <img src={roleImg} draggable='false' style={{width: '100%'}}/>
+        </Box>
+      </DialogContent>
+      {
+      game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver &&
+      <DialogActions sx={{display: 'flex', justifyContent: 'center'}}>
+        <Button disabled={disableConfirmFasc} onClick={()=>setConfirmFascOpen(true)} variant='contained' color='error'>{confirmFascText}</Button>
+      </DialogActions>
+      }
+    </Dialog>
   );
 }
 
-/**
- * make ax x button by turning into card with header and action?
- * Or just position absolute
- * Make so if confirm fasc loses - modal closes automatically
- */

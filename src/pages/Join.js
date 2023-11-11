@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import client from '../api/api'
 import { socket } from '../socket'
 import { Status } from '../consts'
-import {Typography, CssBaseline, IconButton, Snackbar, Box, TextField, Button} from '@mui/material'
+import {IconButton, Snackbar, Box, TextField, Button} from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close';
 
 export default function Join({name, setIsLoading}) {

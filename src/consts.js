@@ -1,11 +1,3 @@
-export const POLICY_WIDTH = 100//74
-
-export const CREATE_GAME = 'CREATE_GAME'
-export const JOIN_GAME = 'JOIN_GAME'
-export const LEAVE_GAME = 'LEAVE_GAME'
-export const UPDATE_PLAYERS = 'UPDATE_PLAYERS'
-export const START_GAME = 'START_GAME'
-export const UPDATE_LOBBY = 'UPDATE_LOBBY'
 export const UPDATE = 'UPDATE'
 
 export const ClaimType = {
@@ -155,8 +147,10 @@ export const PRES3 = {
 }
 
 export const inGov = (game, name) => (game.currentPres === name || game.currentChan === name) &&
-(game.status === Status.PRES_DISCARD || game.status === Status.CHAN_PLAY || game.status === Status.CHAN_CLAIM || game.status === Status.PRES_CLAIM || game.status === Status.VETO_DECLINED || game.status === Status.VETO_REPLY)
+(game.status === Status.PRES_DISCARD || game.status === Status.CHAN_PLAY || game.status === Status.VETO_DECLINED || game.status === Status.VETO_REPLY)
 
+// export const presOrChanDuringClaiming = (game, name) => (game.currentPres === name || game.currentChan === name) && (game.status === Status.PRES_CLAIM || game.status === Status.CHAN_CLAIM)
+export const claiming = (game, name) => (game.currentPres === name && game.status === Status.PRES_CLAIM) || (game.currentChan === name && game.status === Status.CHAN_CLAIM)
 
 export const choosableAnimation = (width) =>`
 @keyframes choosable {
@@ -271,37 +265,42 @@ export const stillAnimation = () => `
 
 
 
-export const enactPolicyAnimation = (policyWidth, left, bottom, policyGap, policyNum) => {
+export const enactPolicyAnimation = (policyWidth, policyBorderRadius, left, bottom, policyGap, policyNum) => {
  return `
   @keyframes enact {
     0% {
       width: ${policyWidth*1.4}px;
       left: ${-policyWidth*1.4}px;
       bottom: 50%;
+      border-radius: ${1.4*policyBorderRadius}px;
       transform: translate(0%, 50%) rotateY(0deg);
     }
     20% {
       width: ${policyWidth*1.4}px;
       left: ${policyWidth/2}px;
       bottom: 50%;
+      border-radius: ${1.4*policyBorderRadius}px;
       transform: translate(0%, 50%) rotateY(0deg);
     }
     40% {
       width: ${policyWidth*1.4}px;
       left: ${policyWidth/2}px;
       bottom: 50%;
+      border-radius: ${1.4*policyBorderRadius}px;
       transform: translate(0%, 50%) rotateY(180deg);
     }
     70% {
       width: ${policyWidth*1.4}px;
       left: ${left + (policyNum - 1)*(policyWidth + policyGap)}px;
       bottom: ${bottom}px;
+      border-radius: ${1.4*policyBorderRadius}px;
       transform: rotateY(180deg);
     }
     100% {
       width: ${policyWidth}px;
       left: ${left + (policyNum - 1)*(policyWidth + policyGap)}px;
       bottom: ${bottom}px;
+      border-radius: ${policyBorderRadius}px;
       transform: rotateY(180deg);
     }
 

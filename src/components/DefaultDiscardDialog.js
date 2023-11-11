@@ -3,25 +3,24 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { POLICY_WIDTH, Color, Status, inGov } from '../consts';
+import {Color, inGov, claiming, Status } from '../consts';
 import libPolicyPng from '../img/LibPolicy.png'
 import fascPolicyPng from '../img/FascPolicy.png'
 
 
-export default function DefaulDiscardDialog({game, name, showDiscardDialog, setShowDiscardDialog, presDiscard}) {
+export default function DefaulDiscardDialog({game, name, showDiscardDialog, setShowDiscardDialog, presDiscard, boardDimensions}) {
+  const policyWidth = boardDimensions.x / 8.2
+  const policyBorderRadius = policyWidth / 18
 
   function getPolicyImg(card){
     return card?.color === Color.RED ? fascPolicyPng : libPolicyPng
   }
 
-  const playerInGov = inGov(game, name)
-
   return (
     <div>
       <Dialog
-        open={showDiscardDialog && !playerInGov}
+        open={showDiscardDialog && !(inGov(game, name) || game.status === Status.CHAN_CLAIM || claiming(game, name))}
         onClose={() => setShowDiscardDialog(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
@@ -30,7 +29,7 @@ export default function DefaulDiscardDialog({game, name, showDiscardDialog, setS
           {"You discarded:"}
         </DialogTitle>
         <DialogContent sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-          <img src={getPolicyImg(presDiscard)} draggable='false' style={{width: POLICY_WIDTH, borderRadius: '10px'}}/>
+          <img src={getPolicyImg(presDiscard)} draggable='false' style={{width: policyWidth, borderRadius: policyBorderRadius}}/>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowDiscardDialog(false)}>Ok</Button>

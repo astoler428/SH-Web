@@ -1,17 +1,14 @@
 import React from 'react'
 import {Box, Typography} from '@mui/material'
-import { Status } from '../consts'
+import { GameType, Status } from '../consts'
 
-export default function StatusMessage({game, name}) {
+export default function StatusMessage({game}) {
   let message
   const status = game.status
-  // const isCurrentPres = game.currentPres === name
-  // const isCurrentChan = game.currentChan === name
-  // const thisPlayer = game.players.find(player => player.name === name)
 
   switch (status){
     case Status.STARTED:
-      message = 'Showing roles'
+      message = game.settings.type === GameType.BLIND ? 'Roles are hidden' : 'Showing roles'
       break
     case Status.CHOOSE_CHAN:
       message = 'President to select chancellor'

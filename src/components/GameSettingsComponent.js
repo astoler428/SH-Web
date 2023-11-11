@@ -1,13 +1,11 @@
-import React, {useEffect} from 'react'
-import { Typography, Box, Container, FormGroup, Card, List, FormControlLabel, Checkbox, FormControl, InputLabel, Select, MenuItem, Button, CardContent, ListItem, ListItemText } from '@mui/material';
+import React from 'react'
+import { Typography, Box, FormGroup, Card, List, FormControlLabel, Checkbox, FormControl, InputLabel, Select, MenuItem, ListItem } from '@mui/material';
 import { GameType, GameSettings } from '../consts';
 import Loading from './Loading';
 
 export default function GameSettingsComponent({game, name, handleSettingsChange}) {
-
-  const styles = {fontSize: 18,  fontWeight: 'normal', fontFamily: 'inter'}
+  const styles = {fontSize: 18, fontWeight: 'normal', fontFamily: 'inter'}
   if(game){
-
     return (
       <>
     {game.host === name ?
@@ -42,7 +40,7 @@ export default function GameSettingsComponent({game, name, handleSettingsChange}
             label="Start with red down"
             />
         <FormControlLabel
-          // disabled={game.settings?.type === GameType.BLIND}
+          disabled={game.settings?.type === GameType.BLIND}
           control={<Checkbox
             checked={game.settings?.hitlerKnowsFasc}
             onChange={() => handleSettingsChange(GameSettings.HITLERKNOWSFASC)}
@@ -72,19 +70,15 @@ export default function GameSettingsComponent({game, name, handleSettingsChange}
           <List>
             <ListItem>
               <Typography variant='h6'>Game Type: <span style={{...styles}}>{game.settings.type.toUpperCase()}</span></Typography>
-              {/* <ListItemText primary={`Game Type: ${game.settings.type.toUpperCase()}`} /> */}
             </ListItem>
             <ListItem>
               <Typography variant='h7'>Start with red down: <span style={styles}>{game.settings.redDown ? 'YES' : 'NO'}</span></Typography>
-            {/* <ListItemText primary={`Start with red down: ${game.settings.redDown ? 'YES' : 'NO'}`} /> */}
             </ListItem>
             <ListItem>
               <Typography variant='h7'>Hitler knows Fascists in 7+: <span style={styles}>{game.settings.hitlerKnowsFasc ? 'YES' : 'NO'}</span></Typography>
-            {/* <ListItemText primary={`Hitler knows Fascists in 7+: ${game.settings.hitlerKnowsFasc ? 'YES' : 'NO'}`} /> */}
             </ListItem>
             <ListItem>
               <Typography variant='h7'>Simple blind: <span style={styles}>{game.settings.simpleBlind ? 'YES' : 'NO'}</span></Typography>
-            {/* <ListItemText primary={`Simple blind: ${game.settings.simpleBlind ? 'YES' : 'NO'}`} /> */}
             </ListItem>
           </List>
       </Card>

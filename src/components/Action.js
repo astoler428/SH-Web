@@ -1,29 +1,29 @@
 import React, {useState, useEffect} from 'react'
-import {IconButton, Snackbar, Button, Typography, Box, Container} from '@mui/material'
+import {Button, Typography, Box} from '@mui/material'
 import libPolicyPng from '../img/LibPolicy.png'
 import fascPolicyPng from '../img/FascPolicy.png'
 import jaPng from '../img/Ja.png'
 import neinPng from '../img/Nein.png'
-import { Color, POLICY_WIDTH, PRES3, CHAN2, Status, Vote, Team, Role, GameType } from '../consts'
+import { Color, PRES3, CHAN2, Status, Vote, Team, Role, GameType } from '../consts'
 import {post} from '../api/api'
 import DefaulDiscardDialog from './DefaultDiscardDialog'
-import { orange } from '@mui/material/colors'
-
 
 export default function Action({game, name, id, setError, blur, setBlur, boardDimensions}) {
   const [showDiscardDialog, setShowDiscardDialog] = useState(false)
   const [centerContent, setCenterContent] = useState(false)
   const [actionContent, setActionContent] = useState(false)
   const [actionTitle, setActionTitle] = useState(false)
+  const [otherContent, setOtherContent] = useState(null)
   const [showTop3PoliciesNotClaim, setShowTop3PoliciesNotClaim] = useState(true) //first show policies
   const isCurrentPres = game.currentPres === name
   const isCurrentChan = game.currentChan === name
   const thisPlayer = game.players.find(player => player.name === name)
   const isHitler = thisPlayer.role === Role.HITLER
   const inVetoZone = game.FascPoliciesEnacted === 5
+  const status = game.status
   let title, content, _blur = true, showDefaultOption = false
 
-  if(game.status === Status.VOTE){
+  if(status === Status.VOTE){
     if(thisPlayer.alive){
       title = 'SELECT A VOTE.'
       content = showVoteCards()
@@ -32,13 +32,13 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
       _blur = false
     }
   }
-  else if(game.status === Status.LIB_SPY_GUESS && isHitler){
+  else if(status === Status.LIB_SPY_GUESS && isHitler){
     title = 'GUESS THE LIBERAL SPY.'
     _blur = false
   }
   else if(isCurrentPres){
     showDefaultOption = game.settings.type === GameType.BLIND ? true : false
-    switch(game.status){
+    switch(status){
       case Status.PRES_DISCARD:
         title = 'CHOOSE A POLICY TO DISCARD. '
         content = showPresPolicies()
@@ -62,7 +62,6 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
         title = `THE CHANCELLOR REQUESTS A VETO. ACCEPT OR DECLINE.`
         content = showVetoOptions()
         break
-
       case Status.CHOOSE_CHAN:
         title = `CHOOSE AN ELIGIBLE CHANCELLOR.`
         _blur = false
@@ -83,7 +82,6 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
         _blur = false
         showDefaultOption = false
         break
-
       default:
         _blur = false
         showDefaultOption = false
@@ -91,7 +89,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
   }
   else if(isCurrentChan){
     showDefaultOption = game.settings.type === GameType.BLIND ? true : false
-    switch(game.status){
+    switch(status){
       case Status.CHAN_PLAY:
         title = `CHOOSE A POLICY TO PLAY${inVetoZone ? ` OR REQUEST A VETO.` : `.`}`
         content = showChanPolicies()
@@ -103,7 +101,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
       case Status.CHAN_CLAIM:
         title = 'AS CHANCELLOR, I RECEIVED...'
         content = showChanClaims()
-        _blur = false //in use effect it get set
+        _blur = false //in use effect it gets set
         break
       default:
         _blur = false
@@ -116,10 +114,19 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
 
 
   useEffect(()=>{
+    //this way content isn't displayed before it gets set off screen an animates in
     setActionContent(content)
     setActionTitle(title)
+    //put here to avoid flickering
+    setOtherContent(
+    <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
+      {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && <Button variant='contained' sx={{fontSize: {xs: '1em', md: '14px'} }} onClick={handleVetoRequest}>Request Veto</Button>}
+      {showDefaultOption && <Button variant='contained' style={{backgroundColor: 'orange'}} sx={{fontSize: {sm: '1em', md: '14px'}}} onClick={handleDefaultAction}>Default to Role</Button>}
+      {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && <Button variant='contained' color='secondary' sx={{fontSize: {xs: '1em', md: '14px'}}} onClick={() => setShowTop3PoliciesNotClaim(false)}>Make Claim</Button> }
+    </Box>
+    )
     setCenterContent(false)
-    if(game.status !== Status.CHAN_CLAIM || !isCurrentChan){
+    if(status !== Status.CHAN_CLAIM || !isCurrentChan){  //delay needed to reset the left position so it can animate
       setTimeout(() => {
         setCenterContent(true)
         if(blur !== _blur){
@@ -128,7 +135,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
       }, 100)
     }
 
-    if(game.status === Status.CHAN_CLAIM && isCurrentChan){
+    if(status === Status.CHAN_CLAIM && isCurrentChan){ //delay showing during chan claim so they can see the policy enact
       setCenterContent(false)
       setBlur(false)
       setTimeout(() => {
@@ -136,13 +143,19 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
         setBlur(true)
       }, 3000)
     }
+  }, [status, showTop3PoliciesNotClaim])
 
-
-  }, [game, showTop3PoliciesNotClaim])
-
-
-
-
+  useEffect(() => {
+    setActionContent(content)
+    setActionTitle(title)
+    setOtherContent(
+    <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
+      {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && <Button variant='contained' sx={{fontSize: {xs: '1em', md: '14px'} }} onClick={handleVetoRequest}>Request Veto</Button>}
+      {showDefaultOption && <Button variant='contained' style={{backgroundColor: 'orange'}} sx={{fontSize: {sm: '1em', md: '14px'}}} onClick={handleDefaultAction}>Default to Role</Button>}
+      {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && <Button variant='contained' color='secondary' sx={{fontSize: {xs: '1em', md: '14px'}}} onClick={() => setShowTop3PoliciesNotClaim(false)}>Make Claim</Button> }
+    </Box>
+    )
+  }, [boardDimensions])
 
   function showVoteCards(){
     const jaVote = thisPlayer.vote === Vote.JA
@@ -150,45 +163,33 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
     return (
       <>
         <Box sx={{width: '100%', maxWidth: boardDimensions.x/4, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-          <img onClick={()=> handleVote(Vote.JA)} src={jaPng} draggable='false' style={{width: '100%', border: jaVote ? '12px solid lightgreen' : 'none', borderRadius: '10px', cursor: 'pointer' }}/>
+          <img onClick={()=> handleVote(Vote.JA)} src={jaPng} style={{width: '100%', border: jaVote ? '12px solid lightgreen' : 'none', borderRadius: boardDimensions.x/80, cursor: 'pointer' }}/>
         </Box>
         <Box sx={{width: '100%', display: 'flex', maxWidth: boardDimensions.x/4, justifyContent: 'center', alignItems: 'center'}}>
-          <img onClick={()=> handleVote(Vote.NEIN)} src={neinPng} draggable='false' style={{width: '100%',  border: neinVote ? '12px solid lightgreen' : 'none', borderRadius: '10px', cursor: 'pointer' }}/>
+          <img onClick={()=> handleVote(Vote.NEIN)} src={neinPng} style={{width: '100%',  border: neinVote ? '12px solid lightgreen' : 'none', borderRadius: boardDimensions.x/80, cursor: 'pointer' }}/>
         </Box>
       </>
     )
   }
 
-
   function showPresPolicies(){
-    return game.presCards.map(card => {
+    const presPolicies = game.presCards.map(card => {
       const policyImg = getPolicyImg(card)
       return (
-        <Box sx={{width: '100%', maxWidth: boardDimensions.x/5, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-          <img key={Math.random()} data-key={card.color} onClick={handlePresDiscard} src={policyImg} draggable='false' style={{width: '100%', borderRadius: '10px', cursor: 'pointer' }}/>
-        </Box>
+        <img key={Math.random()} data-key={card.color} onClick={handlePresDiscard} src={policyImg} style={{width: boardDimensions.x/8.2, borderRadius: '10px', cursor: 'pointer' }}/>
       )
     })
+    return presPolicies
   }
+
   function showChanPolicies(){
     const chanCards = game.chanCards.map(card => {
       const policyImg = getPolicyImg(card)
       return (
-        <Box sx={{width: '100%', maxWidth: boardDimensions.x/5, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-          <img key={Math.random()} data-key={card.color} onClick={handleChanPlay} src={policyImg} draggable='false' style={{width: '100%', borderRadius: '10px', cursor: 'pointer' }}/>
-        </Box>
+        <img key={Math.random()} data-key={card.color} onClick={handleChanPlay} src={policyImg} style={{width: boardDimensions.x/8.2, borderRadius: '10px', cursor: 'pointer' }}/>
       )
     })
-    return (
-        <>
-      {chanCards}
-      {/* {inVetoZone && game.status !== Status.VETO_DECLINED && (
-      <Box sx={{width: '100%', maxWidth: boardDimensions.x/5, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-        <Button variant='contained' sx={{width: '100%', maxWidth: boardDimensions.x/5, borderRadius: '6px', lineHeight: '16px', fontSize: {xs: '1em', md: '14px'} }} onClick={handleVetoRequest}>Request Veto</Button>
-       </Box>
-    )} */}
-      </>
-    )
+    return chanCards
   }
 
   function showPresClaims(){
@@ -226,7 +227,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
       const policyImg = getPolicyImg(card)
       return (
         <Box sx={{width: '100%', maxWidth: boardDimensions.x/5, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-          <img key={Math.random()} src={policyImg} draggable='false' style={{width: '100%', borderRadius: '10px'}}/>
+          <img key={Math.random()} src={policyImg} style={{width: '100%', borderRadius: '10px'}}/>
         </Box>
       )
     })
@@ -240,7 +241,6 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
           <Button variant='contained' data-key={PRES3.BBB} color='primary' sx={{fontSize: {xs: '1em', md: '14px'}}}>3 Liberal policies</Button>
         </Box>
       </>
-
     )
   }
 
@@ -253,19 +253,15 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
     )
   }
 
-
   function getPolicyImg(card){
     return card.color === Color.RED ? fascPolicyPng : libPolicyPng
   }
-
-
 
   async function handleVote(vote){
     await post(`/game/vote/${id}`, {name, vote})
   }
 
   async function handlePresDiscard(e){
-    // const policy = e.target.closest('.MuiBox-root');
     const cardColor = e.target.getAttribute('data-key')
     if(validDiscardDueToMixedRole(cardColor)){
       await post(`/game/presDiscard/${id}`, {cardColor})
@@ -276,7 +272,6 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
   }
 
   async function handleChanPlay(e){
-    // const policy = e.target.closest('.MuiBox-root');
     const cardColor = e.target.getAttribute('data-key')
     if(validPlayDueToMixedRole(cardColor)){
       await post(`/game/chanPlay/${id}`, {cardColor})
@@ -317,14 +312,14 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
   }
 
   async function handleDefaultAction(){
-    if(game.status === Status.PRES_DISCARD){
+    if(status === Status.PRES_DISCARD){
       setShowDiscardDialog(true)
     }
-    if(game.status === Status.VETO_DECLINED){
+    if(status === Status.VETO_DECLINED){
       await post(`/game/default/${Status.CHAN_PLAY}/${id}`)
     }
     else{
-      await post(`/game/default/${game.status}/${id}`)
+      await post(`/game/default/${status}/${id}`)
     }
   }
 
@@ -355,31 +350,26 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
     }
     else if(thisPlayer.team === Team.FASC && thisPlayer.role === Role.LIB){
       //fasc who has to play blue unless all red
-      return cardColor === Color.BLUE || game.chanCards.every(card => card.color === Color.RED)
+      return cardColor === Color.BLUE || game.chanCards.every(card => card.color === Color.RED)                                       //left .75s ease-in-out
     }
     return true
   }
-//maxWidth: 600
-//{xs: '23px', sm: '25px', md: '30px'}
-//fontSize: `calc(${playersDimensions.x}px / ${8*n})
 
   return (
     <Box sx={{}}>
-      <Box sx={{position: 'absolute', width: '100%', height: '100%', top: '50%', left: centerContent ? '50%' : '-50%', transform: 'translate(-50%, -50%)', transition: centerContent ? 'left .75s' : '', display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', gap: {xs: 1, sm: 1, md: 3} }}>
+      <Box sx={{position: 'absolute', width: '100%', height: '100%', top: '50%', left: centerContent ? '50%' : '-50%', transform: 'translate(-50%, -50%)', transition: centerContent ? '' : '', display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', gap: {xs: 1, sm: 1, md: 3} }}>
         <Typography sx={{fontSize: `calc(${boardDimensions.x}px / 18)`, width: '90%', textAlign: 'center', justifyContent: 'center', display: 'flex', fontWeight: 'bold'}}>{actionTitle}</Typography>
         <Box sx={{display: 'flex', flexDirection: 'column', justifyContent:'center', alignItems: 'center', gap: {xs: 1, md: 2}, fontSize: `calc(${boardDimensions.x}px / 36)`, width: '100%'}}>
-          <Box sx={{display: 'flex', gap: 4, justifyContent: 'center', alignItems: 'center', width: '60%'}}>
+          <Box sx={{display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', width: '60%', border: '2px solid black'}}>
             {actionContent}
           </Box>
-          <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
-            {inVetoZone && isCurrentChan && game.status === Status.CHAN_PLAY && <Button variant='contained' sx={{fontSize: {xs: '1em', md: '14px'} }} onClick={handleVetoRequest}>Request Veto</Button>}
-            {showDefaultOption && <Button variant='contained' style={{backgroundColor: 'orange'}} sx={{fontSize: {sm: '1em', md: '14px'}}} onClick={handleDefaultAction}>Default to Role</Button>}
-            {showTop3PoliciesNotClaim && isCurrentPres && game.status === Status.INSPECT_TOP3 && <Button variant='contained' color='secondary' sx={{fontSize: {xs: '1em', md: '14px'}}} onClick={() => setShowTop3PoliciesNotClaim(false)}>Make Claim</Button> }
-          </Box>
+          {otherContent}
         </Box>
       </Box>
-      <DefaulDiscardDialog game={game} name={name} showDiscardDialog={showDiscardDialog} setShowDiscardDialog={setShowDiscardDialog} presDiscard={game.presDiscard}/>
+      <DefaulDiscardDialog game={game} name={name} showDiscardDialog={showDiscardDialog} setShowDiscardDialog={setShowDiscardDialog} presDiscard={game.presDiscard} boardDimensions={boardDimensions}/>
     </Box>
   )
 }
 
+
+//actioncontent box used to have a gap and justify center

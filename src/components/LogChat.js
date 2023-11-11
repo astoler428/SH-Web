@@ -1,19 +1,18 @@
 import React, {useRef, useState, useEffect} from 'react'
-import { Box, Paper, TextField, Typography, List, ListItem, Button } from '@mui/material'
-import { Team, Status, LogType, Role, Policy, GameType } from '../consts';
+import { Box, Paper, TextField, Typography, ListItem } from '@mui/material'
+import { Team, Status, LogType, Role, Policy, GameType, inGov } from '../consts';
 import { socket } from '../socket'
 import StatusMessage from './StatusMessage';
 
 export default function LogChat({game, name, boardDimensions}) {
 
   const [message, setMessage] = useState("")
-  // const [isFocused, setIsFocused] = useState(false)
   const scrollRef = useRef(undefined);
   const messageInputRef = useRef(undefined);
   window.addEventListener('keydown', handleKeyPress)
 
   const thisPlayer = game.players.find(player => player.name === name)
-  const disabled = (!thisPlayer.alive || (game.currentPres === name || game.currentChan === name) && (game.status === Status.PRES_DISCARD || game.status === Status.CHAN_PLAY)) || game.status === Status.LIB_SPY_GUESS
+  const disabled = !thisPlayer.alive || inGov(game, thisPlayer.name) || game.status === Status.LIB_SPY_GUESS
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({behavior: 'smooth'})
@@ -139,15 +138,9 @@ export default function LogChat({game, name, boardDimensions}) {
         logEntry = <span>A {policy === Policy.FASC ? fascistStr : liberalStr} policy is enacted.</span>
         break
       case LogType.CHAN_CLAIM:
-        if(!claim){
-          console.log('chan claim error')
-        }
         logEntry = <span>{chancellorStr} {chan} {claimsStr} {renderPolicies(claim)}.</span>
         break
       case LogType.PRES_CLAIM:
-        if(!claim){
-          console.log('pres claim error')
-        }
         logEntry = <span>{presidentStr} {pres} {claimsStr} {renderPolicies(claim)}.</span>
         break
       case LogType.INV:
@@ -164,9 +157,6 @@ export default function LogChat({game, name, boardDimensions}) {
         logEntry = <span>{presidentStr} {pres} looks at the top 3 policies.</span>
         break
       case LogType.INSPECT_TOP3_CLAIM:
-        if(!claim){
-          console.log('inspect 3 error')
-        }
         logEntry = <span>{presidentStr} {pres} claims the top 3 policies are {renderPolicies(claim)}. The 3 policies are shuffled and then returned to the top of the deck.</span>
         break
       case LogType.GUN:
@@ -197,8 +187,6 @@ export default function LogChat({game, name, boardDimensions}) {
       case LogType.SHUFFLE_DECK:
         const libCount = renderRole(Role.LIB, false, `${entry.payload.libCount} `)
         const fascCount = renderRole(Role.FASC, false, `${entry.payload.fascCount} `)
-        // const libCount = entry.payload.libCount
-        // const fascCount = entry.payload.fascCount
         logEntry = <span>The deck is shuffled: {libCount} and {fascCount} policies.</span>
         break
       case LogType.LIB_WIN:
@@ -221,9 +209,6 @@ export default function LogChat({game, name, boardDimensions}) {
         logEntry = <span>{hitlerStr} has been shot.</span>
         break
       case LogType.DECK:
-        if(!entry.payload.remainingPolicies){
-          console.log('deck error')
-        }
         const remainingPolicies = renderPolicies(entry.payload.remainingPolicies)
         logEntry = remainingPolicies.length === 1 ? <span>The remaining policy in the draw pile is {remainingPolicies}</span> :
         <span>The remaining policies in the draw pile are {remainingPolicies}</span>
@@ -241,23 +226,19 @@ export default function LogChat({game, name, boardDimensions}) {
   return (
     <>
     <Box sx={{position: 'relative', width: {xs: '100vw', sm: '50vw'}, flex: 1, minHeight: {xs: '180px', sm: `${boardDimensions.y}px`}, display: 'flex', flexDirection: 'column', margin: 0, padding: 0}}>
-      <StatusMessage game={game} name={name}/>
+      <StatusMessage game={game}/>
       <Paper elevation={0} sx={{width:'100%', border: '1px solid black', fontSize: {xs: '12px', md: '16px'}, borderRadius: '0', overflow: 'auto', bgcolor: 'white', minHeight: {xs: 'calc(175px - 30px)'}, maxHeight: {xs: `calc(80vh - ${boardDimensions.y}px - 30px - 30px)`, sm: `${boardDimensions.y}px`}, height: {xs: `calc(80vh - ${boardDimensions.y}px - 30px - 30px)`, sm: `${boardDimensions.y}px`}, paddingBottom: '45px'}}>
           {log}
           <ListItem sx={{height: '0', padding: '0', margin: '0'}} ref={scrollRef}></ListItem>
     <form sx={{height: 0,position: 'absolute', bottom: -1}}>
       <button style={{visibility: 'hidden', width: '0px', height: '0px', position: 'absolute', bottom: 0}} type='submit' onClick={sendMessage}></button>
         <TextField
-          // onFocus={() => setIsFocused(true)}
-          // onBlur={() => setIsFocused(false)}
           inputRef={messageInputRef}
           disabled={disabled}
           value={message}
           size='small'
           autoComplete='off'
           placeholder={!disabled ? 'Send a message' : !thisPlayer.alive ? 'Dead cannnot speak' : game.status === Status.LIB_SPY_GUESS ? 'Chat disabled during guess' : 'Chat disabled during government' }
-          // color='secondary'
-          // inputProps={{style: {color: 'white', borderRadius: '3px', outline: isFocused ? 'none' : '2px solid gray'}}}
           sx={{width: '100%', borderRadius: '3px', bgcolor: 'white', position: 'absolute', bottom: 0}}
           onChange={(e) => setMessage(e.target.value)}
           />

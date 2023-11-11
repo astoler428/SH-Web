@@ -1,15 +1,11 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useRef} from 'react'
 import { useParams } from 'react-router'
-import { UPDATE, Status, GameType, GameSettings } from '../consts'
+import { UPDATE, Status, GameSettings } from '../consts'
 import { socket } from '../socket'
 import { useNavigate } from "react-router-dom";
 import client, {post} from '../api/api';
-import { Typography, Box, Toolbar, IconButton, Button, AppBar } from '@mui/material';
-import {makeStyles} from '@mui/styles';
-import {createTheme} from '@mui/material/styles'
-import MenuIcon from '@mui/icons-material/Menu';
+import { Typography, Box, Toolbar, Button, AppBar } from '@mui/material';
 import GameSettingsComponent from '../components/GameSettingsComponent';
-import { ClassNames } from '@emotion/react';
 
 
 export default function Lobby({name, game, setGame, isConnected}) {

@@ -19,7 +19,6 @@ import errorPng from '../img/Error.png'
 import partyBack from '../img/ParyBack.png'
 //card height to width ratio = 1.36
 
-
 const hitlerColor = 'darkred'
 const fascColor = 'orangered'
 const libColor = 'deepskyblue'
@@ -33,17 +32,19 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
   const playersRef = useRef(null)
   const thisPlayer = game.players.find(player => player.name === name)
   const n = game.players.length
-  const gameOver = game.status === Status.END_FASC || game.status === Status.END_LIB
+  const status = game.status
+  const cardBorderRadius  = playersDimensions.y / 32
+  const gameOver = status === Status.END_FASC || status === Status.END_LIB
 
   const choosing = (game.currentPres === name &&
-  (game.status === Status.CHOOSE_CHAN ||
-   game.status === Status.INV ||
-   game.status === Status.SE ||
-   game.status === Status.GUN))
-   || (thisPlayer.role === Role.HITLER && game.status === Status.LIB_SPY_GUESS)
+  (status === Status.CHOOSE_CHAN ||
+   status === Status.INV ||
+   status === Status.SE ||
+   status === Status.GUN))
+   || (thisPlayer.role === Role.HITLER && status === Status.LIB_SPY_GUESS)
 
   const currentPres = game.players.find(player => player.name === game.currentPres)
-  const getRoleImg = (player) => game.settings.type === GameType.MIXED_ROLES && player.team === Team.FASC && player.role !== Role.HITLER ? [fascistPng, getTeamImg(player)[1]] : player.role === Role.HITLER ? [hitlerPng,hitlerColor] : player.role === Role.FASC ? [fascistPng,fascColor] : player.role === Role.LIB_SPY ? [liberalSpyPng, libColor] : [liberalPng,libColor]
+  const getRoleImg = (player) => game.settings.type === GameType.MIXED_ROLES && player.role !== Role.HITLER ? [player.role === Role.FASC ? fascistPng : liberalPng, getTeamImg(player)[1]] : player.role === Role.HITLER ? [hitlerPng,hitlerColor] : player.role === Role.FASC ? [fascistPng,fascColor] : player.role === Role.LIB_SPY ? [liberalSpyPng, libColor] : [liberalPng,libColor]
   const getTeamImg = (player) => player.team === Team.FASC ? [fascPartyPng, fascColor] : [libPartyPng, libColor]
   const getVote = (player) => player.vote === Vote.JA ? jaPng : player.vote === Vote.NEIN ? neinPng : errorPng
 
@@ -61,17 +62,18 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
 
     const thisPlayerInvestigatedPlayer = thisPlayer.investigations.some(invName => invName === player.name)
 
+    //check if player is choosable
     if(choosing && player.name !== name){
-      if(game.status === Status.LIB_SPY_GUESS){
+      if(status === Status.LIB_SPY_GUESS){
         choosable = player.team === Team.LIB || (!game.settings.hitlerKnowsFasc && player.role !== Role.HITLER)
       }
       else if(!player.alive){
         choosable = false
       }
-      else if(game.status === Status.CHOOSE_CHAN){
+      else if(status === Status.CHOOSE_CHAN){
         choosable = game.prevChan !== player.name && game.prevPres !== player.name
       }
-      else if(game.status === Status.INV){
+      else if(status === Status.INV){
         choosable = !player.investigated
       }
       else{
@@ -80,25 +82,29 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
     }
 
     if(choosable){
-      chooseAnimation = 'choosable 1.5s infinite'
+      chooseAnimation = 'choosable 1.3s infinite'
     }
 
+    //making decision for circular progress bar
+
     if(game.currentPres === player.name){
-      if(game.status === Status.CHOOSE_CHAN || game.status === Status.PRES_DISCARD || game.status === Status.PRES_CLAIM || game.status === Status.GUN || game.status === Status.INSPECT_TOP3 || game.status === Status.INV || game.status === Status.INV_CLAIM || game.status === Status.VETO_REPLY || game.status === Status.SE){
+      if(status === Status.CHOOSE_CHAN || status === Status.PRES_DISCARD || status === Status.PRES_CLAIM || status === Status.GUN || status === Status.INSPECT_TOP3 || status === Status.INV || status === Status.INV_CLAIM || status === Status.VETO_REPLY || status === Status.SE){
         makingDecision = true
       }
     }
     if(game.currentChan === player.name){
-      if(game.status === Status.CHAN_PLAY || game.status === Status.CHAN_CLAIM || game.status === Status.VETO_DECLINED ){
+      if(status === Status.CHAN_PLAY || status === Status.CHAN_CLAIM || status === Status.VETO_DECLINED ){
         makingDecision = true
       }
     }
-    if(game.status === Status.VOTE && !player.vote && player.alive){
+    if(status === Status.VOTE && !player.vote && player.alive){
       makingDecision = true
     }
-    if(game.status === Status.LIB_SPY_GUESS && player.role === Role.HITLER){
+    if(status === Status.LIB_SPY_GUESS && player.role === Role.HITLER){
       makingDecision = true
     }
+
+    //content of role and name color
 
     let showDueToInv = false
     //your own role
@@ -114,11 +120,9 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
       showDueToInv = true
     }
 
-
     //animations
 
-
-    if(game.status === Status.STARTED){
+    if(status === Status.STARTED){
       if(player.name === name){
         roleContent = roleBackPng
         roleContentFlip = getRoleImg(player)[0]
@@ -130,20 +134,20 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
         roleAnimation = 'flipAndUnflip 6s forwards 4s'
       }
     }
-    else if(game.status === Status.VOTE){
+    else if(status === Status.VOTE){
       if(player.alive){
         overlayContent = voteBackPng
         animation = 'up 1s forwards'
       }
     }
-    else if(game.status === Status.SHOW_VOTE_RESULT){
+    else if(status === Status.SHOW_VOTE_RESULT){
       if(player.alive){
         overlayContent = voteBackPng
         overlayContentFlip = getVote(player)
         animation = 'flipAndDown 3s forwards'
       }
     }
-    else if(game.status === Status.SHOW_INV_CHOICE && player.name === currentPres.investigations.slice(-1)[0]){
+    else if(status === Status.SHOW_INV_CHOICE && player.name === currentPres.investigations.slice(-1)[0]){
       if(currentPres.name === name){
         nameColor = showDueToInv ? hiddenColor : nameColor
         overlayContent = getTeamImg(player)[0]
@@ -153,13 +157,13 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
       }
       animation = 'upAndDown 3s forwards'
     }
-    else if(game.status === Status.LIB_SPY_GUESS && player.role === Role.HITLER){
+    else if(status === Status.LIB_SPY_GUESS && player.role === Role.HITLER){
       nameColor = hitlerColor
       roleContent = roleBackPng
       roleContentFlip = hitlerPng
       roleAnimation = 'flip 2s forwards'
     }
-    else if(game.status === Status.SHOW_LIB_SPY_GUESS){
+    else if(status === Status.SHOW_LIB_SPY_GUESS){
       const spyGuessedPlayer = game.players.find(player => player.guessedToBeLibSpy)
       if(spyGuessedPlayer.name === player.name){
         roleContent = roleBackPng
@@ -192,7 +196,7 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
     const choosableKeyFrameStyles = choosableAnimation(playersDimensions.y < 110 ? 2 : 4)
 
     return (
-    <Grid key={idx} item xs={12/game.players.length} sx={{}}>
+    <Grid key={idx} item xs={12/n} sx={{}}>
       <Box sx={{opacity: player.socketId? 1 : .3, display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
         <Typography maxWidth='80%' sx={{fontSize: `calc(${playersDimensions.x}px / ${8*n})`, color: nameColor, whiteSpace: 'nowrap', fontFamily: 'inter', fontWeight: 400, overflow: 'hidden'}}>{idx+1}. {player.name}</Typography>
         <Card data-key={player.name} onClick={choosing && choosable ? handleChoosePlayer : ()=>{}} sx={{cursor: choosable ? 'pointer' : 'auto', boxShadow: choosable ? '0 0 0 3px orange' : 'none', animation: chooseAnimation, display: 'flex', flexDirection: 'column', position: 'relative', backgroundColor: 'rgb(46, 109, 28)'}}>
@@ -204,21 +208,21 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
           <style>{stillKeyFrameStyles}</style>
           <style>{choosableKeyFrameStyles}</style>
           {/* first rolebackimg is just a place holder */}
-            <img src={roleBackPng} draggable='false' style={{maxWidth: "100%", borderRadius: playersDimensions.y/32, visibility: 'hidden'}}/>
+            <img src={roleBackPng}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, visibility: 'hidden'}}/>
           <div style={{position: 'absolute', width: '100%', height: '100%', backgroundColor: 'transparent', perspective: 1000, bottom: 0, transformStyle: 'preserve-3d', animation: roleAnimation}}>
-            <img ref={el => imageRefs.current[idx] = el} src={roleContent} draggable='false' style={{maxWidth: "100%", borderRadius: playersDimensions.y/32, position: 'absolute', backfaceVisibility: 'hidden'}}/>
-            <img src={roleContentFlip} draggable='false' style={{maxWidth: "100%", borderRadius: playersDimensions.y/32, position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden'}}/>
+            <img ref={el => imageRefs.current[idx] = el} src={roleContent}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, position: 'absolute', backfaceVisibility: 'hidden'}}/>
+            <img src={roleContentFlip}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden'}}/>
           </div>
           <div style={{position: 'absolute', width: '100%', height: '100%', backgroundColor: 'transparent', perspective: 1000, bottom: -playersDimensions.y, transformStyle: 'preserve-3d', animation}}>
-            <img src={overlayContent} draggable='false' style={{maxWidth: "100%", borderRadius: playersDimensions.y/32, position: 'absolute', backfaceVisibility: 'hidden'}}/>
-            <img src={overlayContentFlip} draggable='false' style={{maxWidth: "100%", borderRadius: playersDimensions.y/32, position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden',  }}/>
+            <img src={overlayContent}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, position: 'absolute', backfaceVisibility: 'hidden'}}/>
+            <img src={overlayContentFlip}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden',  }}/>
           </div>
           {!gameOver &&
             <>
-          {game.currentPres === player.name && <img src={presPng} draggable='false' style={{maxWidth: "100%", position: 'absolute', bottom: 0}}/>}
-          {game.currentChan === player.name && <img src={chanPng} draggable='false' style={{maxWidth: "100%", position: 'absolute', bottom: 0}}/>}
-          {game.prevPres === player.name && <img src={presPng} draggable='false' style={{opacity: .3, maxWidth: "100%", position: 'absolute', top: 0}}/>}
-          {game.prevChan === player.name && <img src={chanPng} draggable='false' style={{opacity: .3, maxWidth: "100%", position: 'absolute', top: 0}}/>}
+          {game.currentPres === player.name && <img src={presPng} style={{maxWidth: "100%", position: 'absolute', bottom: 0}}/>}
+          {game.currentChan === player.name && <img src={chanPng} style={{maxWidth: "100%", position: 'absolute', bottom: 0}}/>}
+          {game.prevPres === player.name && <img src={presPng} style={{opacity: .3, maxWidth: "100%", position: 'absolute', top: 0}}/>}
+          {game.prevChan === player.name && <img src={chanPng} style={{opacity: .3, maxWidth: "100%", position: 'absolute', top: 0}}/>}
           {makingDecision &&
           <Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
             <CircularProgress thickness={2.5} style={{color: 'white', width: `calc(${playersDimensions.x}px / ${2.5*n} )`, height: `calc(${playersDimensions.x}px / ${2.5*n} )`}} />
@@ -254,6 +258,7 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
     return false
   }
 
+  // determine dimensions of player area
   useEffect(() => {
     function handlePlayersResize(){
       if(playersRef.current && imageRefs.current.every(img => img.complete)){
@@ -272,7 +277,7 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
   }, [])
 
   return (
-    //not factoring on the height of the name label so can't use the 1.36, minWidth: 400?
+    //not factoring in the height of the name label so can't use the 1.36, minWidth: 400?
     <Box ref={playersRef} sx={{width: {xs: `calc(20vh / 2.2 * ${n})`, sm: `calc((100vh - (56px + ${boardDimensions.y}px)) / 1.8 * ${n} )`}, minWidth: {sm: 600, md: 650}, maxWidth: `calc(140px * ${n})`}}>
         <Grid container spacing={{xs: .5, sm: 1}}>
           {renderPlayers}
