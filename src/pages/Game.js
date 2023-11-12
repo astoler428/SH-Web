@@ -24,9 +24,12 @@ export default function Game({name, game, setGame, isConnected}) {
   const [confirmFascOpen, setConfirmFascOpen] = useState(false)
   const [error, setError] = useState(null)
   const [boardDimensions, setBoardDimensions] = useState({x: 0, y: 0})
+  const [playersDimensions, setPlayersDimensions] = useState({x: 0, y: 0})
   const [opacity, setOpacity] = useState(0)
   const boardRef = useRef(null)
-  const imageRefs = useRef([])
+  const playersRef = useRef(null)
+  const boardImageRefs = useRef([])
+  const playerImageRefs = useRef([])
 
   //redundant join by just in case someone navigates directly or refreshes page
   useEffect(()=>{
@@ -146,7 +149,7 @@ export default function Game({name, game, setGame, isConnected}) {
   //need to check that all images are done loading first
   useEffect(() => {
     function handleBoardResize(){
-      if(boardRef.current && imageRefs.current.every(img => img.complete)){
+      if(boardRef.current && boardImageRefs.current.every(img => img.complete)){
         setBoardDimensions({x: boardRef.current.offsetWidth, y: boardRef.current.offsetHeight})
       }
       else{
@@ -165,6 +168,25 @@ export default function Game({name, game, setGame, isConnected}) {
     setTimeout(() => setOpacity(1), 300)
   }, [])
 
+
+  // determine dimensions of player area
+  useEffect(() => {
+    function handlePlayersResize(){
+      if(playersRef.current && playerImageRefs.current.every(img => img.complete)){
+        setPlayersDimensions({x: playersRef.current.offsetWidth, y: playersRef.current.offsetHeight})
+      }
+      else{
+        setTimeout(handlePlayersResize, 100)
+      }
+    }
+    handlePlayersResize()
+
+    window.addEventListener('resize', handlePlayersResize);
+    return () => {
+      window.removeEventListener('resize', handlePlayersResize)
+    }
+  }, [])
+
   return (
       <>
     {game && game.status !== Status.CREATED ?
@@ -180,11 +202,11 @@ export default function Game({name, game, setGame, isConnected}) {
       <Box sx={{marginTop: {xs:'30px', sm: '56px'}}}/>
       <RoleDialog thisPlayer={thisPlayer} game={game} roleOpen={roleOpen} setRoleOpen={setRoleOpen} setConfirmFascOpen={setConfirmFascOpen} />
       <Box sx={{display: 'flex', flexDirection: {xs: 'column', sm: 'row'}, maxHeight: {sm: `${boardDimensions.y}px`}}}>
-        <Board boardRef={boardRef} imageRefs={imageRefs} game={game} name={name} id={id} setError={setError} boardDimensions={boardDimensions}/>
-        <LogChat game={game} name={name} boardDimensions={boardDimensions}/>
+        <Board boardRef={boardRef} boardImageRefs={boardImageRefs} game={game} name={name} id={id} setError={setError} boardDimensions={boardDimensions} playersDimensions={playersDimensions}/>
+        <LogChat game={game} name={name} boardDimensions={boardDimensions} playersDimensions={playersDimensions}/>
       </Box>
       {/* <Box sx={{display: 'flex', alignItems: 'top', justifyContent: 'space-between'}}> */}
-        <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} boardDimensions={boardDimensions}/>
+        <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} playerImageRefs={playerImageRefs} playersRef={playersRef} playersDimensions={playersDimensions} boardDimensions={boardDimensions}/>
       {/* </Box> */}
       {/* Snackbar is used in mixed role to let know if you can't discard */}
       <Snackbar

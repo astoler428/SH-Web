@@ -4,7 +4,7 @@ import { Team, Status, LogType, Role, Policy, GameType, inGov } from '../consts'
 import { socket } from '../socket'
 import StatusMessage from './StatusMessage';
 
-export default function LogChat({game, name, boardDimensions}) {
+export default function LogChat({game, name, boardDimensions, playersDimensions}) {
 
   const [message, setMessage] = useState("")
   const scrollRef = useRef(undefined);
@@ -12,11 +12,17 @@ export default function LogChat({game, name, boardDimensions}) {
   window.addEventListener('keydown', handleKeyPress)
 
   const thisPlayer = game.players.find(player => player.name === name)
-  const disabled = !thisPlayer.alive || inGov(game, thisPlayer.name) || game.status === Status.LIB_SPY_GUESS
+  const disabled = !thisPlayer.alive || inGov(game,) || game.status === Status.LIB_SPY_GUESS
 
-  useEffect(() => {
-    scrollRef.current?.scrollIntoView({behavior: 'smooth'})
-  }, [game])
+  // useEffect(() => {
+  //   const scrollLabelRect = scrollRef.current.getBoundingClientRect()
+  //   const textFieldRect = messageInputRef.current.getBoundingClientRect()
+
+  //   if(textFieldRect.bottom - scrollLabelRect.bottom > -20){
+  //     scrollRef.current?.scrollIntoView({behavior: 'smooth'})
+  //   }
+  // }, [game])
+
 
   function sendMessage(e){
     e.preventDefault()
@@ -77,7 +83,7 @@ export default function LogChat({game, name, boardDimensions}) {
     if(!entry.type){
       return(
        <ListItem key={i} sx={{margin: '0', padding: '0', marginLeft: '5px'}}>
-        <Typography sx={{marginLeft: '0px', fontFamily: "inter", fontWeight: 800, color: 'black', fontSize: '1em'}}>{dateStr}{renderName(entry.name)}: {entry.message}</Typography>
+        <Typography sx={{marginLeft: '0px', fontFamily: "inter", fontWeight: 800, color: 'black', fontSize: '1em'}}>{dateStr}{renderName(entry.name)}<span style={{fontWeight: 500, fontSize: '1em'}}>:</span> {entry.message}</Typography>
       </ListItem>
       )
     }
@@ -222,12 +228,18 @@ export default function LogChat({game, name, boardDimensions}) {
       )
   })
 
+  //minHeight: {xs: '180px', sm: `${boardDimensions.y}px`}, maxHeight: {xs: '290px', sm: `${boardDimensions.y}px`},  flex 1
+  //paper minHeight: {xs: 'calc(175px - 30px)'}, maxHeight: {xs: `calc(80vh - ${boardDimensions.y}px - 30px - 30px)`, sm: `${boardDimensions.y}px`}, height: {xs: `calc(80vh - ${boardDimensions.y}px - 30px - 30px)`, sm: `${boardDimensions.y}px`}
 
+  console.log(window.innerHeight)
+  console.log(30 + boardDimensions.y + playersDimensions.y)
+  //flex 1 on Box at sm is so that it expands horizontally when side by side for flexDirection row
+  //problems arise with overflow of content in Paper when it has flex 1 in xs and it's flexDirection col
   return (
     <>
-    <Box sx={{position: 'relative', width: {xs: '100vw', sm: '50vw'}, flex: 1, minHeight: {xs: '180px', sm: `${boardDimensions.y}px`}, display: 'flex', flexDirection: 'column', margin: 0, padding: 0}}>
+    <Box sx={{position: 'relative', flex: {sm: 1}, width: {xs: '100vw', sm: '50vw'}, height: {xs: `calc(100vh - 30px - ${boardDimensions.y}px - ${playersDimensions.y}px)`, sm: `${boardDimensions.y}px`}, minHeight: {xs: '210px'}, display: 'flex', flexDirection: 'column', margin: 0, padding: 0}}>
       <StatusMessage game={game}/>
-      <Paper elevation={0} sx={{width:'100%', border: '1px solid black', fontSize: {xs: '12px', md: '16px'}, borderRadius: '0', overflow: 'auto', bgcolor: 'white', minHeight: {xs: 'calc(175px - 30px)'}, maxHeight: {xs: `calc(80vh - ${boardDimensions.y}px - 30px - 30px)`, sm: `${boardDimensions.y}px`}, height: {xs: `calc(80vh - ${boardDimensions.y}px - 30px - 30px)`, sm: `${boardDimensions.y}px`}, paddingBottom: '45px'}}>
+      <Paper elevation={0} sx={{width:'100%', border: '1px solid black', fontSize: {xs: '12px', md: '16px'}, flex: 1, borderRadius: '0', overflow: 'auto', bgcolor: 'white', paddingBottom: '45px'}}>
           {log}
           <ListItem sx={{height: '0', padding: '0', margin: '0'}} ref={scrollRef}></ListItem>
     <form sx={{height: 0,position: 'absolute', bottom: -1}}>

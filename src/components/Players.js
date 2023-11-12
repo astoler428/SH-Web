@@ -24,12 +24,9 @@ const fascColor = 'orangered'
 const libColor = 'deepskyblue'
 const hiddenColor = 'black'
 
-export default function Players({name, game, handleChoosePlayer, boardDimensions}) {
+export default function Players({name, game, handleChoosePlayer, playerImageRefs, playersRef, playersDimensions, boardDimensions}) {
   // game.status = Status.END_FASC
   // game.status = Status.STARTED
-  const [playersDimensions, setPlayersDimensions] = useState({x: 0, y: 0})
-  const imageRefs = useRef([])
-  const playersRef = useRef(null)
   const thisPlayer = game.players.find(player => player.name === name)
   const n = game.players.length
   const status = game.status
@@ -126,12 +123,12 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
       if(player.name === name){
         roleContent = roleBackPng
         roleContentFlip = getRoleImg(player)[0]
-        roleAnimation = 'flip 6s forwards 2s'
+        roleAnimation = 'flip 1s forwards 2s'
       }
       else if(player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)){
         roleContent = roleBackPng
         roleContentFlip = getRoleImg(player)[0]
-        roleAnimation = 'flipAndUnflip 6s forwards 4s'
+        roleAnimation = 'flipAndUnflip 5s forwards 4s'
       }
     }
     else if(status === Status.VOTE){
@@ -194,11 +191,10 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
     const flipAndUnflipKeyFrameStyles = flipAndUnflipAnimation()
     const stillKeyFrameStyles = stillAnimation()
     const choosableKeyFrameStyles = choosableAnimation(playersDimensions.y < 110 ? 2 : 4)
-
     return (
     <Grid key={idx} item xs={12/n} sx={{}}>
       <Box sx={{opacity: player.socketId? 1 : .3, display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
-        <Typography maxWidth='80%' sx={{fontSize: `calc(${playersDimensions.x}px / ${8*n})`, color: nameColor, whiteSpace: 'nowrap', fontFamily: 'inter', fontWeight: 400, overflow: 'hidden'}}>{idx+1}. {player.name}</Typography>
+        <Typography maxWidth='80%' sx={{fontSize: {xs: `calc(${playersDimensions.x}px / ${7*n})` , sm: `calc(${playersDimensions.x}px / ${8*n})`}, margin: `1px 0`, color: nameColor, whiteSpace: 'nowrap', fontFamily: 'inter', fontWeight: 400, overflow: 'hidden'}}>{idx+1}. {player.name}</Typography>
         <Card data-key={player.name} onClick={choosing && choosable ? handleChoosePlayer : ()=>{}} sx={{cursor: choosable ? 'pointer' : 'auto', boxShadow: choosable ? '0 0 0 3px orange' : 'none', animation: chooseAnimation, display: 'flex', flexDirection: 'column', position: 'relative', backgroundColor: 'rgb(46, 109, 28)'}}>
           <style>{flipAndDownkeyFrameStyles}</style>
           <style>{upKeyFrameStyles}</style>
@@ -210,7 +206,7 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
           {/* first rolebackimg is just a place holder */}
             <img src={roleBackPng}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, visibility: 'hidden'}}/>
           <div style={{position: 'absolute', width: '100%', height: '100%', backgroundColor: 'transparent', perspective: 1000, bottom: 0, transformStyle: 'preserve-3d', animation: roleAnimation}}>
-            <img ref={el => imageRefs.current[idx] = el} src={roleContent}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, position: 'absolute', backfaceVisibility: 'hidden'}}/>
+            <img ref={el => playerImageRefs.current[idx] = el} src={roleContent}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, position: 'absolute', backfaceVisibility: 'hidden'}}/>
             <img src={roleContentFlip}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden'}}/>
           </div>
           <div style={{position: 'absolute', width: '100%', height: '100%', backgroundColor: 'transparent', perspective: 1000, bottom: -playersDimensions.y, transformStyle: 'preserve-3d', animation}}>
@@ -257,32 +253,11 @@ export default function Players({name, game, handleChoosePlayer, boardDimensions
     }
     return false
   }
-
-  // determine dimensions of player area
-  useEffect(() => {
-    function handlePlayersResize(){
-      if(playersRef.current && imageRefs.current.every(img => img.complete)){
-        setPlayersDimensions({x: playersRef.current.offsetWidth, y: playersRef.current.offsetHeight})
-      }
-      else{
-        setTimeout(handlePlayersResize, 100)
-      }
-    }
-    handlePlayersResize()
-
-    window.addEventListener('resize', handlePlayersResize);
-    return () => {
-      window.removeEventListener('resize', handlePlayersResize)
-    }
-  }, [])
-
   return (
-    //not factoring in the height of the name label so can't use the 1.36, minWidth: 400?
-    <Box ref={playersRef} sx={{width: {xs: `calc(20vh / 2.2 * ${n})`, sm: `calc((100vh - (56px + ${boardDimensions.y}px)) / 1.8 * ${n} )`}, minWidth: {sm: 600, md: 650}, maxWidth: `calc(140px * ${n})`}}>
+    <Box ref={playersRef} sx={{width: {xs: '100vw', sm: `calc((100vh - (56px + ${boardDimensions.y}px)) / 1.8 * ${n} )`}, minWidth: {sm: `calc(60px * ${n})`, md: `calc(90px * ${n})`}, maxWidth: {xs: `max(100vw, calc(60px * ${n}))`, sm: `min(100vw, calc(140px * ${n}))`}}}>
         <Grid container spacing={{xs: .5, sm: 1}}>
           {renderPlayers}
         </Grid>
     </Box>
-
   )
 }

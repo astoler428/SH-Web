@@ -157,11 +157,14 @@ export const choosableAnimation = (width) =>`
   0% {
     box-shadow: 0 0 0 ${width}px orange;
   }
-  60% {
+  40% {
     box-shadow: 0 0 0 ${width}px orange;
   }
+  80% {
+    box-shadow: 0 0 0 ${width}px rgb(46, 109, 28);
+  }
   100% {
-    box-shadow: none;
+    box-shadow: 0 0 0 ${width}px orange;
   }
 
 }
@@ -221,14 +224,10 @@ export const flipAnimation = () => `
       bottom: 0px;
       transform: rotateY(0deg);
     }
-    20% {
+    100% {
       bottom: 0px;
       transform: rotateY(180deg);
     }
-    100% {
-        bottom: 0px;
-        transform: rotateY(180deg);
-      }
   }
 `
 export const flipAndUnflipAnimation = () => `
@@ -241,7 +240,7 @@ export const flipAndUnflipAnimation = () => `
       bottom: 0px;
       transform: rotateY(180deg);
     }
-    85% {
+    80% {
         bottom: 0px;
         transform: rotateY(180deg);
       }

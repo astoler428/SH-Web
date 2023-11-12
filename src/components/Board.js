@@ -13,7 +13,7 @@ import { enactPolicyAnimation, Policy, Status } from '../consts'
 
 
 //set policy border radius relative to the policyWidth here and everywhere
-export default function Board({game, name, id, setError, showInvCard, boardRef, imageRefs, boardDimensions}){
+export default function Board({game, name, id, setError, showInvCard, boardRef, boardImageRefs, boardDimensions, playersDimensions}){
   const fascBoard = game.players.length < 7 ? fasc5PlayerBoard : game.players.length < 9 ? fasc7PlayerBoard : fasc9PlayerBoard
   const [blur, setBlur] = useState(false)
   const [animate, setAnimate] = useState(null)
@@ -33,30 +33,41 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
   let policyAnimation = '', enactPolicyImg, enactPolicyKeyFrames, policyDelay = 0
 
   useEffect(() => {
+    let timeout = 5800
+    if(boardState.tracker === 2 && game.tracker === 0 && !game.prevChan){ //means top deck. If prevChan then it was just a gov on hammer
+      timeout = 6800
+      if(boardState.lib < game.LibPoliciesEnacted){
+        setAnimate(Policy.LIB)
+      }
+      else{
+        setAnimate(Policy.FASC)
+      }
+      setBoardState(prevBoardState => ({...prevBoardState, tracker: 3}))
+      setTimeout(() => {
+        setAnimate(null)
+        setBoardState({lib: game.LibPoliciesEnacted, fasc: game.FascPoliciesEnacted, tracker: game.tracker})
+      }, timeout)
+      return
+    }
     if(boardState.lib < game.LibPoliciesEnacted){
       setAnimate(Policy.LIB)
       setTimeout(() => {
         setAnimate(null)
         setBoardState(prevBoardState => ({...prevBoardState, lib: game.LibPoliciesEnacted}))
-      }, 5800)
+      }, timeout)
     }
-    if(boardState.fasc < game.FascPoliciesEnacted){
+    else if(boardState.fasc < game.FascPoliciesEnacted){
       setAnimate(Policy.FASC)
       setTimeout(() => {
         setAnimate(null)
         setBoardState(prevBoardState => ({...prevBoardState, fasc: game.FascPoliciesEnacted}))
-      }, 6000)
+      }, timeout)
     }
-    if(boardState.tracker === 2 && game.tracker === 0 && !game.prevChan){
-      setBoardState(prevBoardState => ({...prevBoardState, tracker: 3}))
-      policyDelay = 1
-      setTimeout(() => {
-        setBoardState(prevBoardState => ({...prevBoardState, tracker: game.tracker}))
-      }, 6800)
-    }
-    else if(boardState.tracker !== 3 && boardState.tracker !== game.tracker){
+
+    if(boardState.tracker !== 3 && boardState.tracker !== game.tracker){ //advance tracker - if tracker is 3, that means I put it there and in middle of top deck
       setBoardState(prevBoardState => ({...prevBoardState, tracker: game.tracker}))
     }
+
   }, [game])
 
     if(boardState.tracker === 3){
@@ -74,7 +85,6 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
       policyAnimation = `enact 6s ${policyDelay}s`
     }
 
-
   const fascCount = boardState.fasc
   const libCount = boardState.lib
 
@@ -90,10 +100,10 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
   return (
     <>
       <Box sx={{width: {xs: '100vw', sm: '50vw'}, maxWidth: {sm: 700}, display: 'flex', flexDirection: 'column', position: 'relative'}}>
-        <Action game={game} name={name} id={id} setError={setError} blur={blur} setBlur={setBlur} showInvCard={showInvCard} boardDimensions={boardDimensions}/>
-        <Box ref={boardRef} sx={{filter: blur ? 'blur(5px)' : 'blur(0)', zIndex: -1, display: 'flex', flexDirection: 'column'}}>
-          <img ref={el => imageRefs.current[0] = el} key={1} src={fascBoard} style={{ maxWidth: "100%"}}/>
-          <img ref={el => imageRefs.current[1] = el} key={2} src={libBoard} style={{ maxWidth: "100%" }}/>
+        <Action game={game} name={name} id={id} setError={setError} blur={blur} setBlur={setBlur} showInvCard={showInvCard} boardDimensions={boardDimensions} playersDimensions={playersDimensions}/>
+        <Box ref={boardRef} sx={{filter: blur ? 'contrast(40%) blur(2px)' : 'blur(0)', zIndex: -1, display: 'flex', flexDirection: 'column', transition: 'filter .8s'}}>
+          <img ref={el => boardImageRefs.current[0] = el} key={1} src={fascBoard} style={{ maxWidth: "100%"}}/>
+          <img ref={el => boardImageRefs.current[1] = el} key={2} src={libBoard} style={{ maxWidth: "100%" }}/>
           <Box sx={{position: 'absolute', bottom: fascBottom, left: fascLeft, display: 'flex', gap: `${policyGap}px`}}>
             {fascPolicies}
           </Box>
@@ -107,12 +117,11 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
             <img src={policyBackPng} style={{width: '100%', position: 'absolute', backfaceVisibility: 'hidden', borderRadius: policyBorderRadius*1.4}}/>
             <img src={enactPolicyImg} style={{width: '100%', position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden', borderRadius: policyBorderRadius*1.4}}/>
           </div>
-            <div style={{backgroundColor: 'blue', width: trackerWidth, height: trackerWidth, borderRadius: '100%', position: 'absolute', bottom: trackerBottom, left: `calc(${trackerLeft} + ${boardState.tracker} * ${trackerGap})`, transition: game.status === Status.STARTED ? 'none' : '1s ease-in-out' }}></div>
+            <div style={{backgroundColor: 'blue', width: trackerWidth, height: trackerWidth, borderRadius: '100%', position: 'absolute', bottom: trackerBottom, left: `calc(${trackerLeft} + ${boardState.tracker} * ${trackerGap})`, transition: '1s left ease-in-out' }}></div>
             <PolicyPiles game={game} boardDimensions={boardDimensions}/>
         </Box>
       </Box>
     </>
   )
   }
-
 
