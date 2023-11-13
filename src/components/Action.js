@@ -4,7 +4,7 @@ import libPolicyPng from '../img/LibPolicy.png'
 import fascPolicyPng from '../img/FascPolicy.png'
 import jaPng from '../img/Ja.png'
 import neinPng from '../img/Nein.png'
-import { Color, PRES3, CHAN2, Status, Vote, Team, Role, GameType } from '../consts'
+import { Color, draws3, PRES3, CHAN2, Status, Vote, Team, Role, GameType, RRR, RRB, RBB, BBB } from '../consts'
 import {post} from '../api/api'
 import DefaulDiscardDialog from './DefaultDiscardDialog'
 
@@ -315,6 +315,15 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
     }
   }
 
+  //does not show default discard if deducable what was dropped
+  useEffect(() => {
+    if(status === Status.CHAN_CLAIM){
+      const presDraw = draws3[game.presCards.reduce((acc, policy) => acc + (policy.color === Color.BLUE ? 1 : 0), 0)]
+      if(presDraw === BBB || presDraw === RRR || (presDraw === RRB && game.chanPlay.color === Color.BLUE) || (presDraw === RBB && game.chanPlay.color === Color.RED) ){
+        setShowDiscardDialog(false)
+      }
+    }
+  }, [game])
 
   function validDiscardDueToMixedRole(cardColor){
     if(game.settings.type !== GameType.MIXED_ROLES){

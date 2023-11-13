@@ -2,6 +2,7 @@ import React, {useState, useRef, useEffect} from 'react'
 import {Status, Role, Team, GameType, Vote, choosableAnimation, upAndDownAnimation, flipAndDownAnimation, upAnimation, flipAnimation, flipAndUnflipAnimation, stillAnimation} from '../consts'
 import {Card, CircularProgress, Grid, Typography, Box} from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close';
+import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 
 import hitlerPng from '../img/Hitler.png'
 import liberalPng from '../img/Liberal.png'
@@ -27,6 +28,7 @@ const hiddenColor = 'black'
 export default function Players({name, game, handleChoosePlayer, playerImageRefs, playersRef, playersDimensions, boardDimensions}) {
   // game.status = Status.END_FASC
   // game.status = Status.STARTED
+  const [firstRender, setFirstRender] = useState(true)
   const thisPlayer = game.players.find(player => player.name === name)
   const n = game.players.length
   const status = game.status
@@ -45,6 +47,8 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
   const getTeamImg = (player) => player.team === Team.FASC ? [fascPartyPng, fascColor] : [libPartyPng, libColor]
   const getVote = (player) => player.vote === Vote.JA ? jaPng : player.vote === Vote.NEIN ? neinPng : errorPng
 
+
+
   const renderPlayers = game?.players?.map((player, idx) => {
     let choosable = false
     let makingDecision = false
@@ -56,6 +60,9 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
     let animation = ''
     let roleAnimation = ''
     let chooseAnimation = ''
+    // let nameAnimation = ''
+    let nameColorTransition = ''
+    // let nameColorKeyFrames
 
     const thisPlayerInvestigatedPlayer = thisPlayer.investigations.some(invName => invName === player.name)
 
@@ -119,16 +126,19 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
 
     //animations
 
-    if(status === Status.STARTED){
+
+    if(status === Status.STARTED && game.settings.type !== GameType.BLIND){
       if(player.name === name){
         roleContent = roleBackPng
         roleContentFlip = getRoleImg(player)[0]
         roleAnimation = 'flip 1s forwards 2s'
+        nameColorTransition = 'color .5s 2.5s'
       }
       else if(player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)){
         roleContent = roleBackPng
         roleContentFlip = getRoleImg(player)[0]
         roleAnimation = 'flipAndUnflip 5s forwards 4s'
+        nameColorTransition = 'color .5s 4.5s'
       }
     }
     else if(status === Status.VOTE){
@@ -159,6 +169,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
       roleContent = roleBackPng
       roleContentFlip = hitlerPng
       roleAnimation = 'flip 2s forwards'
+      nameColorTransition = 'color 1s 1s'
     }
     else if(status === Status.SHOW_LIB_SPY_GUESS){
       const spyGuessedPlayer = game.players.find(player => player.guessedToBeLibSpy)
@@ -166,7 +177,8 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
         roleContent = roleBackPng
         roleContentFlip = getRoleImg(player)[0]
         roleAnimation = 'flip 2s forwards'
-        }
+        nameColorTransition = 'color 1s 1s'
+      }
     }
     else if(gameOver){
       [,nameColor] = getRoleImg(player)
@@ -175,13 +187,20 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
       if(player.name !== name || (game.settings.type === GameType.BLIND && !player.confirmedFasc)){
         roleContent = roleBackPng
         roleContentFlip = getRoleImg(player)[0]
-        roleAnimation = 'flip 6s forwards 2.5s'
+        roleAnimation = 'flip 3s forwards 2.5s'
+        nameColorTransition = 'color 1.5s 4s'
       }
       else{
-        roleContent = getRoleImg(player)[0]
-        roleContentFlip = getRoleImg(player)[0]
-        roleAnimation = 'still .1s forwards'
+        //maybe don't need this??
+        // roleContent = getRoleImg(player)[0]
+        // roleContentFlip = getRoleImg(player)[0]
+        // roleAnimation = 'still .1s forwards'
+        // nameColorTransition = 'color .1s .1s'
       }
+    }
+
+    if(firstRender){
+      nameColor = hiddenColor
     }
 
     const flipAndDownkeyFrameStyles = flipAndDownAnimation(playersDimensions.y)
@@ -194,7 +213,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
     return (
     <Grid key={idx} item xs={12/n} sx={{}}>
       <Box sx={{opacity: player.socketId? 1 : .3, display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
-        <Typography maxWidth='80%' sx={{fontSize: {xs: `calc(${playersDimensions.x}px / ${7*n})` , sm: `calc(${playersDimensions.x}px / ${8*n})`}, margin: `1px 0`, color: nameColor, whiteSpace: 'nowrap', fontFamily: 'inter', fontWeight: 400, overflow: 'hidden'}}>{idx+1}. {player.name}</Typography>
+        <Typography maxWidth='80%' sx={{fontSize: {xs: `calc(${playersDimensions.x}px / ${7*n})` , sm: `calc(${playersDimensions.x}px / ${8*n})`}, margin: `1px 0`, color: nameColor, whiteSpace: 'nowrap', fontFamily: 'inter', fontWeight: 400, overflow: 'hidden', transition: nameColorTransition}}>{idx+1}. {player.name}</Typography>
         <Card data-key={player.name} onClick={choosing && choosable ? handleChoosePlayer : ()=>{}} sx={{cursor: choosable ? 'pointer' : 'auto', boxShadow: choosable ? '0 0 0 3px orange' : 'none', animation: chooseAnimation, display: 'flex', flexDirection: 'column', position: 'relative', backgroundColor: 'rgb(46, 109, 28)'}}>
           <style>{flipAndDownkeyFrameStyles}</style>
           <style>{upKeyFrameStyles}</style>
@@ -205,25 +224,26 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
           <style>{choosableKeyFrameStyles}</style>
           {/* first rolebackimg is just a place holder */}
             <img src={roleBackPng}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, visibility: 'hidden'}}/>
-          <div style={{position: 'absolute', width: '100%', height: '100%', backgroundColor: 'transparent', perspective: 1000, bottom: 0, transformStyle: 'preserve-3d', animation: roleAnimation}}>
+          <div style={{position: 'absolute', zIndex: 10, width: '100%', height: '100%', backgroundColor: 'transparent', perspective: 1000, bottom: 0, transformStyle: 'preserve-3d', animation: roleAnimation}}>
             <img ref={el => playerImageRefs.current[idx] = el} src={roleContent}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, position: 'absolute', backfaceVisibility: 'hidden'}}/>
             <img src={roleContentFlip}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden'}}/>
           </div>
-          <div style={{position: 'absolute', width: '100%', height: '100%', backgroundColor: 'transparent', perspective: 1000, bottom: -playersDimensions.y, transformStyle: 'preserve-3d', animation}}>
+          <div style={{position: 'absolute', zIndex: 50, width: '100%', height: '100%', backgroundColor: 'transparent', perspective: 1000, bottom: -playersDimensions.y, transformStyle: 'preserve-3d', animation}}>
             <img src={overlayContent}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, position: 'absolute', backfaceVisibility: 'hidden'}}/>
             <img src={overlayContentFlip}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden',  }}/>
           </div>
           {!gameOver &&
             <>
-          {game.currentPres === player.name && <img src={presPng} style={{maxWidth: "100%", position: 'absolute', bottom: 0}}/>}
-          {game.currentChan === player.name && <img src={chanPng} style={{maxWidth: "100%", position: 'absolute', bottom: 0}}/>}
-          {game.prevPres === player.name && <img src={presPng} style={{opacity: .3, maxWidth: "100%", position: 'absolute', top: 0}}/>}
-          {game.prevChan === player.name && <img src={chanPng} style={{opacity: .3, maxWidth: "100%", position: 'absolute', top: 0}}/>}
+          {game.currentPres === player.name && <img src={presPng} style={{maxWidth: "100%", position: 'absolute', zIndex: 15, bottom: 0}}/>}
+          {game.currentChan === player.name && <img src={chanPng} style={{maxWidth: "100%", position: 'absolute', zIndex: 15, bottom: 0}}/>}
+          {game.prevPres === player.name && <img src={presPng} style={{opacity: .3, maxWidth: "100%", position: 'absolute', zIndex: 15, top: 0}}/>}
+          {game.prevChan === player.name && <img src={chanPng} style={{opacity: .3, maxWidth: "100%", position: 'absolute', zIndex: 15, top: 0}}/>}
           {makingDecision &&
-          <Box sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+          <Box sx={{ position: 'absolute', zIndex: 100, left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
             <CircularProgress thickness={2.5} style={{color: 'white', width: `calc(${playersDimensions.x}px / ${2.5*n} )`, height: `calc(${playersDimensions.x}px / ${2.5*n} )`}} />
           </Box>}
-          {!player.alive && <CloseIcon sx={{width: '100%', height: '100%', position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', color: 'red' }}/>}
+          {!player.alive && <CloseIcon sx={{width: '100%', height: '100%', position: 'absolute', zIndex: 100, left: '50%', top: '50%', transform: 'translate(-50%, -50%)', color: 'red' }}/>}
+          {player.name === name && !showOwnRole(player) && <QuestionMarkIcon sx={{width: '100%', height: '100%', position: 'absolute', zIndex: 20, left: '50%', top: '50%', transform: 'translate(-50%, -50%)', color: 'black' }}/>}
             </>
           }
         </Card>
@@ -231,6 +251,18 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
     </Grid> )
   })
 
+  /**
+   * zIndex order:
+   * roleContent: 10
+   * prev and current pres and chan: 15
+   * Dead: 20
+   * overlayContent: 50
+   * CircularProgress: 100
+   */
+
+  useEffect(() => {
+    setFirstRender(false)
+  }, [])
 
   function showOwnRole(player){
     return game.settings.type !== GameType.BLIND || player.confirmedFasc

@@ -166,9 +166,9 @@ export const choosableAnimation = (width) =>`
   100% {
     box-shadow: 0 0 0 ${width}px orange;
   }
-
 }
 `
+
 export const upAnimation = (playerHeight) =>`
 @keyframes up {
   0% {
@@ -302,8 +302,6 @@ export const enactPolicyAnimation = (policyWidth, policyBorderRadius, left, bott
       border-radius: ${policyBorderRadius}px;
       transform: rotateY(180deg);
     }
-
-
   }
   `;
 }

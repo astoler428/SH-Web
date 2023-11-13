@@ -14,14 +14,14 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
   const thisPlayer = game.players.find(player => player.name === name)
   const disabled = !thisPlayer.alive || inGov(game,) || game.status === Status.LIB_SPY_GUESS
 
-  // useEffect(() => {
-  //   const scrollLabelRect = scrollRef.current.getBoundingClientRect()
-  //   const textFieldRect = messageInputRef.current.getBoundingClientRect()
+  useEffect(() => {
+    const scrollLabelRect = scrollRef.current.getBoundingClientRect()
+    const textFieldRect = messageInputRef.current.getBoundingClientRect()
 
-  //   if(textFieldRect.bottom - scrollLabelRect.bottom > -20){
-  //     scrollRef.current?.scrollIntoView({behavior: 'smooth'})
-  //   }
-  // }, [game])
+    if(textFieldRect.bottom - scrollLabelRect.bottom > -20){
+      scrollRef.current?.scrollIntoView({behavior: 'smooth'})
+    }
+  }, [game])
 
 
   function sendMessage(e){
@@ -231,8 +231,6 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
   //minHeight: {xs: '180px', sm: `${boardDimensions.y}px`}, maxHeight: {xs: '290px', sm: `${boardDimensions.y}px`},  flex 1
   //paper minHeight: {xs: 'calc(175px - 30px)'}, maxHeight: {xs: `calc(80vh - ${boardDimensions.y}px - 30px - 30px)`, sm: `${boardDimensions.y}px`}, height: {xs: `calc(80vh - ${boardDimensions.y}px - 30px - 30px)`, sm: `${boardDimensions.y}px`}
 
-  console.log(window.innerHeight)
-  console.log(30 + boardDimensions.y + playersDimensions.y)
   //flex 1 on Box at sm is so that it expands horizontally when side by side for flexDirection row
   //problems arise with overflow of content in Paper when it has flex 1 in xs and it's flexDirection col
   return (
