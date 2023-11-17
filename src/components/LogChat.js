@@ -12,8 +12,8 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
   window.addEventListener('keydown', handleKeyPress)
 
   const thisPlayer = game.players.find(player => player.name === name)
-  const disabled = !thisPlayer.alive || inGov(game,) || game.status === Status.LIB_SPY_GUESS
-
+  const disabled = !thisPlayer.alive || inGov(game, name) || game.status === Status.LIB_SPY_GUESS
+  console.log(disabled)
   useEffect(() => {
     const scrollLabelRect = scrollRef.current.getBoundingClientRect()
     const textFieldRect = messageInputRef.current.getBoundingClientRect()
