@@ -127,16 +127,8 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
     </Box>
     )
     setCenterContent(false)
-    if(status !== Status.CHAN_CLAIM || !isCurrentChan){  //delay needed to reset the left position so it can animate
-      setTimeout(() => {
-        setCenterContent(true)
-        if(blur !== _blur){
-          setBlur(_blur) //put a timeout here?
-        }
-      }, status === Status.VOTE ? 300 : 100)
-    }
 
-    if(status === Status.CHAN_CLAIM && isCurrentChan){ //delay showing during chan claim so they can see the policy enact
+    if((status === Status.CHAN_CLAIM && isCurrentChan) || (status === Status.INV_CLAIM && game.currentPres === name)){ //delay showing during chan claim so they can see the policy enact
       setCenterContent(false)
       setBlur(false)
       setTimeout(() => {
@@ -144,6 +136,25 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
         setBlur(true)
       }, 3000)
     }
+    else if(status === Status.LIB_SPY_GUESS && thisPlayer.role === Role.HITLER){
+      setCenterContent(false)
+      setBlur(false)
+      setTimeout(() => {
+        setCenterContent(true)
+      }, 7000) //4 seconds for policy to go down, 3 seconds for animation
+    }
+    else{
+          //can we just make this the else for below
+    // if(status !== Status.CHAN_CLAIM && status !== Status.INV_CLAIM && status !== Status.LIB_SPY_GUESS){  //delay needed to reset the left position so it can animate
+      setTimeout(() => {
+        setCenterContent(true)
+        if(blur !== _blur){
+          setBlur(_blur)
+        }
+      }, status === Status.VOTE ? 400 : 100) //gives time for vote cards to slide up
+    // }
+    }
+
   }, [status, showTop3PoliciesNotClaim])
 
   useEffect(() => {

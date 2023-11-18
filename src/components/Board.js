@@ -68,7 +68,7 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
       setBoardState(prevBoardState => ({...prevBoardState, tracker: game.tracker}))
     }
 
-  }, [game])
+  }, [game.status])
 
     if(boardState.tracker === 3){
       policyDelay = 1

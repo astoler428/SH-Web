@@ -27,7 +27,7 @@ export const Status = {
   VETO_DECLINED: 'VETO_DECLINED',
   LIB_SPY_GUESS: 'LIB_SPY_GUESS',
   SHOW_VOTE_RESULT: 'SHOW_VOTE_RESULT',
-  SHOW_INV_CHOICE: 'SHOW_INV_CHOICE',
+  SHOW_HITLER_FOR_LIB_SPY_GUESS: 'SHOW_HITLER_FOR_LIB_SPY_GUESS',
   SHOW_LIB_SPY_GUESS: 'SHOW_LIB_SPY_GUESS',
 }
 
@@ -66,7 +66,8 @@ export const LogType = {
   INTRO_LIB_SPY: 'INTRO_LIB_SPY',
   INTRO_MIXED: 'INTRO_MIXED',
   INTRO_HITLER_KNOWS_FASC: 'INTRO_HITLER_KNOWS_FASC',
-  INTRO_RED_DOWN: 'INTRO_RED_DOWN'
+  INTRO_RED_DOWN: 'INTRO_RED_DOWN',
+  HITLER_TO_GUESS_LIB_SPY: 'HITLER_TO_GUESS_LIB_SPY'
 }
 
 export const GameType = {
@@ -227,17 +228,17 @@ export const flipAnimation = () => `
     }
   }
 `
-export const flipAndUnflipAnimation = () => `
+export const flipAndUnflipAnimation = (percentage) => `
   @keyframes flipAndUnflip {
     0% {
       bottom: 0px;
       transform: rotateY(0deg);
     }
-    20% {
+    ${percentage}% {
       bottom: 0px;
       transform: rotateY(180deg);
     }
-    80% {
+    ${100-percentage}% {
         bottom: 0px;
         transform: rotateY(180deg);
       }

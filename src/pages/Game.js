@@ -123,11 +123,12 @@ export default function Game({name, game, setGame, isConnected}) {
     await post(`/game/confirmFasc/${id}`, {name: thisPlayer.name})
   }
 
-  useEffect(() => {
-    if(game?.status === Status.END_FASC || game?.status === Status.END_LIB){
-      setRoleOpen(false)
-    }
-  }, [game])
+  //I'm not sure what the purpose of this is. Just closes the role area (not permanently) once the game ends
+  // useEffect(() => {
+  //   if(game?.status === Status.END_FASC || game?.status === Status.END_LIB){
+  //     setRoleOpen(false)
+  //   }
+  // }, [game])
 
 
   const action = (
@@ -203,11 +204,15 @@ export default function Game({name, game, setGame, isConnected}) {
       <RoleDialog thisPlayer={thisPlayer} game={game} roleOpen={roleOpen} setRoleOpen={setRoleOpen} setConfirmFascOpen={setConfirmFascOpen} />
       <Box sx={{display: 'flex', flexDirection: {xs: 'column', sm: 'row'}, maxHeight: {sm: `${boardDimensions.y}px`}}}>
         <Board boardRef={boardRef} boardImageRefs={boardImageRefs} game={game} name={name} id={id} setError={setError} boardDimensions={boardDimensions} playersDimensions={playersDimensions}/>
-        <LogChat game={game} name={name} boardDimensions={boardDimensions} playersDimensions={playersDimensions}/>
+        {/* hacky, but logChat gets hidden on xs and rendered a few lines down to be below the players */}
+        <Box sx={{display: {xs:'none', sm: 'flex', flex: 1}}}>
+          <LogChat game={game} name={name} boardDimensions={boardDimensions} playersDimensions={playersDimensions}/>
+        </Box>
       </Box>
-      {/* <Box sx={{display: 'flex', alignItems: 'top', justifyContent: 'space-between'}}> */}
-        <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} playerImageRefs={playerImageRefs} playersRef={playersRef} playersDimensions={playersDimensions} boardDimensions={boardDimensions}/>
-      {/* </Box> */}
+      <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} playerImageRefs={playerImageRefs} playersRef={playersRef} playersDimensions={playersDimensions} boardDimensions={boardDimensions}/>
+      <Box sx={{display: {xs:'flex', sm: 'none'}, marginTop: '15px'}}>
+          <LogChat game={game} name={name} boardDimensions={boardDimensions} playersDimensions={playersDimensions}/>
+        </Box>
       {/* Snackbar is used in mixed role to let know if you can't discard */}
       <Snackbar
         open={error !== null}

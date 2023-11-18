@@ -13,7 +13,7 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
 
   const thisPlayer = game.players.find(player => player.name === name)
   const disabled = !thisPlayer.alive || inGov(game, name) || game.status === Status.LIB_SPY_GUESS
-  console.log(disabled)
+
   useEffect(() => {
     const scrollLabelRect = scrollRef.current.getBoundingClientRect()
     const textFieldRect = messageInputRef.current.getBoundingClientRect()
@@ -186,6 +186,10 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
       case LogType.TOP_DECK:
         logEntry = <span>Three failed elections. Top decking.</span>
         break
+
+      case LogType.HITLER_TO_GUESS_LIB_SPY:
+        logEntry = <span>The {liberalsStr} enact 5 {liberalStr} policies and the {liberalSpyStr} played a {renderPolicies('R')} policy.</span>
+        break
       case LogType.LIB_SPY_GUESS:
         const spyName = renderName(entry.payload.spyName)
         logEntry = <span>{hitlerStr} guesses {spyName} to be the liberal spy.</span>
@@ -233,9 +237,10 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
 
   //flex 1 on Box at sm is so that it expands horizontally when side by side for flexDirection row
   //problems arise with overflow of content in Paper when it has flex 1 in xs and it's flexDirection col
+  //height in xs is subtracting 30px for appbar, and 15px for marginTop
   return (
     <>
-    <Box sx={{position: 'relative', flex: {sm: 1}, width: {xs: '100vw', sm: '50vw'}, height: {xs: `calc(100vh - 30px - ${boardDimensions.y}px - ${playersDimensions.y}px)`, sm: `${boardDimensions.y}px`}, minHeight: {xs: '210px'}, display: 'flex', flexDirection: 'column', margin: 0, padding: 0}}>
+    <Box sx={{position: 'relative', display: 'flex', justifyContent: 'center', flex: {sm: 1}, width: {xs: '100vw', sm: '50vw'}, height: {xs: `calc(100vh - 30px - ${boardDimensions.y}px - ${playersDimensions.y}px - 15px)`, sm: `${boardDimensions.y}px`}, minHeight: {xs: '210px'}, display: 'flex', flexDirection: 'column', margin: 0, padding: 0}}>
       <StatusMessage game={game}/>
       <Paper elevation={0} sx={{width:'100%', border: '1px solid black', fontSize: {xs: '12px', md: '16px'}, flex: 1, borderRadius: '0', overflow: 'auto', bgcolor: 'white', paddingBottom: '45px'}}>
           {log}
