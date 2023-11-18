@@ -76,16 +76,15 @@ export default function Lobby({name, game, setGame, isConnected}) {
     }
   }
 
-  const players = game?.players?.map(player => <li key={player.name}>
-     <Box
-      display="flex"
-      justifyContent="flex-start"
-      alignItems="center"
-      sx={{fontSize: '20px', marginBottom: {sm: '4px'}, whiteSpace: 'nowrap', overflow: 'hidden', fontWeight: player.name === name ? 'bold' : 'normal'}}
+  const players = game?.players?.map((player, idx) =>
+     <Typography
+     key={player.name}
+     variant='h6'
+      sx={{marginBottom: {sm: '4px'}, whiteSpace: 'nowrap', overflow: 'hidden', fontWeight: player.name === name ? 'bold' : 'normal'}}
     >
-      {player.name}
-    </Box>
-  </li>)
+    {idx+1}. {player.name}
+    </Typography>
+  )
 
   const startGameButtonText = game?.players?.length < 5 ?
     `Waiting for more players` :
@@ -102,39 +101,40 @@ export default function Lobby({name, game, setGame, isConnected}) {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Box sx={{
+      {/* <Box sx={{
         marginTop: {xs: '30px', sm: '10vh', md: '10vh', lg: '10vh'},
         display: 'flex',
         justifyContent: 'center',
 
         minHeight:"100vh",
-      }}>
+      }}> */}
         <Box
           sx={{
+            marginTop: {xs: '30px', sm: '10vh'},
             display:"flex",
             flexDirection: 'column',
-            alignItems: 'center',
-            // alignItems: flexDirection === 'column' ? 'center' : 'flex-start',
-            width:'80%',
-            gap:{sx: 4, sm: 4, md: 3, lg: 4}
+            width:'100%',
+            maxWidth: '320px',
+            gap:{sx: 4, sm: 4, md: 3, lg: 4},
+            border: '2px solid red'
           }}
         >
       <GameSettingsComponent game={game} name={name} handleSettingsChange={handleSettingsChange}/>
-      <Box
+      {/* <Box
         sx={{
           display: 'flex',
           flexDirection: 'column',
           maxWidth: 320,
           width: '100%',
-          gap: 1}}>
+          gap: 1}}> */}
         <Typography variant='h5' sx={{display: 'block', fontFamily: 'inter'}}>Players: </Typography>
-        <ol style={{margin: '0', fontFamily: 'inter'}}>
+        {/* <ol style={{margin: '0', fontFamily: 'inter', paddingLeft: '20px'}}> */}
           {players}
-        </ol>
+        {/* </ol> */}
           <Button variant='contained' disabled={disabled} onClick={startGame}>{startGameButtonText}</Button>
         </Box>
-        </Box>
-      </Box>
+        {/* </Box> */}
+      {/* </Box> */}
     </>
   )
 }
