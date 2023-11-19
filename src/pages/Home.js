@@ -33,15 +33,24 @@ export default function Home({name, setName, isConnected, setIsLoading}) {
 
   return (
       <>
-      <Box sx={{
+      {/* <Box sx={{
         position: 'absolute',
         left: 12,
         top: 12
-      }}>
-        <Typography>
-        {isConnected ? '🟢 online' : '🔴 offline'}
+      }}> */}
+        <Typography sx={{
+          position: 'absolute',
+          left: 12,
+          top: 12}}>
+          {isConnected ? '🟢' : '🔴'}
         </Typography>
-      </Box>
+        <Typography sx={{
+          position: 'absolute',
+          left: 30,
+          top: 11}}>
+          {isConnected ? 'online' : 'offline'}
+        </Typography>
+      {/* </Box> */}
       <CssBaseline />
         <Box
         sx={{
@@ -73,7 +82,8 @@ export default function Home({name, setName, isConnected, setIsLoading}) {
                 disabled={!name}
                 onClick={createGame}
                 fullWidth
-                variant='contained'>
+                variant='contained'
+                sx={{margin: '8px 0 4px 0'}}>
                   Create Game
               </Button>
               <Button

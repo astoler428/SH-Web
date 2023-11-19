@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react'
-import {Status, Role, Team, GameType, Vote, choosableAnimation, upAndDownAnimation, flipAndDownAnimation, upAnimation, flipAnimation, flipAndUnflipAnimation, stillAnimation} from '../consts'
+import {Status, gameOver, Role, Team, GameType, Vote, choosableAnimation, upAndDownAnimation, flipAndDownAnimation, upAnimation, flipAnimation, flipAndUnflipAnimation, stillAnimation} from '../consts'
 import {Card, CircularProgress, Grid, Typography, Box} from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
@@ -23,7 +23,7 @@ import partyBack from '../img/ParyBack.png'
 const hitlerColor = 'darkred'
 const fascColor = 'orangered'
 const libColor = 'deepskyblue'
-const hiddenColor = 'black'
+const hiddenColor = 'white'
 
 export default function Players({name, game, handleChoosePlayer, playerImageRefs, playersRef, playersDimensions, boardDimensions}) {
   // game.status = Status.END_FASC
@@ -34,7 +34,6 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
   const n = game.players.length
   const status = game.status
   const cardBorderRadius  = playersDimensions.y / 32
-  const gameOver = status === Status.END_FASC || status === Status.END_LIB
 
   const choosing = !pauseChoosing && ((game.currentPres === name &&
   (status === Status.CHOOSE_CHAN ||
@@ -180,7 +179,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
         // nameColorTransition = 'color 1s 1s'
       }
     }
-    else if(gameOver){
+    else if(gameOver(status)){
       [,nameColor] = getRoleImg(player)
 
       //flip over everyone elses role, unless blind in which case your needs flipping too if not confirmed
@@ -216,7 +215,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
     <Grid key={idx} item xs={12/n} sx={{}}>
       <Box sx={{opacity: player.socketId? 1 : .3, display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
         <Typography maxWidth='80%' sx={{fontSize: {xs: `calc(${playersDimensions.x}px / ${7*n})` , sm: `calc(${playersDimensions.x}px / ${8*n})`}, margin: `1px 0`, color: nameColor, whiteSpace: 'nowrap', fontFamily: 'inter', fontWeight: 400, overflow: 'hidden', transition: nameColorTransition}}>{idx+1}. {player.name}</Typography>
-        <Card data-key={player.name} onClick={choosing && choosable ? handleChoosePlayer : ()=>{}} sx={{cursor: choosable ? 'pointer' : 'auto', animation: chooseAnimation, display: 'flex', flexDirection: 'column', position: 'relative', backgroundColor: 'rgb(46, 109, 28)'}}>
+        <Card data-key={player.name} onClick={choosing && choosable ? handleChoosePlayer : ()=>{}} sx={{cursor: choosable ? 'pointer' : 'auto', animation: chooseAnimation, display: 'flex', flexDirection: 'column', position: 'relative', backgroundColor: '#404040'}}>
           <style>{flipAndDownkeyFrameStyles}</style>
           <style>{upKeyFrameStyles}</style>
           <style>{flipKeyFrameStyles}</style>
@@ -234,7 +233,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
             <img src={overlayContent}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, position: 'absolute', backfaceVisibility: 'hidden'}}/>
             <img src={overlayContentFlip}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden',  }}/>
           </div>
-          {!gameOver &&
+          {!gameOver(status) &&
             <>
           {game.currentPres === player.name && <img src={presPng} style={{maxWidth: "100%", position: 'absolute', zIndex: 15, bottom: 0}}/>}
           {game.currentChan === player.name && <img src={chanPng} style={{maxWidth: "100%", position: 'absolute', zIndex: 15, bottom: 0}}/>}

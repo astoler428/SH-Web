@@ -8,11 +8,10 @@ import fascistPng from '../img/Fascist.png'
 import roleBackPng from '../img/RoleBack.png'
 import libParty from '../img/LibParty.png'
 import fascParty from '../img/FascParty.png'
-import { Role, GameType, Team, Status, inGov, claiming } from '../consts';
+import { Role, gameOver, GameType, Team, Status, inGov, claiming } from '../consts';
 
 export default function RoleDialog({thisPlayer, game, roleOpen, setRoleOpen, setConfirmFascOpen}) {
 
-  const gameOver = game?.status === Status.END_FASC || game?.status === Status.END_LIB
   let roleImg, teamImg
   switch (thisPlayer?.role) {
     case Role.FASC:
@@ -30,7 +29,7 @@ export default function RoleDialog({thisPlayer, game, roleOpen, setRoleOpen, set
     default:
       roleImg = roleBackPng
   }
-  if(game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver){
+  if(game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver(game.status)){
     roleImg = roleBackPng
   }
 
@@ -65,7 +64,7 @@ export default function RoleDialog({thisPlayer, game, roleOpen, setRoleOpen, set
         </Box>
       </DialogContent>
       {
-      game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver &&
+      game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver(game.status) &&
       <DialogActions sx={{display: 'flex', justifyContent: 'center'}}>
         <Button disabled={disableConfirmFasc} onClick={()=>setConfirmFascOpen(true)} variant='contained' color='error'>{confirmFascText}</Button>
       </DialogActions>

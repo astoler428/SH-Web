@@ -61,8 +61,9 @@ export default function Game({name, game, setGame, isConnected}) {
     };
   }, [])
 
+  //'rgb(46, 109, 28)'
   useEffect(() => {
-    document.body.style.backgroundColor = 'rgb(46, 109, 28)'
+    document.body.style.backgroundColor = '#404040'
     return () => {document.body.style.backgroundColor = ''}
   }, [])
 

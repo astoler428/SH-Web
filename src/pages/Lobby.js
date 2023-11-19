@@ -80,8 +80,8 @@ export default function Lobby({name, game, setGame, isConnected}) {
      <Typography
      key={player.name}
      variant='h6'
-      sx={{marginBottom: {sm: '4px'}, whiteSpace: 'nowrap', overflow: 'hidden', fontWeight: player.name === name ? 'bold' : 'normal'}}
-    >
+     sx={{fontSize: '20px', marginBottom: '-3px', whiteSpace: 'nowrap', overflow: 'hidden', fontWeight: player.name === name ? 'bold' : 'normal', color: player.name === name ? '#7e22ce' : 'black'}}
+     >
     {idx+1}. {player.name}
     </Typography>
   )
@@ -101,13 +101,7 @@ export default function Lobby({name, game, setGame, isConnected}) {
           </Typography>
         </Toolbar>
       </AppBar>
-      {/* <Box sx={{
-        marginTop: {xs: '30px', sm: '10vh', md: '10vh', lg: '10vh'},
-        display: 'flex',
-        justifyContent: 'center',
-
-        minHeight:"100vh",
-      }}> */}
+      <Box sx={{width: '100%', display: 'flex', justifyContent: 'center'}}>
         <Box
           sx={{
             marginTop: {xs: '30px', sm: '10vh'},
@@ -115,26 +109,17 @@ export default function Lobby({name, game, setGame, isConnected}) {
             flexDirection: 'column',
             width:'100%',
             maxWidth: '320px',
-            gap:{sx: 4, sm: 4, md: 3, lg: 4},
-            border: '2px solid red'
+            gap:{xs: 1.5, sm: 4},
           }}
-        >
-      <GameSettingsComponent game={game} name={name} handleSettingsChange={handleSettingsChange}/>
-      {/* <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          maxWidth: 320,
-          width: '100%',
-          gap: 1}}> */}
-        <Typography variant='h5' sx={{display: 'block', fontFamily: 'inter'}}>Players: </Typography>
-        {/* <ol style={{margin: '0', fontFamily: 'inter', paddingLeft: '20px'}}> */}
+          >
+        <GameSettingsComponent game={game} name={name} handleSettingsChange={handleSettingsChange}/>
+        <Box>
+          <Typography variant='h5' sx={{fontSize: '27px', marginBottom: '5px', display: 'block', fontWeight: 500, fontFamily: 'inter', letterSpacing: '-.5px' }}>Players</Typography>
           {players}
-        {/* </ol> */}
-          <Button variant='contained' disabled={disabled} onClick={startGame}>{startGameButtonText}</Button>
         </Box>
-        {/* </Box> */}
-      {/* </Box> */}
+        <Button variant='contained' disabled={disabled} onClick={startGame}>{startGameButtonText}</Button>
+      </Box>
+    </Box>
     </>
   )
 }

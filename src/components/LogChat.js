@@ -1,6 +1,6 @@
 import React, {useRef, useState, useEffect} from 'react'
 import { Box, Paper, TextField, Typography, ListItem } from '@mui/material'
-import { Team, Status, LogType, Role, Policy, GameType, inGov } from '../consts';
+import { Team, gameOver, Status, LogType, Role, Policy, GameType, inGov } from '../consts';
 import { socket } from '../socket'
 import StatusMessage from './StatusMessage';
 
@@ -8,19 +8,26 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
 
   const [message, setMessage] = useState("")
   const scrollRef = useRef(undefined);
+  const paperRef = useRef(undefined);
   const messageInputRef = useRef(undefined);
   window.addEventListener('keydown', handleKeyPress)
 
   const thisPlayer = game.players.find(player => player.name === name)
-  const disabled = !thisPlayer.alive || inGov(game, name) || game.status === Status.LIB_SPY_GUESS
+  const disabled = !gameOver(game.status) && ( !thisPlayer.alive || inGov(game, name) || game.status === Status.LIB_SPY_GUESS)
 
   useEffect(() => {
-    const scrollLabelRect = scrollRef.current.getBoundingClientRect()
-    const textFieldRect = messageInputRef.current.getBoundingClientRect()
-
-    if(textFieldRect.bottom - scrollLabelRect.bottom > -20){
-      scrollRef.current?.scrollIntoView({behavior: 'smooth'})
+    console.log(paperRef.current.scrollHeight, paperRef.current.clientHeight, paperRef.current.scrollTop)
+    if(paperRef.current.scrollHeight - paperRef.current.clientHeight - Math.round(paperRef.current.scrollTop) < 80){
+      paperRef.current.scrollTo({behavior: 'auto', top: paperRef.current.scrollHeight})
     }
+
+
+    // const scrollLabelRect = scrollRef.current.getBoundingClientRect()
+    // const textFieldRect = messageInputRef.current.getBoundingClientRect()
+
+    // if(textFieldRect.bottom - scrollLabelRect.bottom > -20){
+    //   scrollRef.current?.scrollIntoView({behavior: 'auto', block: 'start'})
+    // }
   }, [game])
 
 
@@ -56,7 +63,7 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
   }
 
   function renderDate(date){
-    return <span style={{fontSize: '.65em', fontFamily: 'inter', color: '#a7a7a8', fontWeight: 700, marginRight: '2px'}}>{date}</span>
+    return <Box sx={{display: 'inline-block', fontSize: '.65em', fontFamily: 'roboto', color: '#a7a7a8', fontWeight: 700, marginRight: '3px'}}>{date}</Box>
   }
 
   const presidentStr = <span style={{color: 'gold', fontWeight: 800}}>President</span>
@@ -237,12 +244,12 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
 
   //flex 1 on Box at sm is so that it expands horizontally when side by side for flexDirection row
   //problems arise with overflow of content in Paper when it has flex 1 in xs and it's flexDirection col
-  //height in xs is subtracting 30px for appbar, and 15px for marginTop
+  //height in xs is subtracting 30px for appbar, and 15px for marginTop, 5px is to leave a margin bottom
   return (
     <>
-    <Box sx={{position: 'relative', display: 'flex', justifyContent: 'center', flex: {sm: 1}, width: {xs: '100vw', sm: '50vw'}, height: {xs: `calc(100vh - 30px - ${boardDimensions.y}px - ${playersDimensions.y}px - 15px)`, sm: `${boardDimensions.y}px`}, minHeight: {xs: '210px'}, display: 'flex', flexDirection: 'column', margin: 0, padding: 0}}>
+    <Box sx={{position: 'relative', display: 'flex', justifyContent: 'center', flex: {sm: 1}, width: {xs: '100vw', sm: '50vw'}, height: {xs: `calc(100vh - 30px - ${boardDimensions.y}px - ${playersDimensions.y}px - 15px - 5px)`, sm: `${boardDimensions.y}px`}, minHeight: {xs: '210px'}, display: 'flex', flexDirection: 'column', margin: 0, padding: 0}}>
       <StatusMessage game={game}/>
-      <Paper elevation={0} sx={{width:'100%', border: '1px solid black', fontSize: {xs: '12px', md: '16px'}, flex: 1, borderRadius: '0', overflow: 'auto', bgcolor: 'white', paddingBottom: '45px'}}>
+      <Paper ref={paperRef} elevation={0} sx={{width:'100%', border: '1px solid black', fontSize: {xs: '12px', md: '16px'}, flex: 1, borderRadius: '0', overflow: 'auto', bgcolor: '#f5f5f5', paddingBottom: '45px'}}>
           {log}
           <ListItem sx={{height: '0', padding: '0', margin: '0'}} ref={scrollRef}></ListItem>
     <form sx={{height: 0,position: 'absolute', bottom: -1}}>
@@ -254,7 +261,7 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
           size='small'
           autoComplete='off'
           placeholder={!disabled ? 'Send a message' : !thisPlayer.alive ? 'Dead cannnot speak' : game.status === Status.LIB_SPY_GUESS ? 'Chat disabled during guess' : 'Chat disabled during government' }
-          sx={{width: '100%', borderRadius: '3px', bgcolor: 'white', position: 'absolute', bottom: 0}}
+          sx={{width: '100%', borderRadius: '3px', bgcolor: '#e5e5e5', position: 'absolute', bottom: 0}}
           onChange={(e) => setMessage(e.target.value)}
           />
           </form>

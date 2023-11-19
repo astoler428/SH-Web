@@ -74,7 +74,7 @@ export default function Join({name, setIsLoading}) {
             variant='contained'
             disabled={id.length !== 4}
             onClick={handleJoin}
-            >
+            sx={{marginTop: '8px'}}>
               Join Game
           </Button>
         </form>

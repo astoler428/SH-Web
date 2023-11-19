@@ -150,6 +150,8 @@ export const inGov = (game, name) => (game.currentPres === name || game.currentC
 // export const presOrChanDuringClaiming = (game, name) => (game.currentPres === name || game.currentChan === name) && (game.status === Status.PRES_CLAIM || game.status === Status.CHAN_CLAIM)
 export const claiming = (game, name) => (game.currentPres === name && game.status === Status.PRES_CLAIM) || (game.currentChan === name && game.status === Status.CHAN_CLAIM)
 
+export const gameOver = (status) => status === Status.END_FASC || status === Status.END_LIB
+
 export const choosableAnimation = (width) =>`
 @keyframes choosable {
   0% {

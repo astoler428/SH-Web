@@ -4,7 +4,7 @@ import { GameType, GameSettings } from '../consts';
 import Loading from './Loading';
 
 export default function GameSettingsComponent({game, name, handleSettingsChange}) {
-  const styles = {fontSize: 18, fontWeight: 'normal', fontFamily: 'inter'}
+  const styles = {fontSize: 16, fontWeight: 'normal', fontFamily: 'inter'}
   if(game){
     return (
       <>
@@ -14,7 +14,8 @@ export default function GameSettingsComponent({game, name, handleSettingsChange}
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'start',
-        maxWidth: 320
+        maxWidth: 320,
+        gap: 1
       }}>
       <FormControl fullWidth>
         <InputLabel id="game-type-label">Game Type</InputLabel>
@@ -66,19 +67,19 @@ export default function GameSettingsComponent({game, name, handleSettingsChange}
         </FormGroup>
       </Box>
       :
-       <Card>
-          <List>
+       <Card sx={{display: 'flex', justifyContent: 'center'}}>
+          <List sx={{fontWeight: 'bold', margin: '6px 0'}}>
             <ListItem>
-              <Typography variant='h6'>Game Type: <span style={{...styles}}>{game.settings.type.toUpperCase()}</span></Typography>
+              <Typography variant='h7'>Game Type: <span style={styles}>{game.settings.type}</span></Typography>
             </ListItem>
             <ListItem>
-              <Typography variant='h7'>Start with red down: <span style={styles}>{game.settings.redDown ? 'YES' : 'NO'}</span></Typography>
+              <Typography variant='h7'>Start with red down: <span style={styles}>{game.settings.redDown ? 'Yes' : 'No'}</span></Typography>
             </ListItem>
             <ListItem>
-              <Typography variant='h7'>Hitler knows Fascists in 7+: <span style={styles}>{game.settings.hitlerKnowsFasc ? 'YES' : 'NO'}</span></Typography>
+              <Typography variant='h7'>Hitler knows Fascists in 7+: <span style={styles}>{game.settings.hitlerKnowsFasc ? 'Yes' : 'No'}</span></Typography>
             </ListItem>
             <ListItem>
-              <Typography variant='h7'>Simple blind: <span style={styles}>{game.settings.simpleBlind ? 'YES' : 'NO'}</span></Typography>
+              <Typography variant='h7'>Simple blind: <span style={styles}>{game.settings.simpleBlind ? 'Yes' : 'No'}</span></Typography>
             </ListItem>
           </List>
       </Card>
