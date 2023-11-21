@@ -17,7 +17,7 @@ import presPng from '../img/President.png'
 import chanPng from '../img/Chancellor.png'
 import voteBackPng from '../img/VoteBack.png'
 import errorPng from '../img/Error.png'
-import partyBack from '../img/ParyBack.png'
+import partyBack from '../img/PartyBack.png'
 //card height to width ratio = 1.36
 
 const hitlerColor = 'darkred'
