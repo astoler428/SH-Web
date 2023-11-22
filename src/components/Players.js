@@ -20,10 +20,10 @@ import errorPng from '../img/Error.png'
 import partyBack from '../img/PartyBack.png'
 //card height to width ratio = 1.36
 
-const hitlerColor = 'darkred'
+const hitlerColor = '#A72323'
 const fascColor = 'orangered'
 const libColor = 'deepskyblue'
-const hiddenColor = 'white'
+const hiddenColor = '#f5f5f5'
 
 export default function Players({name, game, handleChoosePlayer, playerImageRefs, playersRef, playersDimensions, boardDimensions}) {
   // game.status = Status.END_FASC
@@ -214,7 +214,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
       //I turned the Card into a Box where it's data-key to avoid the built int border / box
     <Grid key={idx} item xs={12/n} sx={{}}>
       <Box sx={{opacity: player.socketId? 1 : .3, display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
-        <Typography maxWidth='80%' sx={{fontSize: {xs: `calc(${playersDimensions.x}px / ${7*n})` , sm: `calc(${playersDimensions.x}px / ${8*n})`}, margin: `1px 0`, color: nameColor, whiteSpace: 'nowrap', fontFamily: 'inter', fontWeight: 400, overflow: 'hidden', transition: nameColorTransition}}>{idx+1}. {player.name}</Typography>
+        <Typography maxWidth='80%' sx={{fontSize: {xs: `calc(${playersDimensions.x}px / ${7*n})` , sm: `calc(${playersDimensions.x}px / ${8*n})`}, margin: `1px 0`, color: nameColor, whiteSpace: 'nowrap', fontFamily: 'inter', fontWeight: 500, overflow: 'hidden', transition: nameColorTransition}}>{idx+1}. {player.name}</Typography>
         <Card data-key={player.name} onClick={choosing && choosable ? handleChoosePlayer : ()=>{}} sx={{cursor: choosable ? 'pointer' : 'auto', animation: chooseAnimation, display: 'flex', flexDirection: 'column', position: 'relative', backgroundColor: '#404040'}}>
           <style>{flipAndDownkeyFrameStyles}</style>
           <style>{upKeyFrameStyles}</style>
@@ -237,11 +237,11 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
             <>
           {game.currentPres === player.name && <img src={presPng} style={{maxWidth: "100%", position: 'absolute', zIndex: 15, bottom: 0}}/>}
           {game.currentChan === player.name && <img src={chanPng} style={{maxWidth: "100%", position: 'absolute', zIndex: 15, bottom: 0}}/>}
-          {game.prevPres === player.name && <img src={presPng} style={{opacity: .3, maxWidth: "100%", position: 'absolute', zIndex: 15, top: 0}}/>}
-          {game.prevChan === player.name && <img src={chanPng} style={{opacity: .3, maxWidth: "100%", position: 'absolute', zIndex: 15, top: 0}}/>}
+          {game.prevPres === player.name && <img src={presPng} style={{opacity: .2, maxWidth: "100%", position: 'absolute', zIndex: 15, top: 0}}/>}
+          {game.prevChan === player.name && <img src={chanPng} style={{opacity: .2, maxWidth: "100%", position: 'absolute', zIndex: 15, top: 0}}/>}
           {makingDecision &&
           <Box sx={{ position: 'absolute', zIndex: 100, left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-            <CircularProgress thickness={2.5} style={{color: 'white', width: `calc(${playersDimensions.x}px / ${2.5*n} )`, height: `calc(${playersDimensions.x}px / ${2.5*n} )`}} />
+            <CircularProgress thickness={2.5} style={{color: '#f5f5f5', width: `calc(${playersDimensions.x}px / ${2.5*n} )`, height: `calc(${playersDimensions.x}px / ${2.5*n} )`}} />
           </Box>}
           {!player.alive && <CloseIcon sx={{width: '100%', height: '100%', position: 'absolute', zIndex: 100, left: '50%', top: '50%', transform: 'translate(-50%, -50%)', color: 'red' }}/>}
           {player.name === name && !showOwnRole(player) && <QuestionMarkIcon sx={{width: '100%', height: '100%', position: 'absolute', zIndex: 20, left: '50%', top: '50%', transform: 'translate(-50%, -50%)', color: 'black' }}/>}

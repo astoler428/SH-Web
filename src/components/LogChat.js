@@ -185,7 +185,7 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
         : <span>{presidentStr} {pres} declines veto.</span>
         break
       case LogType.CONFIRM_FASC:
-        logEntry = <span>{name} tried to confirm themself as {fascistStr}, but was {liberalStr}.</span>
+        logEntry = <span>{name} tried to confirm as {fascistStr}, but was {liberalStr}.</span>
         break
       case LogType.ELECTION_FAIL:
         logEntry = <span>The election fails and the election tracker moves forward.</span>

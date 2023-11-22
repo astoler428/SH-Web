@@ -161,7 +161,7 @@ export const choosableAnimation = (width) =>`
     box-shadow: 0 0 0 ${width}px orange;
   }
   80% {
-    box-shadow: 0 0 0 ${width}px rgb(46, 109, 28);
+    box-shadow: 0 0 0 ${width}px #404040;
   }
   100% {
     box-shadow: 0 0 0 ${width}px orange;

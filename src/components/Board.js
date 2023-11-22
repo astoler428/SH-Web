@@ -17,18 +17,18 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
   const fascBoard = game.players.length < 7 ? fasc5PlayerBoard : game.players.length < 9 ? fasc7PlayerBoard : fasc9PlayerBoard
   const [blur, setBlur] = useState(false)
   const [animate, setAnimate] = useState(null)
-  const policyWidth = boardDimensions.x / 8.2
+  const policyWidth = boardDimensions.x / 7.7//8.2
   const policyBorderRadius = policyWidth / 18
   const [boardState, setBoardState] = useState({lib: game.LibPoliciesEnacted, fasc: game.FascPoliciesEnacted, tracker: game.tracker})
-  const fascBottom = boardDimensions.x / 2.12
-  const fascLeft = boardDimensions.x / 10
-  const libBottom = boardDimensions.x / 10
-  const libLeft = boardDimensions.x / 5.9
-  const policyGap = boardDimensions.x/75
-  const trackerWidth = boardDimensions.x / 28.1
-  const trackerGap = '9.3%'
-  const trackerLeft = '33.9%'
-  const trackerBottom = '7%'
+  const fascBottom = boardDimensions.x / 2.103//2.12
+  const fascLeft = boardDimensions.x / 10.16
+  const libBottom = boardDimensions.x / 10.45
+  const libLeft = boardDimensions.x / 6.15
+  const policyGap = boardDimensions.x/195
+  const trackerWidth = boardDimensions.x / 28.4//boardDimensions.x / 28.1
+  const trackerGap = '11.1%'
+  const trackerLeft = '23%'//'33.9%'
+  const trackerBottom = '6.5%' //'7%'
 
   let policyAnimation = '', enactPolicyImg, enactPolicyKeyFrames, policyDelay = 0
 
