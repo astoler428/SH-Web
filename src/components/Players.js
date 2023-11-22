@@ -33,7 +33,6 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
   const thisPlayer = game.players.find(player => player.name === name)
   const n = game.players.length
   const status = game.status
-  const cardBorderRadius  = playersDimensions.y / 32
 
   const choosing = !pauseChoosing && ((game.currentPres === name &&
   (status === Status.CHOOSE_CHAN ||
@@ -224,14 +223,14 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
           <style>{stillKeyFrameStyles}</style>
           <style>{choosableKeyFrameStyles}</style>
           {/* first rolebackimg is just a place holder */}
-            <img src={roleBackPng}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, visibility: 'hidden'}}/>
+            <img src={roleBackPng}  style={{maxWidth: "100%", visibility: 'hidden'}}/>
           <div style={{position: 'absolute', zIndex: 10, width: '100%', height: '100%', backgroundColor: 'transparent', perspective: 1000, bottom: 0, transformStyle: 'preserve-3d', animation: roleAnimation}}>
-            <img ref={el => playerImageRefs.current[idx] = el} src={roleContent}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, position: 'absolute', backfaceVisibility: 'hidden'}}/>
-            <img src={roleContentFlip}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden'}}/>
+            <img ref={el => playerImageRefs.current[idx] = el} src={roleContent}  style={{maxWidth: "100%", position: 'absolute', backfaceVisibility: 'hidden'}}/>
+            <img src={roleContentFlip}  style={{maxWidth: "100%", position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden'}}/>
           </div>
           <div style={{position: 'absolute', zIndex: 50, width: '100%', height: '100%', backgroundColor: 'transparent', perspective: 1000, bottom: -playersDimensions.y, transformStyle: 'preserve-3d', animation}}>
-            <img src={overlayContent}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, position: 'absolute', backfaceVisibility: 'hidden'}}/>
-            <img src={overlayContentFlip}  style={{maxWidth: "100%", borderRadius: cardBorderRadius, position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden',  }}/>
+            <img src={overlayContent}  style={{maxWidth: "100%", position: 'absolute', backfaceVisibility: 'hidden'}}/>
+            <img src={overlayContentFlip}  style={{maxWidth: "100%", position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden',  }}/>
           </div>
           {!gameOver(status) &&
             <>

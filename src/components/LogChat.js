@@ -59,7 +59,7 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
   }
 
   function renderRole(role, plural = false, opts = ""){
-    return <span style={{fontWeight: 700, color: role === Role.HITLER ? 'darkred' : role === Role.FASC ? 'orangered' : 'deepskyblue'}}>{opts}{role}{plural ? 's' : ''}</span>
+    return <span style={{fontWeight: 700, color: role === Role.HITLER ? '#A72323' : role === Role.FASC ? 'orangered' : 'deepskyblue'}}>{opts}{role}{plural ? 's' : ''}</span>
   }
 
   function renderDate(date){

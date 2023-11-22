@@ -264,42 +264,37 @@ export const stillAnimation = () => `
 
 
 
-export const enactPolicyAnimation = (policyWidth, policyBorderRadius, left, bottom, policyGap, policyNum) => {
+export const enactPolicyAnimation = (policyWidth, left, bottom, policyGap, policyNum) => {
  return `
   @keyframes enact {
     0% {
-      width: ${policyWidth*1.4}px;
-      left: ${-policyWidth*1.4}px;
+      width: ${policyWidth*1.25}px;
+      left: ${-policyWidth*1.25}px;
       bottom: 50%;
-      border-radius: ${1.4*policyBorderRadius}px;
       transform: translate(0%, 50%) rotateY(0deg);
     }
     20% {
-      width: ${policyWidth*1.4}px;
+      width: ${policyWidth*1.25}px;
       left: ${policyWidth/2}px;
       bottom: 50%;
-      border-radius: ${1.4*policyBorderRadius}px;
       transform: translate(0%, 50%) rotateY(0deg);
     }
     40% {
-      width: ${policyWidth*1.4}px;
+      width: ${policyWidth*1.25}px;
       left: ${policyWidth/2}px;
       bottom: 50%;
-      border-radius: ${1.4*policyBorderRadius}px;
       transform: translate(0%, 50%) rotateY(180deg);
     }
     70% {
-      width: ${policyWidth*1.4}px;
+      width: ${policyWidth*1.25}px;
       left: ${left + (policyNum - 1)*(policyWidth + policyGap)}px;
       bottom: ${bottom}px;
-      border-radius: ${1.4*policyBorderRadius}px;
       transform: rotateY(180deg);
     }
     100% {
       width: ${policyWidth}px;
       left: ${left + (policyNum - 1)*(policyWidth + policyGap)}px;
       bottom: ${bottom}px;
-      border-radius: ${policyBorderRadius}px;
       transform: rotateY(180deg);
     }
   }

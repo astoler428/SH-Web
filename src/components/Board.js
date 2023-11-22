@@ -18,7 +18,7 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
   const [blur, setBlur] = useState(false)
   const [animate, setAnimate] = useState(null)
   const policyWidth = boardDimensions.x / 7.7//8.2
-  const policyBorderRadius = policyWidth / 18
+  // const policyBorderRadius = policyWidth / 18
   const [boardState, setBoardState] = useState({lib: game.LibPoliciesEnacted, fasc: game.FascPoliciesEnacted, tracker: game.tracker})
   const fascBottom = boardDimensions.x / 2.103//2.12
   const fascLeft = boardDimensions.x / 10.16
@@ -76,12 +76,12 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
 
     if(animate === Policy.LIB){
       enactPolicyImg = libPolicyPng
-      enactPolicyKeyFrames = enactPolicyAnimation(policyWidth, policyBorderRadius, libLeft, libBottom, policyGap, game.LibPoliciesEnacted)
+      enactPolicyKeyFrames = enactPolicyAnimation(policyWidth, libLeft, libBottom, policyGap, game.LibPoliciesEnacted)
       policyAnimation = `enact 6s ${policyDelay}s`
     }
     else if(animate === Policy.FASC){
       enactPolicyImg = fascPolicyPng
-      enactPolicyKeyFrames = enactPolicyAnimation(policyWidth, policyBorderRadius, fascLeft, fascBottom, policyGap, game.FascPoliciesEnacted)
+      enactPolicyKeyFrames = enactPolicyAnimation(policyWidth, fascLeft, fascBottom, policyGap, game.FascPoliciesEnacted)
       policyAnimation = `enact 6s ${policyDelay}s`
     }
 
@@ -90,11 +90,11 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
 
   const fascPolicies = []
   for(let i = 0; i < fascCount; i++){
-    fascPolicies.push(<img key={i} src={fascPolicyPng} style={{ width: policyWidth, borderRadius: policyBorderRadius  }}/>)
+    fascPolicies.push(<img key={i} src={fascPolicyPng} style={{ width: policyWidth }}/>)
   }
   const libPolicies = []
   for(let i = 0; i < libCount; i++){
-    libPolicies.push(<img key={i} src={libPolicyPng} style={{ width: policyWidth, borderRadius: policyBorderRadius }}/>)
+    libPolicies.push(<img key={i} src={libPolicyPng} style={{ width: policyWidth,  }}/>)
   }
 
   return (
@@ -111,11 +111,11 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
             {libPolicies}
           </Box>
           <style>{enactPolicyKeyFrames}</style>
-          <div style={{position: 'absolute', width: policyWidth*1.4, backgroundColor: 'transparent', display: 'flex', perspective: 1000, borderRadius: policyBorderRadius*1.4, left: -1.4*policyWidth, bottom: 0, transformStyle: 'preserve-3d', animation: policyAnimation}}>
+          <div style={{position: 'absolute', width: policyWidth*1.4, backgroundColor: 'transparent', display: 'flex', perspective: 1000, left: -1.4*policyWidth, bottom: 0, transformStyle: 'preserve-3d', animation: policyAnimation}}>
 {/*First is just a placeholder img to set the size since the absolute images below don't affect size of Box - since lib and fasc images are slightly different sizes its causing a flicker?*/}
-            <img src={libPolicyPng} style={{width: '100%', visibility: 'hidden', borderRadius: policyBorderRadius*1.4}}/>
-            <img src={policyBackPng} style={{width: '100%', position: 'absolute', backfaceVisibility: 'hidden', borderRadius: policyBorderRadius*1.4}}/>
-            <img src={enactPolicyImg} style={{width: '100%', position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden', borderRadius: policyBorderRadius*1.4}}/>
+            <img src={libPolicyPng} style={{width: '100%', visibility: 'hidden'}}/>
+            <img src={policyBackPng} style={{width: '100%', position: 'absolute', backfaceVisibility: 'hidden'}}/>
+            <img src={enactPolicyImg} style={{width: '100%', position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden'}}/>
           </div>
             <div style={{backgroundColor: 'blue', width: trackerWidth, height: trackerWidth, borderRadius: '100%', position: 'absolute', bottom: trackerBottom, left: `calc(${trackerLeft} + ${boardState.tracker} * ${trackerGap})`, transition: '1s left ease-in-out' }}></div>
             <PolicyPiles game={game} boardDimensions={boardDimensions}/>

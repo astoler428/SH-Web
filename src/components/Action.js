@@ -172,8 +172,8 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
   function showVoteCards(){
     return (
       <>
-        <img onClick={()=> handleVote(Vote.JA)} src={jaPng} style={{width: boardDimensions.x/4.5, border: thisPlayer.vote === Vote.JA ? '12px solid lightgreen' : 'none', borderRadius: boardDimensions.x/55, cursor: 'pointer' }}/>
-        <img onClick={()=> handleVote(Vote.NEIN)} src={neinPng} style={{width: boardDimensions.x/4.5,  border: thisPlayer.vote === Vote.NEIN ? '12px solid lightgreen' : 'none', borderRadius: boardDimensions.x/55, cursor: 'pointer' }}/>
+        <img onClick={()=> handleVote(Vote.JA)} src={jaPng} style={{width: boardDimensions.x/4.5, border: thisPlayer.vote === Vote.JA ? '12px solid lightgreen' : 'none', cursor: 'pointer' }}/>
+        <img onClick={()=> handleVote(Vote.NEIN)} src={neinPng} style={{width: boardDimensions.x/4.5,  border: thisPlayer.vote === Vote.NEIN ? '12px solid lightgreen' : 'none', cursor: 'pointer' }}/>
       </>
     )
   }
@@ -182,7 +182,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
     const presPolicies = game.presCards.map(card => {
       const policyImg = getPolicyImg(card)
       return (
-        <img key={Math.random()} data-key={card.color} onClick={handlePresDiscard} src={policyImg} style={{width: boardDimensions.x/6, borderRadius: boardDimensions.x/6/18, cursor: 'pointer' }}/>
+        <img key={Math.random()} data-key={card.color} onClick={handlePresDiscard} src={policyImg} style={{width: boardDimensions.x/6, cursor: 'pointer' }}/>
       )
     })
     return presPolicies
@@ -192,7 +192,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
     const chanCards = game.chanCards.map(card => {
       const policyImg = getPolicyImg(card)
       return (
-        <img key={Math.random()} data-key={card.color} onClick={handleChanPlay} src={policyImg} style={{width: boardDimensions.x/6, borderRadius: boardDimensions.x/6/18, cursor: 'pointer' }}/>
+        <img key={Math.random()} data-key={card.color} onClick={handleChanPlay} src={policyImg} style={{width: boardDimensions.x/6, cursor: 'pointer' }}/>
       )
     })
     return chanCards
@@ -231,7 +231,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
   function showInspect3PoliciesAndClaims(){
     const top3 = game.top3.map(card => {
       return (
-          <img key={Math.random()} src={getPolicyImg(card)} style={{width: boardDimensions.x/6, borderRadius: boardDimensions.x/6/18}}/>
+          <img key={Math.random()} src={getPolicyImg(card)} style={{width: boardDimensions.x/6}}/>
       )
     })
     return (

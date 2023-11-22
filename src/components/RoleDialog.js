@@ -65,7 +65,7 @@ export default function RoleDialog({thisPlayer, game, roleOpen, setRoleOpen, set
         {
         game.settings.type === GameType.MIXED_ROLES &&
         <Box sx={{width: {xs: 134.5, sm: 196}}}>
-          <img src={teamImg} draggable='false' style={{ width: '100%', borderRadius: 12}}/>
+          <img src={teamImg} draggable='false' style={{ width: '100%'}}/>
         </Box>
         }
         <Box sx={{width: {xs: 140, sm: 200}}}>
