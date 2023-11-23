@@ -24,10 +24,11 @@ export default function PolicyPiles({game, boardDimensions}) {
     borderRadius: boardDimensions.x/1800,
     fontSize: boardDimensions.x/48
   }
-
+ //22.5, 9.5
+ //27 32
   return (
       <Box sx={{display: 'flex', gap: 1}}>
-        <Box sx={{position: 'absolute', left: boardDimensions.x/22.5, bottom: boardDimensions.x/9.5, width: policyPilesWidth*1.25}}>
+        <Box sx={{position: 'absolute', left: boardDimensions.x/17.5, bottom: boardDimensions.x/9.8, width: policyPilesWidth*1.25}}>
           <img src={DrawPile} style={{ width: '100%' }}/>
           <Box sx={{position: 'absolute', left: boardDimensions.x/95, bottom: boardDimensions.x/38, width: policyPilesWidth}}>
             <img src={PolicyBack} style={{ width: '100%' }}/>
@@ -36,7 +37,7 @@ export default function PolicyPiles({game, boardDimensions}) {
             </Box>
         </Box>
           </Box>
-        <Box sx={{position: 'absolute', right: boardDimensions.x/22.5, bottom: boardDimensions.x/9.5, width: policyPilesWidth*1.25}}>
+        <Box sx={{position: 'absolute', right: boardDimensions.x/17.5, bottom: boardDimensions.x/9.8, width: policyPilesWidth*1.25}}>
           <img src={DiscardPile} style={{ width: '100%' }}/>
           <Box sx={{position: 'absolute', left: boardDimensions.x/95, bottom: boardDimensions.x/38, width: policyPilesWidth}}>
             <img src={PolicyBack} style={{ width: '100%' }}/>

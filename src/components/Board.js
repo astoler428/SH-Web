@@ -17,18 +17,18 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
   const fascBoard = game.players.length < 7 ? fasc5PlayerBoard : game.players.length < 9 ? fasc7PlayerBoard : fasc9PlayerBoard
   const [blur, setBlur] = useState(false)
   const [animate, setAnimate] = useState(null)
-  const policyWidth = boardDimensions.x / 7.7//8.2
+  const policyWidth = boardDimensions.x / 7.72//7.68//8.2
   // const policyBorderRadius = policyWidth / 18
   const [boardState, setBoardState] = useState({lib: game.LibPoliciesEnacted, fasc: game.FascPoliciesEnacted, tracker: game.tracker})
-  const fascBottom = boardDimensions.x / 2.103//2.12
-  const fascLeft = boardDimensions.x / 10.16
-  const libBottom = boardDimensions.x / 10.45
-  const libLeft = boardDimensions.x / 6.15
-  const policyGap = boardDimensions.x/195
+  const fascBottom = boardDimensions.x / 2.102//2.12
+  const fascLeft = boardDimensions.x / 9.93
+  const libBottom = boardDimensions.x / 10.5
+  const libLeft = boardDimensions.x / 6.03
+  const policyGap = boardDimensions.x/210
   const trackerWidth = boardDimensions.x / 28.4//boardDimensions.x / 28.1
   const trackerGap = '11.1%'
-  const trackerLeft = '23%'//'33.9%'
-  const trackerBottom = '6.5%' //'7%'
+  const trackerLeft = '22.1%'//'33.9%'
+  const trackerBottom = '6.3%' //'7%'
 
   let policyAnimation = '', enactPolicyImg, enactPolicyKeyFrames, policyDelay = 0
 
@@ -118,7 +118,7 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
             <img src={enactPolicyImg} style={{width: '100%', position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden'}}/>
           </div>
             <div style={{backgroundColor: 'blue', width: trackerWidth, height: trackerWidth, borderRadius: '100%', position: 'absolute', bottom: trackerBottom, left: `calc(${trackerLeft} + ${boardState.tracker} * ${trackerGap})`, transition: '1s left ease-in-out' }}></div>
-            <PolicyPiles game={game} boardDimensions={boardDimensions}/>
+            <PolicyPiles game={game} boardDimensions={boardDimensions} policyWidth={policyWidth}/>
         </Box>
       </Box>
     </>

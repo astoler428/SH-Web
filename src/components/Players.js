@@ -166,7 +166,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
       nameColor = hitlerColor
       roleContent = roleBackPng
       roleContentFlip = hitlerPng
-      roleAnimation = 'flipAndUnflip 3s forwards 4s'
+      roleAnimation = 'flipAndUnflip 3s forwards 6s'
       // nameColorTransition = 'color 1s 1s'
     }
     else if(status === Status.SHOW_LIB_SPY_GUESS){
@@ -224,20 +224,20 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
           <style>{choosableKeyFrameStyles}</style>
           {/* first rolebackimg is just a place holder */}
             <img src={roleBackPng}  style={{maxWidth: "100%", visibility: 'hidden'}}/>
-          <div style={{position: 'absolute', zIndex: 10, width: '100%', height: '100%', backgroundColor: 'transparent', perspective: 1000, bottom: 0, transformStyle: 'preserve-3d', animation: roleAnimation}}>
+          <div style={{position: 'absolute', zIndex: 10, width: '100%', height: '100%', backgroundColor: 'transparent', perspective: 1000, left: 0, bottom: 0, transformStyle: 'preserve-3d', animation: roleAnimation}}>
             <img ref={el => playerImageRefs.current[idx] = el} src={roleContent}  style={{maxWidth: "100%", position: 'absolute', backfaceVisibility: 'hidden'}}/>
             <img src={roleContentFlip}  style={{maxWidth: "100%", position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden'}}/>
           </div>
-          <div style={{position: 'absolute', zIndex: 50, width: '100%', height: '100%', backgroundColor: 'transparent', perspective: 1000, bottom: -playersDimensions.y, transformStyle: 'preserve-3d', animation}}>
-            <img src={overlayContent}  style={{maxWidth: "100%", position: 'absolute', backfaceVisibility: 'hidden'}}/>
-            <img src={overlayContentFlip}  style={{maxWidth: "100%", position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden',  }}/>
+          <div style={{position: 'absolute', zIndex: 50, width: '100%', height: '100%', backgroundColor: 'transparent', perspective: 1000, left: 0, bottom: -playersDimensions.y, transformStyle: 'preserve-3d', animation,}}>
+            <img src={overlayContent}  style={{maxWidth: '100%', position: 'absolute', backfaceVisibility: 'hidden'}}/>
+            <img src={overlayContentFlip}  style={{maxWidth: '100%', position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden',  }}/>
           </div>
           {!gameOver(status) &&
             <>
-          {game.currentPres === player.name && <img src={presPng} style={{maxWidth: "100%", position: 'absolute', zIndex: 15, bottom: 0}}/>}
-          {game.currentChan === player.name && <img src={chanPng} style={{maxWidth: "100%", position: 'absolute', zIndex: 15, bottom: 0}}/>}
-          {game.prevPres === player.name && <img src={presPng} style={{opacity: .2, maxWidth: "100%", position: 'absolute', zIndex: 15, top: 0}}/>}
-          {game.prevChan === player.name && <img src={chanPng} style={{opacity: .2, maxWidth: "100%", position: 'absolute', zIndex: 15, top: 0}}/>}
+          {game.currentPres === player.name && <img src={presPng} style={{maxWidth: "100%", position: 'absolute', zIndex: 75, bottom: 0}}/>}
+          {game.currentChan === player.name && <img src={chanPng} style={{maxWidth: "100%", position: 'absolute', zIndex: 75, bottom: 0}}/>}
+          {game.prevPres === player.name && <img src={presPng} style={{opacity: .3, maxWidth: "100%", position: 'absolute', zIndex: 75, top: 0}}/>}
+          {game.prevChan === player.name && <img src={chanPng} style={{opacity: .3, maxWidth: "100%", position: 'absolute', zIndex: 75, top: 0}}/>}
           {makingDecision &&
           <Box sx={{ position: 'absolute', zIndex: 100, left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
             <CircularProgress thickness={2.5} style={{color: '#f5f5f5', width: `calc(${playersDimensions.x}px / ${2.5*n} )`, height: `calc(${playersDimensions.x}px / ${2.5*n} )`}} />
@@ -254,9 +254,9 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
   /**
    * zIndex order:
    * roleContent: 10
-   * prev and current pres and chan: 15
    * Dead: 20
    * overlayContent: 50
+   * prev and current pres and chan: 75
    * CircularProgress: 100
    */
 
@@ -267,7 +267,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
   useEffect(() => {
     if(status === Status.LIB_SPY_GUESS){
       setPauseChoosing(true)
-      setTimeout(() => setPauseChoosing(false), 7000) //4 seconds for policy to enact + 3 seconds for flip animation
+      setTimeout(() => setPauseChoosing(false), 9000) //give 6 seconds for policy to enact + 3 seconds for flip animation
     }
   }, [status])
 

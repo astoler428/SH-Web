@@ -195,7 +195,7 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
         break
 
       case LogType.HITLER_TO_GUESS_LIB_SPY:
-        logEntry = <span>The {liberalsStr} enact 5 {liberalStr} policies and the {liberalSpyStr} played a {renderPolicies('R')} policy.</span>
+        logEntry = <span>The {liberalsStr} enacted 5 {liberalStr} policies and the {liberalSpyStr} played a {renderPolicies('R')} policy.</span>
         break
       case LogType.LIB_SPY_GUESS:
         const spyName = renderName(entry.payload.spyName)

@@ -21,7 +21,6 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
   const isHitler = thisPlayer.role === Role.HITLER
   const inVetoZone = game.FascPoliciesEnacted === 5
   const n = game.players.length
-  // const cardBorderRadius  = playersDimensions.y / 32
   const status = game.status
   let title, content, _blur = true, showDefaultOption = false
 
@@ -134,27 +133,23 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
       setTimeout(() => {
         setCenterContent(true)
         setBlur(true)
-      }, 3000)
+      }, 4000)
     }
     else if(status === Status.LIB_SPY_GUESS && thisPlayer.role === Role.HITLER){
       setCenterContent(false)
       setBlur(false)
       setTimeout(() => {
         setCenterContent(true)
-      }, 7000) //4 seconds for policy to go down, 3 seconds for animation
+      }, 9000) //6 seconds for policy to go down, 3 seconds for animation
     }
     else{
-          //can we just make this the else for below
-    // if(status !== Status.CHAN_CLAIM && status !== Status.INV_CLAIM && status !== Status.LIB_SPY_GUESS){  //delay needed to reset the left position so it can animate
       setTimeout(() => {
         setCenterContent(true)
         if(blur !== _blur){
           setBlur(_blur)
         }
       }, status === Status.VOTE ? 400 : 100) //gives time for vote cards to slide up
-    // }
     }
-
   }, [status, showTop3PoliciesNotClaim])
 
   useEffect(() => {

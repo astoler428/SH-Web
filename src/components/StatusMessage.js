@@ -56,7 +56,7 @@ export default function StatusMessage({game}) {
     case Status.END_FASC:
     case Status.END_LIB:
       const winners = game.status === Status.END_FASC ? "Fascists" : "Liberals"
-      message = `Game over. ${winners} win`
+      message = `Game over. ${winners} win!`
       break
   }
 
