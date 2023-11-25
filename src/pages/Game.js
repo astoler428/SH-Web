@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from 'react-router'
 import client, {post} from '../api/api'
 import { socket } from '../socket'
-import {Status, UPDATE} from '../consts'
+import {Status, UPDATE, colors, gameOver} from '../consts'
 import Players from '../components/Players';
 import Board from '../components/Board';
 import Loading from '../components/Loading';
@@ -12,6 +12,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import RoleDialog from '../components/RoleDialog';
 import ConfirmFascDialog from '../components/ConfirmFascDialog';
 import LogChat from '../components/LogChat';
+import Confetti from 'react-confetti'
 
 export default function Game({name, game, setGame, isConnected}) {
     // game.status = Status.CHOOSE_CHAN
@@ -30,7 +31,8 @@ export default function Game({name, game, setGame, isConnected}) {
   const playersRef = useRef(null)
   const boardImageRefs = useRef([])
   const playerImageRefs = useRef([])
-
+  const [recycleConfetti, setRecycleConfetti] = useState(true)
+  const [runConfetti, setRunConfetti] = useState(false)
   //redundant join by just in case someone navigates directly or refreshes page
   useEffect(()=>{
     if(isConnected){
@@ -124,13 +126,6 @@ export default function Game({name, game, setGame, isConnected}) {
     await post(`/game/confirmFasc/${id}`, {name: thisPlayer.name})
   }
 
-  //I'm not sure what the purpose of this is. Just closes the role area (not permanently) once the game ends
-  // useEffect(() => {
-  //   if(game?.status === Status.END_FASC || game?.status === Status.END_LIB){
-  //     setRoleOpen(false)
-  //   }
-  // }, [game])
-
 
   const action = (
     <React.Fragment>
@@ -145,9 +140,7 @@ export default function Game({name, game, setGame, isConnected}) {
     </React.Fragment>
   );
 
-
-
-  //used to get the height of the board so the logChat can match it
+  //used to get the height of the board so the logChat can match it, also the playes area depends on it
   //need to check that all images are done loading first
   useEffect(() => {
     function handleBoardResize(){
@@ -170,6 +163,16 @@ export default function Game({name, game, setGame, isConnected}) {
     setTimeout(() => setOpacity(1), 300)
   }, [])
 
+  async function resetGame(){
+    await post(`/game/reset/${id}`, {name})
+  }
+
+  useEffect(() => {
+    if(game.resetId){
+      const timeout = (game.players.findIndex(player => player.name === name) + 1) * 1000  //timeout so all players don't join at once and cause concurrency issue
+      setTimeout(() => navigate(`/lobby/${game.resetId}`), timeout)
+    }
+  }, [game])
 
   // determine dimensions of player area
   useEffect(() => {
@@ -187,18 +190,28 @@ export default function Game({name, game, setGame, isConnected}) {
     return () => {
       window.removeEventListener('resize', handlePlayersResize)
     }
-  }, [])
+  }, [boardDimensions])
+
+  useEffect(() => {
+    if(gameOver(game?.status)){
+      setTimeout(() => setRunConfetti(true), 3000)
+      setTimeout(() => setRecycleConfetti(false), 8000)
+    }
+  }, [game?.status])
 
   return (
       <>
     {game && game.status !== Status.CREATED ?
     <Box sx={{opacity, transition: 'opacity 1.5s cubic-bezier(0.16, 0.62, 1, 1)'}}>
+    {game.status === Status.END_LIB && <Confetti colors={[colors.lib, colors.libDark]} run={runConfetti} recycle={recycleConfetti}/>}
+    {game.status === Status.END_FASC && <Confetti colors={[colors.fasc, colors.hitler]} run={runConfetti} recycle={recycleConfetti}/>}
       <AppBar sx={{display: 'flex', position: 'absolute', justifyContent: 'center', height: {xs: '30px', sm: '56px'}}}>
         <Toolbar sx={{maxWidth: '95vw'}}>
           <Typography component="div" sx={{flexGrow: 1, fontFamily: 'inter', fontSize: {xs: '14px', sm: '20px'}}}>
             Game ID: {id}
           </Typography>
           <Button color="inherit" onClick={() => setRoleOpen(true)} sx={{fontFamily: 'inter', fontSize: {xs: '14px'}}}>Role</Button>
+          <Button color="inherit" onClick={resetGame} sx={{fontFamily: 'inter', fontSize: {xs: '14px'}}}>Reset</Button>
         </Toolbar>
       </AppBar>
       <Box sx={{marginTop: {xs:'30px', sm: '56px'}}}/>

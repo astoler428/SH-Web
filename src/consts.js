@@ -1,3 +1,18 @@
+export const colors = {
+  fasc: '#E34D0D',
+  hitler: '#A72323',
+  lib: '#0EA5E9',
+  libDark: '#1E6DA7',
+  hidden: '#f5f5f5',
+  default: 'orange',
+  gold: 'gold',
+  fascBackground: '#E66026',//'#C73F04',
+  libBackground: '#0699DB',
+  darkLibBackground: '#446E8D'
+  //logChat has some blacks or off black to add too
+  //backgroudn for claims
+}
+
 export const UPDATE = 'UPDATE'
 
 export const ClaimType = {
@@ -29,6 +44,7 @@ export const Status = {
   SHOW_VOTE_RESULT: 'SHOW_VOTE_RESULT',
   SHOW_HITLER_FOR_LIB_SPY_GUESS: 'SHOW_HITLER_FOR_LIB_SPY_GUESS',
   SHOW_LIB_SPY_GUESS: 'SHOW_LIB_SPY_GUESS',
+  RESET_GAME: 'RESET_GAME'
 }
 
 
@@ -165,6 +181,17 @@ export const choosableAnimation = (width) =>`
   }
   100% {
     box-shadow: 0 0 0 ${width}px orange;
+  }
+}
+`
+export const drawPolicyAnimation = (top) =>`
+@keyframes drawPolicy {
+  0% {
+    top: 0;
+    visibility: visible;
+  }
+  100% {
+    top: ${top}px;
   }
 }
 `

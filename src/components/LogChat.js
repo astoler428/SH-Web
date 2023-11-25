@@ -1,6 +1,6 @@
 import React, {useRef, useState, useEffect} from 'react'
 import { Box, Paper, TextField, Typography, ListItem } from '@mui/material'
-import { Team, gameOver, Status, LogType, Role, Policy, GameType, inGov } from '../consts';
+import { Team, gameOver, Status, LogType, Role, Policy, GameType, inGov, colors } from '../consts';
 import { socket } from '../socket'
 import StatusMessage from './StatusMessage';
 
@@ -10,13 +10,15 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
   const scrollRef = useRef(undefined);
   const paperRef = useRef(undefined);
   const messageInputRef = useRef(undefined);
-  window.addEventListener('keydown', handleKeyPress)
 
   const thisPlayer = game.players.find(player => player.name === name)
   const disabled = !gameOver(game.status) && ( !thisPlayer.alive || inGov(game, name) || game.status === Status.LIB_SPY_GUESS)
 
   useEffect(() => {
-    console.log(paperRef.current.scrollHeight, paperRef.current.clientHeight, paperRef.current.scrollTop)
+    window.addEventListener('keydown', handleKeyPress)
+  }, [])
+
+  useEffect(() => {
     if(paperRef.current.scrollHeight - paperRef.current.clientHeight - Math.round(paperRef.current.scrollTop) < 80){
       paperRef.current.scrollTo({behavior: 'auto', top: paperRef.current.scrollHeight})
     }
@@ -49,7 +51,7 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
     if(!policyStr){
       return
     }
-    return policyStr.split('').map((char, idx) => <span key={idx} style={{fontWeight: 700, color: char === 'R' ? 'orangered' : 'deepskyblue'}}>{char}</span>)
+    return policyStr.split('').map((char, idx) => <span key={idx} style={{fontWeight: 700, color: char === 'R' ? colors.fasc : colors.lib}}>{char}</span>)
   }
 
   function renderName(name){
@@ -59,11 +61,11 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
   }
 
   function renderRole(role, plural = false, opts = ""){
-    return <span style={{fontWeight: 700, color: role === Role.HITLER ? '#A72323' : role === Role.FASC ? 'orangered' : 'deepskyblue'}}>{opts}{role}{plural ? 's' : ''}</span>
+    return <span style={{fontWeight: 700, color: role === Role.HITLER ? '#A72323' : role === Role.FASC ? colors.fasc : colors.lib}}>{opts}{role}{plural ? 's' : ''}</span>
   }
 
   function renderDate(date){
-    return <Box sx={{display: 'inline-block', fontSize: '.65em', fontFamily: 'roboto', color: '#a7a7a8', fontWeight: 700, marginRight: '3px'}}>{date}</Box>
+    return <span style={{display: 'inline-block', fontSize: '.65em', fontFamily: 'roboto', color: '#a7a7a8', fontWeight: 700, marginRight: '3px'}}>{date}</span>
   }
 
   const presidentStr = <span style={{color: 'gold', fontWeight: 800}}>President</span>
@@ -249,7 +251,7 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
     <>
     <Box sx={{position: 'relative', display: 'flex', justifyContent: 'center', flex: {sm: 1}, width: {xs: '100vw', sm: '50vw'}, height: {xs: `calc(100vh - 30px - ${boardDimensions.y}px - ${playersDimensions.y}px - 15px - 5px)`, sm: `${boardDimensions.y}px`}, minHeight: {xs: '210px'}, display: 'flex', flexDirection: 'column', margin: 0, padding: 0}}>
       <StatusMessage game={game}/>
-      <Paper ref={paperRef} elevation={0} sx={{width:'100%', border: '1px solid black', fontSize: {xs: '12px', md: '16px'}, flex: 1, borderRadius: '0', overflow: 'auto', bgcolor: '#f5f5f5', paddingBottom: '45px'}}>
+      <Paper ref={paperRef} elevation={0} sx={{width:'100%', border: '1px solid black', fontSize: {xs: '12px', md: '16px'}, flex: 1, borderRadius: '0', overflow: 'auto', bgcolor: colors.hidden, paddingBottom: '45px'}}>
           {log}
           <ListItem sx={{height: '0', padding: '0', margin: '0'}} ref={scrollRef}></ListItem>
     <form sx={{height: 0,position: 'absolute', bottom: -1}}>
