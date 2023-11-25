@@ -229,7 +229,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
           <style>{choosableKeyFrameStyles}</style>
           {/* first rolebackimg is just a place holder */}
             <img src={roleBackPng}  style={{width: "100%", visibility: 'hidden'}}/>
-          <div style={{position: 'absolute', zIndex: 10, width: '100%', height: '100%', backgroundColor: 'transparent', perspective: 1000, left: 0, bottom: 0, transformStyle: 'preserve-3d', animation: roleAnimation,}}>
+          <div style={{position: 'absolute', zIndex: 10, width: '99.9%', height: '99.9%', backgroundColor: 'transparent', perspective: 1000, left: 0, bottom: 0, transformStyle: 'preserve-3d', animation: roleAnimation,}}>
             <img ref={el => playerImageRefs.current[idx] = el} src={roleContent} draggable='false' style={{width: "100%", position: 'absolute', backfaceVisibility: 'hidden'}}/>
             <img src={roleContentFlip} draggable='false' style={{width: "100%", position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden'}}/>
           </div>

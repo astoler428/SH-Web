@@ -163,14 +163,14 @@ export default function Game({name, game, setGame, isConnected}) {
     setTimeout(() => setOpacity(1), 300)
   }, [])
 
-  async function resetGame(){
-    await post(`/game/reset/${id}`, {name})
+  async function remakeGame(){
+    await post(`/game/remake/${id}`, {name})
   }
 
   useEffect(() => {
-    if(game.resetId){
+    if(game.remakeId){
       const timeout = (game.players.findIndex(player => player.name === name) + 1) * 1000  //timeout so all players don't join at once and cause concurrency issue
-      setTimeout(() => navigate(`/lobby/${game.resetId}`), timeout)
+      setTimeout(() => navigate(`/lobby/${game.remakeId}`), timeout)
     }
   }, [game])
 
@@ -211,7 +211,7 @@ export default function Game({name, game, setGame, isConnected}) {
             Game ID: {id}
           </Typography>
           <Button color="inherit" onClick={() => setRoleOpen(true)} sx={{fontFamily: 'inter', fontSize: {xs: '14px'}}}>Role</Button>
-          <Button color="inherit" onClick={resetGame} sx={{fontFamily: 'inter', fontSize: {xs: '14px'}}}>Reset</Button>
+          <Button color="inherit" onClick={remakeGame} sx={{fontFamily: 'inter', fontSize: {xs: '14px'}}}>Remake</Button>
         </Toolbar>
       </AppBar>
       <Box sx={{marginTop: {xs:'30px', sm: '56px'}}}/>
