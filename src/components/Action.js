@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useCallback} from 'react'
 import {Button, Typography, Box} from '@mui/material'
 import libPolicyPng from '../img/LibPolicy.png'
 import fascPolicyPng from '../img/FascPolicy.png'
@@ -8,12 +8,13 @@ import {Color, draws3, PRES3, CHAN2, Status, Vote, Team, Role, GameType, RRR, RR
 import {post} from '../api/api'
 import DefaulDiscardDialog from './DefaultDiscardDialog'
 
-export default function Action({game, name, id, setError, blur, setBlur, boardDimensions, playersDimensions}) {
+export default function Action({game, name, id, setError, blur, setBlur, boardDimensions, playersDimensions, pauseActions, setPauseActions}) {
   const [showDiscardDialog, setShowDiscardDialog] = useState(false)
   const [centerContent, setCenterContent] = useState(false)
   const [actionContent, setActionContent] = useState(false)
   const [actionTitle, setActionTitle] = useState(false)
   const [otherContent, setOtherContent] = useState(null)
+  const [uncenterContentTime, setUncenterContentTime] = useState(new Date().getTime())
   const [showTop3PoliciesNotClaim, setShowTop3PoliciesNotClaim] = useState(true) //first show policies
   const isCurrentPres = game.currentPres === name
   const isCurrentChan = game.currentChan === name
@@ -22,20 +23,15 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
   const inVetoZone = game.FascPoliciesEnacted === 5
   const n = game.players.length
   const status = game.status
-  let title, content, _blur = true, showDefaultOption = false
+  let title, content, _blur = false, showDefaultOption = false
 
-  if(status === Status.VOTE){
-    if(thisPlayer.alive){
-      title = 'SELECT A VOTE.'
-      content = showVoteCards()
-    }
-    else{
-      _blur = false
-    }
+  if(status === Status.VOTE && thisPlayer.alive){
+    title = 'SELECT A VOTE.'
+    content = showVoteCards()
+    _blur = true
   }
   else if(status === Status.LIB_SPY_GUESS && isHitler){
     title = 'GUESS THE LIBERAL SPY.'
-    _blur = false
   }
   else if(isCurrentPres){
     showDefaultOption = game.settings.type === GameType.BLIND ? true : false
@@ -43,18 +39,22 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
       case Status.PRES_DISCARD:
         title = 'CHOOSE A POLICY TO DISCARD. '
         content = showPresPolicies()
+        _blur = true
         break
       case Status.PRES_CLAIM:
         title = 'AS PRESIDENT, I DREW...'
         content = showPresClaims()
+        _blur = true
         break
       case Status.INV_CLAIM:
         title = 'THIS PLAYER IS ON TEAM...'
         content = showInvClaims()
+        _blur = true
         break
       case Status.INSPECT_TOP3:
         title = 'THE TOP 3 POLICIES ARE...'
         content = showInspect3PoliciesAndClaims()
+        _blur = true
         if(showTop3PoliciesNotClaim){
           showDefaultOption = false
         }
@@ -62,25 +62,22 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
       case Status.VETO_REPLY:
         title = `THE CHANCELLOR REQUESTS A VETO. ACCEPT OR DECLINE.`
         content = showVetoOptions()
+        _blur = true
         break
       case Status.CHOOSE_CHAN:
         title = `CHOOSE AN ELIGIBLE CHANCELLOR.`
-        _blur = false
         showDefaultOption = false
         break
       case Status.INV:
         title = `CHOOSE A PLAYER TO INVESTIGATE.`
-        _blur = false
         showDefaultOption = false
         break
       case Status.SE:
         title = `CHOOSE A PLAYER TO BECOME THE NEXT PRESIDENT.`
-        _blur = false
         showDefaultOption = false
         break
       case Status.GUN:
         title = `CHOOSE A PLAYER TO SHOOT.`
-        _blur = false
         showDefaultOption = false
         break
       default:
@@ -94,70 +91,70 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
       case Status.CHAN_PLAY:
         title = `CHOOSE A POLICY TO PLAY${inVetoZone ? ` OR REQUEST A VETO.` : `.`}`
         content = showChanPolicies()
+        _blur = true
         break
       case Status.VETO_DECLINED:
         title = `VETO WAS DECLINED. CHOOSE A POLICY TO PLAY.`
         content = showChanPolicies()
+        _blur = true
         break
       case Status.CHAN_CLAIM:
         title = 'AS CHANCELLOR, I RECEIVED...'
         content = showChanClaims()
-        _blur = false //in use effect it gets set
+        _blur = true
         break
       default:
         _blur = false
         showDefaultOption = false
     }
   }
-  else{
-    _blur = false
-  }
+
+
 
   useEffect(()=>{
-    //this way content isn't displayed before it gets set off screen an animates in
-    setActionContent(content)
-    setActionTitle(title)
-    //put here to avoid flickering
-    setOtherContent(
-    <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
-      {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && <Button variant='contained' color='secondary' sx={{fontSize: {xs: '1em', md: '14px'} }} onClick={handleVetoRequest}>Request Veto</Button>}
-      {showDefaultOption && <Button variant='contained' style={{backgroundColor: colors.default}} sx={{fontSize: {sm: '1em', md: '14px'}}} onClick={handleDefaultAction}>Default to Role</Button>}
-      {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && <Button variant='contained' color='secondary' sx={{fontSize: {xs: '1em', md: '14px'}}} onClick={() => setShowTop3PoliciesNotClaim(false)}>Make Claim</Button> }
-    </Box>
-    )
-    setCenterContent(false)
+    if(centerContent){
+      setCenterContent(false)
+    }
+    if(blur){
+      setBlur(false)
+    }
+    // setUncenterContentTime(new Date().getTime())
 
-    if((status === Status.CHAN_CLAIM && isCurrentChan) || (status === Status.INV_CLAIM && game.currentPres === name)){ //delay showing during chan claim so they can see the policy enact
-      // setCenterContent(false)
-      setBlur(false)
-      setTimeout(() => {
-        setCenterContent(true)
-        setBlur(true)
-      }, 4000)
-    }
-    else if(status === Status.LIB_SPY_GUESS && thisPlayer.role === Role.HITLER){
-      // setCenterContent(false)
-      setBlur(false)
-      setTimeout(() => {
-        setCenterContent(true)
-      }, 7500) //6 seconds for policy to go down, 1.5 seconds for animation
-    }
-    else if(status === Status.PRES_DISCARD && isCurrentPres){
-      setBlur(false)
-      setTimeout(() => {
-        setCenterContent(true)
-        setBlur(true)
-      }, 1200) //allow player to see the policies animate being drawn
-    }
-    else{
-      setTimeout(() => {
-        setCenterContent(true)
-        if(blur !== _blur){
-          setBlur(_blur)
-        }
-      }, status === Status.VOTE ? 400 : 100) //gives time for vote cards to slide up
-    }
   }, [status, showTop3PoliciesNotClaim])
+
+  useEffect(() => {
+    if(!centerContent && !pauseActions){
+      const setEverything = () => {
+        setActionContent(content)
+        setActionTitle(title)
+        setOtherContent(
+        <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
+          {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && <Button variant='contained' color='secondary' sx={{fontSize: {xs: '1em', md: '14px'} }} onClick={handleVetoRequest}>Request Veto</Button>}
+          {showDefaultOption && <Button variant='contained' style={{backgroundColor: colors.default}} sx={{fontSize: {xs: '1em', md: '14px'}}} onClick={handleDefaultAction}>Default to Role</Button>}
+          {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && <Button variant='contained' color='secondary' sx={{fontSize: {xs: '1em', md: '14px'}}} onClick={() => setShowTop3PoliciesNotClaim(false)}>Make Claim</Button> }
+        </Box>
+        )
+        setBlur(_blur)
+        setCenterContent(true)
+      }
+      if(status === Status.INSPECT_TOP3 && !showTop3PoliciesNotClaim){
+        setTimeout(setEverything, 700)
+      }
+      else{
+        setEverything()
+      }
+      // const timeDifference = new Date().getTime() - uncenterContentTime
+      // if(timeDifference >= 700){
+      //   setEverything()
+      // }
+      // else{
+      //   setTimeout(setEverything, 700 - timeDifference) //needs to be enough time for left to transition back plus buffer to register
+      // }
+
+    }
+  }, [centerContent, pauseActions])
+
+
 
   useEffect(() => {
     setActionContent(content)
@@ -165,17 +162,31 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
     setOtherContent(
     <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
       {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && <Button variant='contained' color='secondary' sx={{fontSize: {xs: '1em', md: '14px'} }} onClick={handleVetoRequest}>Request Veto</Button>}
-      {showDefaultOption && <Button variant='contained' style={{backgroundColor: colors.default}} sx={{fontSize: {sm: '1em', md: '14px'}}} onClick={handleDefaultAction}>Default to Role</Button>}
+      {showDefaultOption && <Button variant='contained' style={{backgroundColor: colors.default}} sx={{fontSize: {xs: '1em', md: '14px'}}} onClick={handleDefaultAction}>Default to Role</Button>}
       {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && <Button variant='contained' color='secondary' sx={{fontSize: {xs: '1em', md: '14px'}}} onClick={() => setShowTop3PoliciesNotClaim(false)}>Make Claim</Button> }
     </Box>
     )
   }, [boardDimensions, playersDimensions])
 
+  useEffect(() => {
+    if(game.status === Status.VOTE){
+      setActionContent(content)
+      setActionTitle(title)
+      setOtherContent(
+      <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
+        {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && <Button variant='contained' color='secondary' sx={{fontSize: {xs: '1em', md: '14px'} }} onClick={handleVetoRequest}>Request Veto</Button>}
+        {showDefaultOption && <Button variant='contained' style={{backgroundColor: colors.default}} sx={{fontSize: {xs: '1em', md: '14px'}}} onClick={handleDefaultAction}>Default to Role</Button>}
+        {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && <Button variant='contained' color='secondary' sx={{fontSize: {xs: '1em', md: '14px'}}} onClick={() => setShowTop3PoliciesNotClaim(false)}>Make Claim</Button> }
+      </Box>
+      )
+    }
+  }, [thisPlayer.vote]) //Otherwise actionContent does not update with the new vote info
+
   function showVoteCards(){
     return (
       <>
-        <img onClick={()=> handleVote(Vote.JA)} draggable='false' src={jaPng} style={{width: boardDimensions.x/4.5, border: thisPlayer.vote === Vote.JA ? '12px solid lightgreen' : 'none', cursor: 'pointer' }}/>
-        <img onClick={()=> handleVote(Vote.NEIN)} draggable='false' src={neinPng} style={{width: boardDimensions.x/4.5,  border: thisPlayer.vote === Vote.NEIN ? '12px solid lightgreen' : 'none', cursor: 'pointer' }}/>
+        <img onClick={()=> handleVote(Vote.JA)} draggable='false' src={jaPng} style={{width: boardDimensions.x/4.5, boxShadow: thisPlayer.vote === Vote.JA ? '0 0 10px 8px #79DFA0' : 'none', cursor: 'pointer' }}/>
+        <img onClick={()=> handleVote(Vote.NEIN)} draggable='false' src={neinPng} style={{width: boardDimensions.x/4.5, boxShadow: thisPlayer.vote === Vote.NEIN ? '0 0 10px 8px #79DFA0' : 'none', cursor: 'pointer' }}/>
       </>
     )
   }
@@ -231,11 +242,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
   }
 
   function showInspect3PoliciesAndClaims(){
-    const top3 = game.top3.map(card => {
-      return (
-          <img key={Math.random()} draggable='false' src={getPolicyImg(card)} style={{width: boardDimensions.x/6}}/>
-      )
-    })
+    const top3 = game.top3.map(card => <img key={Math.random()} draggable='false' src={getPolicyImg(card)} style={{width: boardDimensions.x/6}}/>)
     return (
       showTop3PoliciesNotClaim ? top3 :
       <>
@@ -358,7 +365,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
         setShowDiscardDialog(false)
       }
     }
-  }, [game])
+  }, [game.status])
 
   function validDiscardDueToMixedRole(cardColor){
     if(game.settings.type !== GameType.MIXED_ROLES){
@@ -393,7 +400,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
 
   return (
     <Box sx={{}}>
-      <Box sx={{position: 'absolute', width: '100%', height: '100%', top: '50%', left: centerContent ? '50%' : '-50%', transform: 'translate(-50%, -50%)', transition: centerContent ? 'left 1s ease-in-out' : '', display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', gap: {xs: 1, sm: 1, md: 3} }}>
+      <Box sx={{position: 'absolute', width: '100%', height: '100%', top: '50%', left: centerContent ? '50%' : '-50%', transform: 'translate(-50%, -50%)', opacity: centerContent ? 1 : 0,  transition: centerContent ? 'left 1s ease-in-out' : 'left 0s .4s, opacity .4s ease-in-out', display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center', gap: {xs: 1, sm: 1, md: 3} }}>
         <Typography sx={{fontSize: `calc(${boardDimensions.x}px / 18)`, width: '90%', textAlign: 'center', justifyContent: 'center', display: 'flex', fontWeight: 'bold'}}>{actionTitle}</Typography>
         <Box sx={{display: 'flex', flexDirection: 'column', justifyContent:'center', alignItems: 'center', gap: {xs: 1, md: 2}, fontSize: `calc(${boardDimensions.x}px / 36)`, width: '100%'}}>
           <Box sx={{display: 'flex', justifyContent: 'center', gap: boardDimensions.x/70, alignItems: 'center', width: '100%'}}>

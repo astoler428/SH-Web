@@ -16,18 +16,18 @@ export default function PolicyPiles({game, boardDimensions}) {
     if(policyPilesState.drawPile !== game.deck.drawPile.length){
       const n = policyPilesState.drawPile - game.deck.drawPile.length
       const iterations = Math.abs(n) > 3 ? 1 : Math.abs(n) //means putting discard pile back
-      const setPolicyStateTimeout = n === 3 ? animationTime*2000 : animationTime*1000 //the 2 seconds is so if 3 cards left in deck, the deck shows blank as 3rd card is drawn
-      setDrawPileAnimation(`drawPolicy ${animationTime}s ${iterations} ${n === 1 ? '1s' : ''} ${n > 0 ? '' : 'forwards reverse'}`) //delay 1s if topdeck to wait for tracker
+      const setPolicyStateTimeout = n === 3 ? animationTime*2000 + 300 : animationTime*1000 + 300 //the 2 seconds is so if 3 cards left in deck, the deck shows blank as 3rd card is drawn
+      setDrawPileAnimation(`drawPolicy ${animationTime}s ${iterations} ${n === 1 ? '1s' : '.3s'} ${n > 0 ? '' : 'forwards reverse'}`) //delay 1s if topdeck to wait for tracker
       setTimeout(() => setPolicyPilesState(prevState => ({...prevState, drawPile: game.deck.drawPile.length})), setPolicyStateTimeout)
-      setTimeout(() => setDrawPileAnimation(''), animationTime*iterations*1000)
+      setTimeout(() => setDrawPileAnimation(''), animationTime*iterations*1000 + 300)
     }
     if(policyPilesState.discardPile !== game.deck.discardPile.length){
       const n = policyPilesState.discardPile - game.deck.discardPile.length
       const iterations = Math.abs(n) > 2 ? 1 : Math.abs(n) // > 2 means putting back in draw pile. 1 means discard, 2 from veto accepted
-      const setPolicyStateTimeout = Math.abs(n) > 2 ? 0 : animationTime*1000
-      setDiscardPileAnimation(`drawPolicy ${animationTime}s ${iterations} ${n > 0 ? '' : 'forwards reverse'}`)
+      const setPolicyStateTimeout = Math.abs(n) > 2 ? 0 + 300 : animationTime*1000 + 300
+      setDiscardPileAnimation(`drawPolicy ${animationTime}s ${iterations} .3s ${n > 0 ? '' : 'forwards reverse'}`)
       setTimeout(() => setPolicyPilesState(prevState => ({...prevState, discardPile: game.deck.discardPile.length})), setPolicyStateTimeout)
-      setTimeout(() => setDiscardPileAnimation(''), animationTime*iterations*1000)
+      setTimeout(() => setDiscardPileAnimation(''), animationTime*iterations*1000 + 300)
 
     }
   }, [game.status])

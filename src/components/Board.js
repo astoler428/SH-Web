@@ -3,7 +3,7 @@ import {Box} from '@mui/material'
 import fasc5PlayerBoard from '../img/fasc5PlayerBoard.png'
 import fasc7PlayerBoard from '../img/fasc7PlayerBoard.png'
 import fasc9PlayerBoard from '../img/fasc9PlayerBoard.png'
-import libBoard from '../img/LibBoard.png'
+import libBoard from '../img/libBoard.png'
 import libPolicyPng from '../img/LibPolicy.png'
 import fascPolicyPng from '../img/FascPolicy.png'
 import policyBackPng from '../img/PolicyBack.png';
@@ -13,7 +13,7 @@ import { enactPolicyAnimation, Policy, Status } from '../consts'
 
 
 //set policy border radius relative to the policyWidth here and everywhere
-export default function Board({game, name, id, setError, showInvCard, boardRef, boardImageRefs, boardDimensions, playersDimensions}){
+export default function Board({game, name, id, setError, showInvCard, boardRef, boardImageRefs, boardDimensions, playersDimensions, pauseActions, setPauseActions}){
   const fascBoard = game.players.length < 7 ? fasc5PlayerBoard : game.players.length < 9 ? fasc7PlayerBoard : fasc9PlayerBoard
   const [blur, setBlur] = useState(false)
   const [animate, setAnimate] = useState(null)
@@ -100,8 +100,8 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
   return (
     <>
       <Box sx={{width: {xs: '100vw', sm: '50vw'}, maxWidth: {sm: 700}, display: 'flex', flexDirection: 'column', position: 'relative'}}>
-        <Action game={game} name={name} id={id} setError={setError} blur={blur} setBlur={setBlur} showInvCard={showInvCard} boardDimensions={boardDimensions} playersDimensions={playersDimensions}/>
-        <Box ref={boardRef} sx={{filter: blur ? 'contrast(40%) blur(2px)' : 'blur(0)', zIndex: -1, display: 'flex', flexDirection: 'column', transition: 'filter .8s'}}>
+        <Action game={game} name={name} id={id} setError={setError} blur={blur} setBlur={setBlur} showInvCard={showInvCard} boardDimensions={boardDimensions} playersDimensions={playersDimensions} pauseActions={pauseActions} setPauseActions={setPauseActions}/>
+        <Box ref={boardRef} sx={{filter: blur ? 'contrast(40%) blur(2px)' : 'blur(0%) contrast(100%)', zIndex: -1, display: 'flex', flexDirection: 'column', transition: 'filter .5s'}}>
           <img ref={el => boardImageRefs.current[0] = el} key={1} draggable='false' src={fascBoard} style={{ maxWidth: "100%"}}/>
           <img ref={el => boardImageRefs.current[1] = el} key={2} draggable='false' src={libBoard} style={{ maxWidth: "100%" }}/>
           <Box sx={{position: 'absolute', bottom: fascBottom, left: fascLeft, display: 'flex', gap: `${policyGap}px`}}>

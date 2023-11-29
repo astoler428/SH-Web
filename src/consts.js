@@ -208,17 +208,21 @@ export const upAnimation = (playerHeight) =>`
 `
 
 
-export const flipAndDownAnimation = (playerHeight) => `
+export const flipAndDownAnimation = (playerHeight, oneSecPercentage) => `
   @keyframes flipAndDown {
     0% {
       bottom: 0px;
       transform: rotateY(0deg);
     }
-    30% {
+    ${oneSecPercentage}% {
+      bottom: 0px;
+      transform: rotateY(0deg);
+    }
+    ${2*oneSecPercentage}% {
       bottom: 0px;
       transform: rotateY(180deg);
     }
-    70% {
+    ${100-oneSecPercentage}% {
       bottom: 0px;
       transform: rotateY(180deg);
     }

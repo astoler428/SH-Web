@@ -25,15 +25,15 @@ import partyBack from '../img/PartyBack.png'
 // const colors.lib = 'deepskyblue'
 // const colors.hidden = '#f5f5f5'
 
-export default function Players({name, game, handleChoosePlayer, playerImageRefs, playersRef, playersDimensions, boardDimensions}) {
+export default function Players({name, game, handleChoosePlayer, playerImageRefs, playersRef, playersDimensions, boardDimensions, pauseActions, setPauseActions}) {
   const [firstRender, setFirstRender] = useState(true)
-  const [pauseChoosing, setPauseChoosing] = useState(false)
+  // const [pauseChoosing, setPauseChoosing] = useState(false)
   const [hitlerFlippedForLibSpyGuess, setHitlerFlippedForLibSpyGuess] = useState(false)
   const thisPlayer = game.players.find(player => player.name === name)
   const n = game.players.length
   const status = game.status
 
-  const choosing = !pauseChoosing && ((game.currentPres === name &&
+  const choosing = !pauseActions && ((game.currentPres === name &&
   (status === Status.CHOOSE_CHAN ||
     status === Status.INV ||
    status === Status.SE ||
@@ -57,6 +57,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
     let roleAnimation = ''
     let chooseAnimation = ''
     let nameColorTransition = ''
+    let flipAndDownDuration = 0 //varies based on vote split
 
     const thisPlayerInvestigatedPlayer = thisPlayer.investigations.some(invName => invName === player.name)
 
@@ -80,7 +81,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
     }
 
     if(choosable){
-      chooseAnimation = 'choosable 1.3s infinite'
+      chooseAnimation = 'choosable 1.3s infinite .7s'
     }
 
     //making decision for circular progress bar
@@ -102,7 +103,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
       makingDecision = true
     }
 
-    if(pauseChoosing){
+    if(pauseActions){
       makingDecision = false
     }
 
@@ -144,14 +145,19 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
     else if(status === Status.VOTE){
       if(player.alive){
         overlayContent = voteBackPng
-        animation = 'up .9s forwards'
+        animation = 'up .9s forwards .1s'
       }
     }
     else if(status === Status.SHOW_VOTE_RESULT){
       if(player.alive){
         overlayContent = voteBackPng
         overlayContentFlip = getVote(player)
-        animation = 'flipAndDown 3s forwards'
+
+        const jas = game.players.reduce((acc, player) => player.vote === Vote.JA ? acc+1 : acc, 0)
+        const numVotes = game.players.reduce((acc, player) => player.vote ? acc+1 : acc, 0)
+        const voteSplit = Math.min(jas, numVotes - jas)
+        flipAndDownDuration = voteSplit <= 1 ? 4 : voteSplit <= 3 ? 5 : 6
+        animation = `flipAndDown ${flipAndDownDuration}s forwards`
       }
     }
     else if(status === Status.INV_CLAIM && player.name === currentPres.investigations.slice(-1)[0]){
@@ -193,13 +199,6 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
         const delay = (game.LibPoliciesEnacted === 5 && !hitlerFlippedForLibSpyGuess) || game.FascPoliciesEnacted === 6 ? (game.tracker === 3 ? 7 : 6) : 2
         roleAnimation = `flip 3s forwards ${delay}s` //'flip 3s forwards 2.5s'
         nameColorTransition = `color 1.5s ${delay+1.5}s`
-      // }
-      // if(player.name !== name || (game.settings.type === GameType.BLIND && !player.confirmedFasc)){
-      //   roleContent = roleBackPng
-      //   roleContentFlip = getRoleImg(player)[0]
-      //   roleAnimation = 'flip 3s forwards 2.5s'
-      //   nameColorTransition = 'color 1.5s 4s'
-      // }
     }
   }
 
@@ -208,7 +207,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
       nameColorTransition = 'color .1s'
     }
 
-    const flipAndDownkeyFrameStyles = flipAndDownAnimation(playersDimensions.y)
+    const flipAndDownkeyFrameStyles = flipAndDownAnimation(playersDimensions.y, 1/flipAndDownDuration * 100)
     const upKeyFrameStyles = upAnimation(playersDimensions.y)
     const flipKeyFrameStyles = flipAnimation()
     const upAndDownKeyFrameStyles = upAndDownAnimation(playersDimensions.y)
@@ -229,7 +228,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
           <style>{choosableKeyFrameStyles}</style>
           {/* first rolebackimg is just a place holder */}
             <img src={roleBackPng}  style={{width: "100%", visibility: 'hidden'}}/>
-          <div style={{position: 'absolute', zIndex: 10, width: '99.9%', height: '99.9%', backgroundColor: 'transparent', perspective: 1000, left: 0, bottom: 0, transformStyle: 'preserve-3d', animation: roleAnimation,}}>
+          <div style={{position: 'absolute', zIndex: 10, width: '99.8%', height: '99.8%', transform: 'translate(.1%, -.1%)',  backgroundColor: 'transparent', perspective: 1000, left: 0, bottom: 0, transformStyle: 'preserve-3d', animation: roleAnimation,}}>
             <img ref={el => playerImageRefs.current[idx] = el} src={roleContent} draggable='false' style={{width: "100%", position: 'absolute', backfaceVisibility: 'hidden'}}/>
             <img src={roleContentFlip} draggable='false' style={{width: "100%", position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden'}}/>
           </div>
@@ -271,18 +270,8 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
 
   useEffect(() => {
     if(status === Status.LIB_SPY_GUESS){
-      setPauseChoosing(true)
-      setTimeout(() => setPauseChoosing(false), 7500) //give 6 seconds for policy to enact + 1.5 seconds for flip animation
-    }
-    else if(status === Status.PRES_DISCARD){
-      setPauseChoosing(true)
-      setTimeout(() => setPauseChoosing(false), 1200) //allow player to see the policies draw
-    }
-
-    if(status === Status.LIB_SPY_GUESS){
       setHitlerFlippedForLibSpyGuess(true)
     }
-
   }, [status])
 
   function showOwnRole(player){
@@ -308,18 +297,11 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
   }
 
   //xs: `min(100vw, calc(70px * ${n}))`,
-  // console.log( ( window.innerHeight - (56 + boardDimensions.y) ) / 1.8 * n)
-  // console.log(boardDimensions.y)
-  // console.log(playersDimensions)
   return (
     <Box ref={playersRef} sx={{width: {xs: 'calc(100vw-10px)', sm: `calc((100vh - (56px + ${boardDimensions.y}px)) / 1.8 * ${n} )`}, minWidth: {sm: `calc(60px * ${n})`, md: `calc(90px * ${n})`}, maxWidth: {sm: `min(calc(100vw - 10px), calc(140px * ${n}))`}, display: 'flex', margin: '0 5px'}}>
         <Grid container spacing={{xs: .5, sm: 1}}>
           {renderPlayers}
         </Grid>
-        {/* <Box sx={{width: '100px', position: 'relative'}}>
-        <img src={roleBackPng} draggable='false' style={{width: "100%", position: 'absolute', backfaceVisibility: 'hidden'}}/>
-        <img src={jaPng} draggable='false' style={{width: "100%", position: 'absolute', transform: 'rotateY(180deg)'}}/>
-        </Box> */}
     </Box>
   )
 }

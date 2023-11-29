@@ -33,6 +33,7 @@ export default function Game({name, game, setGame, isConnected}) {
   const playerImageRefs = useRef([])
   const [recycleConfetti, setRecycleConfetti] = useState(true)
   const [runConfetti, setRunConfetti] = useState(false)
+  const [pauseActions, setPauseActions] = useState(false)
   //redundant join by just in case someone navigates directly or refreshes page
   useEffect(()=>{
     if(isConnected){
@@ -163,12 +164,36 @@ export default function Game({name, game, setGame, isConnected}) {
     setTimeout(() => setOpacity(1), 300)
   }, [])
 
-  async function remakeGame(){
-    await post(`/game/remake/${id}`, {name})
-  }
 
   useEffect(() => {
-    if(game.remakeId){
+    if(game?.status === Status.LIB_SPY_GUESS){
+      pauseActions(7500)
+    }
+    else if(game?.status === Status.PRES_DISCARD){
+      pauseActions(1200)
+    }
+    else if(game?.status === Status.VOTE){
+      pauseActions(800)
+    }
+    else if(game?.status === Status.CHAN_CLAIM){
+      pauseActions(4000)
+    }
+    else if(game?.status === Status.INV_CLAIM){
+      pauseActions(3500)
+    }
+    else{
+      pauseActions(700) // time for fade out content and uncenter
+    }
+
+    function pauseActions(timeout){
+      setPauseActions(true)
+      setTimeout(() => setPauseActions(false), timeout)
+
+    }
+  }, [game?.status])
+
+  useEffect(() => {
+    if(game?.remakeId){
       const timeout = (game.players.findIndex(player => player.name === name) + 1) * 1000  //timeout so all players don't join at once and cause concurrency issue
       setTimeout(() => navigate(`/lobby/${game.remakeId}`), timeout)
     }
@@ -211,19 +236,19 @@ export default function Game({name, game, setGame, isConnected}) {
             Game ID: {id}
           </Typography>
           <Button color="inherit" onClick={() => setRoleOpen(true)} sx={{fontFamily: 'inter', fontSize: {xs: '14px'}}}>Role</Button>
-          <Button color="inherit" onClick={remakeGame} sx={{fontFamily: 'inter', fontSize: {xs: '14px'}}}>Remake</Button>
+          <Button color="inherit" onClick={ async () => await post(`/game/remake/${id}`, {name})} sx={{fontFamily: 'inter', fontSize: {xs: '14px'}}}>Remake</Button>
         </Toolbar>
       </AppBar>
       <Box sx={{marginTop: {xs:'30px', sm: '56px'}}}/>
       <RoleDialog thisPlayer={thisPlayer} game={game} roleOpen={roleOpen} setRoleOpen={setRoleOpen} setConfirmFascOpen={setConfirmFascOpen} />
       <Box sx={{display: 'flex', flexDirection: {xs: 'column', sm: 'row'}, maxHeight: {sm: `${boardDimensions.y}px`}}}>
-        <Board boardRef={boardRef} boardImageRefs={boardImageRefs} game={game} name={name} id={id} setError={setError} boardDimensions={boardDimensions} playersDimensions={playersDimensions}/>
+        <Board boardRef={boardRef} boardImageRefs={boardImageRefs} game={game} name={name} id={id} setError={setError} boardDimensions={boardDimensions} playersDimensions={playersDimensions} pauseActions={pauseActions} setPauseActions={setPauseActions}/>
         {/* hacky, but logChat gets hidden on xs and rendered a few lines down to be below the players */}
         <Box sx={{display: {xs:'none', sm: 'flex', flex: 1}}}>
           <LogChat game={game} name={name} boardDimensions={boardDimensions} playersDimensions={playersDimensions}/>
         </Box>
       </Box>
-      <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} playerImageRefs={playerImageRefs} playersRef={playersRef} playersDimensions={playersDimensions} boardDimensions={boardDimensions}/>
+      <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} playerImageRefs={playerImageRefs} playersRef={playersRef} playersDimensions={playersDimensions} boardDimensions={boardDimensions} pauseActions={pauseActions} setPauseActions={setPauseActions}/>
       <Box sx={{display: {xs:'flex', sm: 'none'}, marginTop: '15px'}}>
           <LogChat game={game} name={name} boardDimensions={boardDimensions} playersDimensions={playersDimensions}/>
         </Box>

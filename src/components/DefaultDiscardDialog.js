@@ -10,7 +10,7 @@ import fascPolicyPng from '../img/FascPolicy.png'
 
 
 export default function DefaulDiscardDialog({game, name, showDiscardDialog, setShowDiscardDialog, presDiscard, boardDimensions}) {
-  const policyWidth = boardDimensions.x / 8.2
+  const policyWidth = boardDimensions.x / 7.8
   // const policyBorderRadius = policyWidth / 18
 
   function getPolicyImg(card){
@@ -29,7 +29,7 @@ export default function DefaulDiscardDialog({game, name, showDiscardDialog, setS
           {"You discarded:"}
         </DialogTitle>
         <DialogContent sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-          <img src={getPolicyImg(presDiscard)} draggable='false' style={{width: '60%'}}/>
+          <img src={getPolicyImg(presDiscard)} draggable='false' style={{width: '50%'}}/>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowDiscardDialog(false)}>Ok</Button>

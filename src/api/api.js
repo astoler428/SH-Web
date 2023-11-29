@@ -13,6 +13,7 @@ export async function post(path, payload){
     return await client.post(path, payload)
   }
   catch (err) {
+    console.log(err)
     console.log(err?.response?.data?.message)
   }
 }
