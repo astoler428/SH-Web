@@ -16,6 +16,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
   const [otherContent, setOtherContent] = useState(null)
   const [uncenterContentTime, setUncenterContentTime] = useState(new Date().getTime())
   const [showTop3PoliciesNotClaim, setShowTop3PoliciesNotClaim] = useState(true) //first show policies
+  const [keepShowingVoteSelection, setKeepShowingVoteSelection] = useState(true) //when show vote starts - keep showing the players selected vote
   const isCurrentPres = game.currentPres === name
   const isCurrentChan = game.currentChan === name
   const thisPlayer = game.players.find(player => player.name === name)
@@ -25,7 +26,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
   const status = game.status
   let title, content, _blur = false, showDefaultOption = false
 
-  if(status === Status.VOTE && thisPlayer.alive){
+  if( (status === Status.VOTE || (status === Status.SHOW_VOTE_RESULT && keepShowingVoteSelection)) && thisPlayer.alive){
     title = 'SELECT A VOTE.'
     content = showVoteCards()
     _blur = true
@@ -110,17 +111,26 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
   }
 
 
-
   useEffect(()=>{
+    if(status === Status.SHOW_VOTE_RESULT && keepShowingVoteSelection){
+      setActionContent(content)
+      setTimeout(() => setKeepShowingVoteSelection(false), 300)
+      return
+    }
+
     if(centerContent){
       setCenterContent(false)
     }
     if(blur){
       setBlur(false)
     }
+
+    if(status !== Status.SHOW_VOTE_RESULT && !keepShowingVoteSelection){
+      setKeepShowingVoteSelection(true)
+    }
     // setUncenterContentTime(new Date().getTime())
 
-  }, [status, showTop3PoliciesNotClaim])
+  }, [status, showTop3PoliciesNotClaim, keepShowingVoteSelection])
 
   useEffect(() => {
     if(!centerContent && !pauseActions){
@@ -128,10 +138,10 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
         setActionContent(content)
         setActionTitle(title)
         setOtherContent(
-        <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
-          {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && <Button variant='contained' color='secondary' sx={{fontSize: {xs: '1em', md: '14px'} }} onClick={handleVetoRequest}>Request Veto</Button>}
-          {showDefaultOption && <Button variant='contained' style={{backgroundColor: colors.default}} sx={{fontSize: {xs: '1em', md: '14px'}}} onClick={handleDefaultAction}>Default to Role</Button>}
-          {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && <Button variant='contained' color='secondary' sx={{fontSize: {xs: '1em', md: '14px'}}} onClick={() => setShowTop3PoliciesNotClaim(false)}>Make Claim</Button> }
+        <Box sx={{display: 'flex', flexDirection: 'column', gap: 1, width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`}}>
+          {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && <Button variant='contained' color='secondary' sx={{fontSize: {xs: 'min(1em, 16px)'} }} onClick={handleVetoRequest}>Request Veto</Button>}
+          {showDefaultOption && <Button variant='contained' style={{backgroundColor: colors.default}} sx={{fontSize: {xs: 'min(1em, 16px)'}}} onClick={handleDefaultAction}>Default to Role</Button>}
+          {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && <Button variant='contained' color='secondary' sx={{fontSize: {xs: 'min(1em, 16px)'}}} onClick={() => setShowTop3PoliciesNotClaim(false)}>Make Claim</Button> }
         </Box>
         )
         setBlur(_blur)
@@ -160,10 +170,10 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
     setActionContent(content)
     setActionTitle(title)
     setOtherContent(
-    <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
-      {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && <Button variant='contained' color='secondary' sx={{fontSize: {xs: '1em', md: '14px'} }} onClick={handleVetoRequest}>Request Veto</Button>}
-      {showDefaultOption && <Button variant='contained' style={{backgroundColor: colors.default}} sx={{fontSize: {xs: '1em', md: '14px'}}} onClick={handleDefaultAction}>Default to Role</Button>}
-      {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && <Button variant='contained' color='secondary' sx={{fontSize: {xs: '1em', md: '14px'}}} onClick={() => setShowTop3PoliciesNotClaim(false)}>Make Claim</Button> }
+    <Box sx={{display: 'flex', flexDirection: 'column', gap: 1, width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`}}>
+      {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && <Button variant='contained' color='secondary' sx={{fontSize: {xs: 'min(1em, 16px)'} }} onClick={handleVetoRequest}>Request Veto</Button>}
+      {showDefaultOption && <Button variant='contained' style={{backgroundColor: colors.default}} sx={{fontSize: {xs: 'min(1em, 16px)'}}} onClick={handleDefaultAction}>Default to Role</Button>}
+      {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && <Button variant='contained' color='secondary' sx={{fontSize: {xs: 'min(1em, 16px)'}}} onClick={() => setShowTop3PoliciesNotClaim(false)}>Make Claim</Button> }
     </Box>
     )
   }, [boardDimensions, playersDimensions])
@@ -174,9 +184,9 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
       setActionTitle(title)
       setOtherContent(
       <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
-        {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && <Button variant='contained' color='secondary' sx={{fontSize: {xs: '1em', md: '14px'} }} onClick={handleVetoRequest}>Request Veto</Button>}
-        {showDefaultOption && <Button variant='contained' style={{backgroundColor: colors.default}} sx={{fontSize: {xs: '1em', md: '14px'}}} onClick={handleDefaultAction}>Default to Role</Button>}
-        {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && <Button variant='contained' color='secondary' sx={{fontSize: {xs: '1em', md: '14px'}}} onClick={() => setShowTop3PoliciesNotClaim(false)}>Make Claim</Button> }
+        {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && <Button variant='contained' color='secondary' sx={{fontSize: {xs: 'min(1em, 16px)'} }} onClick={handleVetoRequest}>Request Veto</Button>}
+        {showDefaultOption && <Button variant='contained' style={{backgroundColor: colors.default}} sx={{fontSize: {xs: 'min(1em, 16px)'}}} onClick={handleDefaultAction}>Default to Role</Button>}
+        {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && <Button variant='contained' color='secondary' sx={{fontSize: {xs: 'min(1em, 16px)'}}} onClick={() => setShowTop3PoliciesNotClaim(false)}>Make Claim</Button> }
       </Box>
       )
     }
@@ -185,8 +195,8 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
   function showVoteCards(){
     return (
       <>
-        <img onClick={()=> handleVote(Vote.JA)} draggable='false' src={jaPng} style={{width: boardDimensions.x/4.5, boxShadow: thisPlayer.vote === Vote.JA ? '0 0 10px 8px #79DFA0' : 'none', cursor: 'pointer' }}/>
-        <img onClick={()=> handleVote(Vote.NEIN)} draggable='false' src={neinPng} style={{width: boardDimensions.x/4.5, boxShadow: thisPlayer.vote === Vote.NEIN ? '0 0 10px 8px #79DFA0' : 'none', cursor: 'pointer' }}/>
+        <img onClick={()=> status === Status.VOTE ? handleVote(Vote.JA) : {}} draggable='false' src={jaPng} style={{width: boardDimensions.x/4.5, boxShadow: thisPlayer.vote === Vote.JA ? `0 0 6px ${boardDimensions.x/50}px #79DFA0` : 'none', cursor: status === Status.SHOW_VOTE_RESULT ? 'auto' : 'pointer', transition: 'box-shadow .3s' }}/>
+        <img onClick={()=> status === Status.VOTE ? handleVote(Vote.NEIN) : {}} draggable='false' src={neinPng} style={{width: boardDimensions.x/4.5, boxShadow: thisPlayer.vote === Vote.NEIN ? `0 0 6px ${boardDimensions.x/50}px #79DFA0` : 'none', cursor: status === Status.SHOW_VOTE_RESULT ? 'auto' : 'pointer', transition: 'box-shadow .3s' }}/>
       </>
     )
   }
@@ -195,7 +205,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
     const presPolicies = game.presCards.map(card => {
       const policyImg = getPolicyImg(card)
       return (
-        <img key={Math.random()} draggable='false' data-key={card.color} onClick={handlePresDiscard} src={policyImg} style={{width: boardDimensions.x/6, cursor: 'pointer' }}/>
+        <img key={Math.random()} className="choosable-policy" draggable='false' data-key={card.color} onClick={handlePresDiscard} src={policyImg} style={{width: boardDimensions.x/6, cursor: 'pointer' }}/>
       )
     })
     return presPolicies
@@ -205,7 +215,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
     const chanCards = game.chanCards.map(card => {
       const policyImg = getPolicyImg(card)
       return (
-        <img key={Math.random()} draggable='false' data-key={card.color} onClick={handleChanPlay} src={policyImg} style={{width: boardDimensions.x/6, cursor: 'pointer' }}/>
+        <img key={Math.random()} className="choosable-policy" draggable='false' data-key={card.color} onClick={handleChanPlay} src={policyImg} style={{width: boardDimensions.x/6, cursor: 'pointer' }}/>
       )
     })
     return chanCards
@@ -214,10 +224,10 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
   function showPresClaims(){
     return (
     <Box onClick={handlePresClaim} sx={{display: 'flex', flexDirection: 'column', width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`, gap: {xs: 1, sm: .5, md: 2}}}>
-      <Button variant='contained' data-key={PRES3.RRR} sx={{'&:hover': {backgroundColor: colors.fascBackground}, backgroundColor: colors.fasc, fontSize: {xs: '1em', md: '14px'}}}>3 Fascist policies</Button>
-      <Button variant='contained' data-key={PRES3.RRB} color='inherit' sx={{lineHeight: {sm: '12px', md: '16px'}, fontSize: {xs: '1em', md: '14px'}}}>2 Fascist and a Liberal policy</Button>
-      <Button variant='contained' data-key={PRES3.RBB} sx={{'&:hover': {backgroundColor: colors.libBackground},lineHeight: {sm: '12px', md: '16px'}, backgroundColor: colors.lib, fontSize: {xs: '1em', md: '14px'}}}>2 Liberal and a Fascist policy</Button>
-      <Button variant='contained' data-key={PRES3.BBB} sx={{'&:hover': {backgroundColor: colors.darkLibBackground}, backgroundColor: colors.libDark, fontSize: {xs: '1em', md: '14px'}}}>3 Liberal policies</Button>
+      <Button variant='contained' data-key={PRES3.RRR} sx={{'&:hover': {backgroundColor: colors.fascBackground}, backgroundColor: colors.fasc, fontSize: {xs: 'min(1em, 16px)'}}}>3 Fascist policies</Button>
+      <Button variant='contained' data-key={PRES3.RRB} color='inherit' sx={{lineHeight: {xs: '1.2em'}, fontSize: {xs: 'min(1em, 16px)'}}}>2 Fascist and a Liberal policy</Button>
+      <Button variant='contained' data-key={PRES3.RBB} sx={{'&:hover': {backgroundColor: colors.libBackground},lineHeight: {xs: '1.2em'}, backgroundColor: colors.lib, fontSize: {xs: 'min(1em, 16px)'}}}>2 Liberal and a Fascist policy</Button>
+      <Button variant='contained' data-key={PRES3.BBB} sx={{'&:hover': {backgroundColor: colors.darkLibBackground}, backgroundColor: colors.libDark, fontSize: {xs: 'min(1em, 16px)'}}}>3 Liberal policies</Button>
     </Box>
     )
   }
@@ -225,9 +235,9 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
   function showChanClaims(){
     return (
     <Box onClick={handleChanClaim} sx={{display: 'flex', flexDirection: 'column', width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`, gap: {xs: 1, md: 2}}}>
-      <Button variant='contained' data-key={CHAN2.RR} sx={{'&:hover': {backgroundColor: colors.fascBackground}, backgroundColor: colors.fasc, fontSize: {xs: '1em', md: '14px'}}}>2 Fascist policies</Button>
-      <Button variant='contained' data-key={CHAN2.RB} color='inherit' sx={{lineHeight: {sm: '12px', md: '16px'}, fontSize: {xs: '1em', md: '14px'}}}>A Fascist and a Liberal policy</Button>
-      <Button variant='contained' data-key={CHAN2.BB} sx={{'&:hover': {backgroundColor: colors.libBackground}, backgroundColor: colors.lib, fontSize: {xs: '1em', md: '14px'}}}>2 Liberal policies</Button>
+      <Button variant='contained' data-key={CHAN2.RR} sx={{'&:hover': {backgroundColor: colors.fascBackground}, backgroundColor: colors.fasc, fontSize: {xs: 'min(1em, 16px)'}}}>2 Fascist policies</Button>
+      <Button variant='contained' data-key={CHAN2.RB} color='inherit' sx={{lineHeight: {xs: '1.2em'}, fontSize: {xs: 'min(1em, 16px)'}}}>A Fascist and a Liberal policy</Button>
+      <Button variant='contained' data-key={CHAN2.BB} sx={{'&:hover': {backgroundColor: colors.libBackground}, backgroundColor: colors.lib, fontSize: {xs: 'min(1em, 16px)'}}}>2 Liberal policies</Button>
     </Box>
     )
   }
@@ -235,8 +245,8 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
   function showInvClaims(){
     return (
     <Box onClick={handleInvClaim} sx={{display: 'flex', flexDirection: 'column', width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`, gap: {xs: 1, md: 2}}}>
-      <Button variant='contained' data-key={Team.LIB}  sx={{'&:hover': {backgroundColor: colors.libBackground}, backgroundColor: colors.lib, fontSize: {xs: '1em', md: '14px'}}}>Liberal</Button>
-      <Button variant='contained' data-key={Team.FASC} sx={{'&:hover': {backgroundColor: colors.fascBackground}, backgroundColor: colors.fasc, fontSize: {xs: '1em', md: '14px'}}}>Fascist</Button>
+      <Button variant='contained' data-key={Team.LIB}  sx={{'&:hover': {backgroundColor: colors.libBackground}, backgroundColor: colors.lib, fontSize: {xs: 'min(1em, 16px)'}}}>Liberal</Button>
+      <Button variant='contained' data-key={Team.FASC} sx={{'&:hover': {backgroundColor: colors.fascBackground}, backgroundColor: colors.fasc, fontSize: {xs: 'min(1em, 16px)'}}}>Fascist</Button>
     </Box>
     )
   }
@@ -247,20 +257,22 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
       showTop3PoliciesNotClaim ? top3 :
       <>
         <Box onClick={handleInspect3Claim} sx={{display: 'flex', flexDirection: 'column', width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`, gap: {xs: 1, sm: .5, md: 2}}}>
-          <Button variant='contained' data-key={PRES3.RRR} sx={{'&:hover': {backgroundColor: colors.fascBackground}, backgroundColor: colors.fasc, fontSize: {xs: '1em', md: '14px'}}}>3 Fascist policies</Button>
-          <Button variant='contained' data-key={PRES3.RRB} color='inherit' sx={{lineHeight: {sm: '12px', md: '16px'}, fontSize: {xs: '1em', md: '14px'}}}>2 Fascist and a Liberal policy</Button>
-          <Button variant='contained' data-key={PRES3.RBB} sx={{'&:hover': {backgroundColor: colors.libBackground}, backgroundColor: colors.lib, lineHeight: {sm: '12px', md: '16px'}, fontSize: {xs: '1em', md: '14px'}}}>2 Liberal and a Fascist policy</Button>
-          <Button variant='contained' data-key={PRES3.BBB} sx={{'&:hover': {backgroundColor: colors.darkLibBackground}, backgroundColor: colors.libDark, fontSize: {xs: '1em', md: '14px'}}}>3 Liberal policies</Button>
+          <Button variant='contained' data-key={PRES3.RRR} sx={{'&:hover': {backgroundColor: colors.fascBackground}, backgroundColor: colors.fasc, fontSize: {xs: 'min(1em, 16px)'}}}>3 Fascist policies</Button>
+          <Button variant='contained' data-key={PRES3.RRB} color='inherit' sx={{lineHeight: {sm: '12px', md: '16px'}, fontSize: {xs: 'min(1em, 16px)'}}}>2 Fascist and a Liberal policy</Button>
+          <Button variant='contained' data-key={PRES3.RBB} sx={{'&:hover': {backgroundColor: colors.libBackground}, backgroundColor: colors.lib, lineHeight: {sm: '12px', md: '16px'}, fontSize: {xs: 'min(1em, 16px)'}}}>2 Liberal and a Fascist policy</Button>
+          <Button variant='contained' data-key={PRES3.BBB} sx={{'&:hover': {backgroundColor: colors.darkLibBackground}, backgroundColor: colors.libDark, fontSize: {xs: 'min(1em, 16px)'}}}>3 Liberal policies</Button>
         </Box>
       </>
     )
   }
 
+  console.log(game.deck)
+
   function showVetoOptions(){
     return (
     <Box onClick={handleVetoReply} sx={{display: 'flex', flexDirection: 'column', width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`, gap: {xs: 2}}}>
-      <Button variant='contained' data-key={true} sx={{'&:hover': {backgroundColor: colors.libBackground}, backgroundColor: colors.lib, fontSize: {xs: '1em', md: '14px'}}}>Accept</Button>
-      <Button variant='contained' data-key={false} sx={{'&:hover': {backgroundColor: colors.fascBackground}, backgroundColor: colors.fasc, fontSize: {xs: '1em', md: '14px'}}}>Decline</Button>
+      <Button variant='contained' data-key={true} sx={{'&:hover': {backgroundColor: colors.libBackground}, backgroundColor: colors.lib, fontSize: {xs: 'min(1em, 16px)'}}}>Accept</Button>
+      <Button variant='contained' data-key={false} sx={{'&:hover': {backgroundColor: colors.fascBackground}, backgroundColor: colors.fasc, fontSize: {xs: 'min(1em, 16px)'}}}>Decline</Button>
     </Box>
     )
   }

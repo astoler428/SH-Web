@@ -1,3 +1,10 @@
 img{
   user-select: none;
 }
+
+.choosable-policy{
+  transition: box-shadow .2s ease;
+}
+.choosable-policy:active:hover{
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}

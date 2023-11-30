@@ -154,9 +154,10 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
         overlayContentFlip = getVote(player)
 
         const jas = game.players.reduce((acc, player) => player.vote === Vote.JA ? acc+1 : acc, 0)
-        const numVotes = game.players.reduce((acc, player) => player.vote ? acc+1 : acc, 0)
+        const numVotes = game.players.reduce((n, player) => player.alive ? n + 1 : n, 0)
         const voteSplit = Math.min(jas, numVotes - jas)
         flipAndDownDuration = voteSplit <= 1 ? 4 : voteSplit <= 3 ? 5 : 6
+        console.log(jas, numVotes, voteSplit, flipAndDownDuration)
         animation = `flipAndDown ${flipAndDownDuration}s forwards`
       }
     }
@@ -228,7 +229,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
           <style>{choosableKeyFrameStyles}</style>
           {/* first rolebackimg is just a place holder */}
             <img src={roleBackPng}  style={{width: "100%", visibility: 'hidden'}}/>
-          <div style={{position: 'absolute', zIndex: 10, width: '99.8%', height: '99.8%', transform: 'translate(.1%, -.1%)',  backgroundColor: 'transparent', perspective: 1000, left: 0, bottom: 0, transformStyle: 'preserve-3d', animation: roleAnimation,}}>
+          <div style={{position: 'absolute', zIndex: 10, width: '99.6%', height: '99.6%', transform: 'translate(.2%, -.2%)',  backgroundColor: 'transparent', perspective: 1000, left: 0, bottom: 0, transformStyle: 'preserve-3d', animation: roleAnimation,}}>
             <img ref={el => playerImageRefs.current[idx] = el} src={roleContent} draggable='false' style={{width: "100%", position: 'absolute', backfaceVisibility: 'hidden'}}/>
             <img src={roleContentFlip} draggable='false' style={{width: "100%", position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden'}}/>
           </div>
