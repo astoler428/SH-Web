@@ -3,7 +3,7 @@ import {Box} from '@mui/material'
 import PolicyBack from '../img/PolicyBack.png';
 import DrawPile from '../img/DrawPile.png'
 import DiscardPile from '../img/DiscardPile.png'
-import {colors, drawPolicyAnimation} from '../consts'
+import {colors, policyPileAnimation} from '../consts'
 
 export default function PolicyPiles({game, boardDimensions}) {
   // const horizontal = boardDimensions.x/35
@@ -17,7 +17,7 @@ export default function PolicyPiles({game, boardDimensions}) {
       const n = policyPilesState.drawPile - game.deck.drawPile.length
       const iterations = Math.abs(n) > 3 ? 1 : Math.abs(n) //means putting discard pile back
       const setPolicyStateTimeout = n === 3 ? animationTime*2000 + 300 : animationTime*1000 + 300 //the 2 seconds is so if 3 cards left in deck, the deck shows blank as 3rd card is drawn
-      setDrawPileAnimation(`drawPolicy ${animationTime}s ${iterations} ${n === 1 ? '1s' : '.3s'} ${n > 0 ? '' : 'forwards reverse'}`) //delay 1s if topdeck to wait for tracker
+      setDrawPileAnimation(`policyPile ${animationTime}s ${iterations} ${n === 1 ? '1s' : '.3s'} ${n > 0 ? '' : 'forwards reverse'}`) //delay 1s if topdeck to wait for tracker
       setTimeout(() => setPolicyPilesState(prevState => ({...prevState, drawPile: game.deck.drawPile.length})), setPolicyStateTimeout)
       setTimeout(() => setDrawPileAnimation(''), animationTime*iterations*1000 + 300)
     }
@@ -25,7 +25,7 @@ export default function PolicyPiles({game, boardDimensions}) {
       const n = policyPilesState.discardPile - game.deck.discardPile.length
       const iterations = Math.abs(n) > 2 ? 1 : Math.abs(n) // > 2 means putting back in draw pile. 1 means discard, 2 from veto accepted
       const setPolicyStateTimeout = Math.abs(n) > 2 ? 0 + 300 : animationTime*1000 + 300
-      setDiscardPileAnimation(`drawPolicy ${animationTime}s ${iterations} .3s ${n > 0 ? '' : 'forwards reverse'}`)
+      setDiscardPileAnimation(`policyPile ${animationTime}s ${iterations} .3s ${n > 0 ? '' : 'forwards reverse'}`)
       setTimeout(() => setPolicyPilesState(prevState => ({...prevState, discardPile: game.deck.discardPile.length})), setPolicyStateTimeout)
       setTimeout(() => setDiscardPileAnimation(''), animationTime*iterations*1000 + 300)
 
@@ -33,7 +33,7 @@ export default function PolicyPiles({game, boardDimensions}) {
   }, [game.status])
 
   const policyPilesWidth = boardDimensions.x/12
-  const policyPileKeyFrames = drawPolicyAnimation(policyPilesWidth)
+  const policyPileKeyFrames = policyPileAnimation(policyPilesWidth)
   const countStyles = {
     position: 'absolute',
     top: 0,
@@ -72,7 +72,7 @@ export default function PolicyPiles({game, boardDimensions}) {
           <img src={DiscardPile} draggable='false' style={{ width: '100%' }}/>
           <style>{policyPileKeyFrames}</style>
           <Box sx={{position: 'absolute', left: boardDimensions.x/95, bottom: boardDimensions.x/38, width: policyPilesWidth}}>
-            <img src={PolicyBack} draggable='false' style={{ width: '100%', visibility: policyPilesState.discardPile === 0 ? 'hidden' : 'visible' }}/>
+            <img src={PolicyBack} draggable='false' style={{width: '100%', visibility: policyPilesState.discardPile === 0 ? 'hidden' : 'visible' }}/>
             <img src={PolicyBack} draggable='false' style={{position: 'absolute', top: 0, left: 0, width: '100%', visibility: 'hidden', animation: discardPileAnimation}}/>
             <Box sx={{...countStyles, visibility: policyPilesState.discardPile === 0 ? 'hidden' : 'visible'}}>
               {policyPilesState.discardPile}

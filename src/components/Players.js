@@ -56,7 +56,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
     let animation = ''
     let roleAnimation = ''
     let chooseAnimation = ''
-    let nameColorTransition = ''
+    let nameColorTransition = 'color 1.5s'
     let flipAndDownDuration = 0 //varies based on vote split
 
     const thisPlayerInvestigatedPlayer = thisPlayer.investigations.some(invName => invName === player.name)

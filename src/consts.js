@@ -184,8 +184,8 @@ export const choosableAnimation = (width) =>`
   }
 }
 `
-export const drawPolicyAnimation = (top) =>`
-@keyframes drawPolicy {
+export const policyPileAnimation = (top) =>`
+@keyframes policyPile {
   0% {
     top: 0;
     visibility: visible;
