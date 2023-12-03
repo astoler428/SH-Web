@@ -168,6 +168,8 @@ export const claiming = (game, name) => (game.currentPres === name && game.statu
 
 export const gameOver = (status) => status === Status.END_FASC || status === Status.END_LIB
 
+export const gameEndedWithPolicyEnactment = (game, hitlerFlippedForLibSpyGuess) => (game.LibPoliciesEnacted === 5 && !hitlerFlippedForLibSpyGuess) || game.FascPoliciesEnacted === 6
+
 export const choosableAnimation = (width) =>`
 @keyframes choosable {
   0% {

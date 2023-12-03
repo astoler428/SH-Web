@@ -34,7 +34,7 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
 
   useEffect(() => {
     let timeout = 5800
-    if(boardState.tracker === 2 && (game.status === Status.CHOOSE_CHAN || game.tracker === 3)){ //means top deck. Choose chan means it didn't go to to chan claim, and when game ends ,tracker stays at 3
+    if(game.topDecked && (boardState.lib < game.LibPoliciesEnacted || boardState.fasc < game.FascPoliciesEnacted)){ //need additional policy check to ensure a refresh doesn't reanimate
       timeout = 6800
       if(boardState.lib < game.LibPoliciesEnacted){
         setAnimate(Policy.LIB)
@@ -64,11 +64,12 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
       }, timeout)
     }
 
+    //could refactor now to check game.topdeck
     if(boardState.tracker !== 3 && boardState.tracker !== game.tracker){ //advance tracker - if tracker is 3, that means I put it there and in middle of top deck
       setBoardState(prevBoardState => ({...prevBoardState, tracker: game.tracker}))
     }
 
-  }, [game.status])
+  }, [game.FascPoliciesEnacted, game.LibPoliciesEnacted]) //was game.status
 
     if(boardState.tracker === 3){
       policyDelay = 1

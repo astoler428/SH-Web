@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react'
-import {colors, Status, gameOver, Role, Team, GameType, Vote, choosableAnimation, upAndDownAnimation, flipAndDownAnimation, upAnimation, flipAnimation, flipAndUnflipAnimation, stillAnimation} from '../consts'
+import {colors, Status, gameOver, gameEndedWithPolicyEnactment, Role, Team, GameType, Vote, choosableAnimation, upAndDownAnimation, flipAndDownAnimation, upAnimation, flipAnimation, flipAndUnflipAnimation, stillAnimation} from '../consts'
 import {Card, CircularProgress, Grid, Typography, Box} from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
@@ -25,10 +25,10 @@ import partyBack from '../img/PartyBack.png'
 // const colors.lib = 'deepskyblue'
 // const colors.hidden = '#f5f5f5'
 
-export default function Players({name, game, handleChoosePlayer, playerImageRefs, playersRef, playersDimensions, boardDimensions, pauseActions, setPauseActions}) {
+export default function Players({name, game, handleChoosePlayer, playerImageRefs, playersRef, playersDimensions, boardDimensions, pauseActions, hitlerFlippedForLibSpyGuess, setHitlerFlippedForLibSpyGuess}) {
   const [firstRender, setFirstRender] = useState(true)
   // const [pauseChoosing, setPauseChoosing] = useState(false)
-  const [hitlerFlippedForLibSpyGuess, setHitlerFlippedForLibSpyGuess] = useState(false)
+  const [showPlayerCardLabels, setShowPlayerCardLabels] = useState(true) //basically just gameover or not but want a delay
   const thisPlayer = game.players.find(player => player.name === name)
   const n = game.players.length
   const status = game.status
@@ -45,6 +45,8 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
   const getTeamImg = (player) => player.team === Team.FASC ? [fascPartyPng, colors.fasc] : [libPartyPng, colors.lib]
   const getVote = (player) => player.vote === Vote.JA ? jaPng : player.vote === Vote.NEIN ? neinPng : errorPng
 
+  const gameOverDelay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess) ? (game.topDecked ? 7 : 6) : 2
+
   const renderPlayers = game?.players?.map((player, idx) => {
     let choosable = false
     let makingDecision = false
@@ -57,7 +59,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
     let roleAnimation = ''
     let chooseAnimation = ''
     let nameColorTransition = 'color 1.5s'
-    let flipAndDownDuration = 0 //varies based on vote split
+    let flipAndDownDuration = 4 //varies based on vote split
 
     const thisPlayerInvestigatedPlayer = thisPlayer.investigations.some(invName => invName === player.name)
 
@@ -81,7 +83,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
     }
 
     if(choosable){
-      chooseAnimation = 'choosable 1.3s infinite .7s'
+      chooseAnimation = 'choosable 1.3s infinite .5s'
     }
 
     //making decision for circular progress bar
@@ -157,7 +159,6 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
         const numVotes = game.players.reduce((n, player) => player.alive ? n + 1 : n, 0)
         const voteSplit = Math.min(jas, numVotes - jas)
         flipAndDownDuration = voteSplit <= 1 ? 4 : voteSplit <= 3 ? 5 : 6
-        console.log(jas, numVotes, voteSplit, flipAndDownDuration)
         animation = `flipAndDown ${flipAndDownDuration}s forwards`
       }
     }
@@ -175,7 +176,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
     else if(status === Status.LIB_SPY_GUESS && player.role === Role.HITLER && player.name !== name){
       roleContent = roleBackPng
       roleContentFlip = hitlerPng
-      const delay = game.tracker === 3 ? 7 : 6
+      const delay = game.topDecked ? 7 : 6
       roleAnimation = `flip 1.5s forwards ${delay}s`
       nameColor = colors.hitler
       nameColorTransition = `color 1.5s ${delay + 1.5}s`
@@ -197,9 +198,9 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
       if(roleContent === roleBackPng){
         roleContent = roleBackPng
         roleContentFlip = getRoleImg(player)[0]
-        const delay = (game.LibPoliciesEnacted === 5 && !hitlerFlippedForLibSpyGuess) || game.FascPoliciesEnacted === 6 ? (game.tracker === 3 ? 7 : 6) : 2
-        roleAnimation = `flip 3s forwards ${delay}s` //'flip 3s forwards 2.5s'
-        nameColorTransition = `color 1.5s ${delay+1.5}s`
+        // const delay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess) ? (game.topDecked ? 7 : 6) : 2
+        roleAnimation = `flip 3s forwards ${gameOverDelay}s` //'flip 3s forwards 2.5s'
+        nameColorTransition = `color 1.5s ${gameOverDelay+1.5}s`
     }
   }
 
@@ -237,7 +238,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
             <img src={overlayContent} draggable='false' style={{width: '100%', position: 'absolute', backfaceVisibility: 'hidden'}}/>
             <img src={overlayContentFlip} draggable='false' style={{width: '100%', position: 'absolute', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden'}}/>
           </div>
-          {!gameOver(status) &&
+          {showPlayerCardLabels && //used to be !(gameOver(status))
             <>
           {game.currentPres === player.name && <img src={presPng} draggable='false' style={{width: "100%", position: 'absolute', zIndex: 75, bottom: 0}}/>}
           {game.currentChan === player.name && <img src={chanPng} draggable='false' style={{width: "100%", position: 'absolute', zIndex: 75, bottom: 0}}/>}
@@ -247,8 +248,8 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
           <Box sx={{ position: 'absolute', zIndex: 100, left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
             <CircularProgress thickness={2.5} style={{color: colors.hidden, width: `calc(${playersDimensions.x}px / ${2.5*n} )`, height: `calc(${playersDimensions.x}px / ${2.5*n} )`}} />
           </Box>}
-          {!player.alive && <CloseIcon sx={{width: '100%', height: '100%', position: 'absolute', zIndex: 100, left: '50%', top: '50%', transform: 'translate(-50%, -50%)', color: 'red' }}/>}
-          {player.name === name && !showOwnRole(player) && <QuestionMarkIcon sx={{width: '100%', height: '100%', position: 'absolute', zIndex: 20, left: '50%', top: '50%', transform: 'translate(-50%, -50%)', color: 'black' }}/>}
+          <CloseIcon sx={{opacity: player.alive ? 0 : 1, transition: 'opacity 1.5s ease-in-out', width: '100%', height: '100%', position: 'absolute', zIndex: 150, left: '50%', top: '50%', transform: 'translate(-50%, -50%)', color: 'red' }}/>
+          {player.name === name && !showOwnRole(player) && <QuestionMarkIcon sx={{width: '100%', height: '100%', position: 'absolute', zIndex: 25, left: '50%', top: '50%', transform: 'translate(-50%, -50%)', color: 'black' }}/>}
             </>
           }
         </Card>
@@ -259,10 +260,11 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
   /**
    * zIndex order:
    * roleContent: 10
-   * Dead: 20
+   * blind ? role: 25
    * overlayContent: 50
    * prev and current pres and chan: 75
    * CircularProgress: 100
+   * Dead: 150
    */
 
   useEffect(() => {
@@ -272,6 +274,9 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
   useEffect(() => {
     if(status === Status.LIB_SPY_GUESS){
       setHitlerFlippedForLibSpyGuess(true)
+    }
+    else if(gameOver(status)){
+      setTimeout(() => setShowPlayerCardLabels(false), gameOverDelay*1000)
     }
   }, [status])
 

@@ -148,6 +148,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
         setCenterContent(true)
       }
       if(status === Status.INSPECT_TOP3 && !showTop3PoliciesNotClaim){
+        //need this here because there's no status change, so the automatic pause of 700 isn't set in game
         setTimeout(setEverything, 700)
       }
       else{
@@ -251,6 +252,8 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
     )
   }
 
+  // const top3 = game.top3.map(card => <img key={Math.random()} draggable='false' src={getPolicyImg(card)} style={{width: boardDimensions.x/6}}/>)
+  // console.log(top3)
   function showInspect3PoliciesAndClaims(){
     const top3 = game.top3.map(card => <img key={Math.random()} draggable='false' src={getPolicyImg(card)} style={{width: boardDimensions.x/6}}/>)
     return (
@@ -265,8 +268,6 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
       </>
     )
   }
-
-  console.log(game.deck)
 
   function showVetoOptions(){
     return (

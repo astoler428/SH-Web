@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from 'react-router'
 import client, {post} from '../api/api'
 import { socket } from '../socket'
-import {Status, UPDATE, colors, gameOver} from '../consts'
+import {Status, UPDATE, colors, gameEndedWithPolicyEnactment, gameOver} from '../consts'
 import Players from '../components/Players';
 import Board from '../components/Board';
 import Loading from '../components/Loading';
@@ -26,6 +26,7 @@ export default function Game({name, game, setGame, isConnected}) {
   const [error, setError] = useState(null)
   const [boardDimensions, setBoardDimensions] = useState({x: 0, y: 0})
   const [playersDimensions, setPlayersDimensions] = useState({x: 0, y: 0})
+  const [hitlerFlippedForLibSpyGuess, setHitlerFlippedForLibSpyGuess] = useState(false)
   const [opacity, setOpacity] = useState(0)
   const boardRef = useRef(null)
   const playersRef = useRef(null)
@@ -170,7 +171,7 @@ export default function Game({name, game, setGame, isConnected}) {
       pauseActions(7500)
     }
     else if(game?.status === Status.PRES_DISCARD){
-      pauseActions(1200)
+      pauseActions(1400)
     }
     else if(game?.status === Status.VOTE){
       pauseActions(800)
@@ -180,6 +181,9 @@ export default function Game({name, game, setGame, isConnected}) {
     }
     else if(game?.status === Status.INV_CLAIM){
       pauseActions(3500)
+    }
+    else if(game?.status === Status.CHOOSE_CHAN && game.topDecked){
+      pauseActions(4000)
     }
     else{
       pauseActions(700) // time for fade out content and uncenter
@@ -219,8 +223,10 @@ export default function Game({name, game, setGame, isConnected}) {
 
   useEffect(() => {
     if(gameOver(game?.status)){
-      setTimeout(() => setRunConfetti(true), 3000)
-      setTimeout(() => setRecycleConfetti(false), 8000)
+
+      const delay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess) ? (game.topDecked ? 5000 : 4000) : 1000
+      setTimeout(() => setRunConfetti(true), delay)
+      setTimeout(() => setRecycleConfetti(false), delay + 6000)
     }
   }, [game?.status])
 
@@ -248,7 +254,7 @@ export default function Game({name, game, setGame, isConnected}) {
           <LogChat game={game} name={name} boardDimensions={boardDimensions} playersDimensions={playersDimensions}/>
         </Box>
       </Box>
-      <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} playerImageRefs={playerImageRefs} playersRef={playersRef} playersDimensions={playersDimensions} boardDimensions={boardDimensions} pauseActions={pauseActions} setPauseActions={setPauseActions}/>
+      <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} playerImageRefs={playerImageRefs} playersRef={playersRef} playersDimensions={playersDimensions} boardDimensions={boardDimensions} pauseActions={pauseActions} hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess} setHitlerFlippedForLibSpyGuess={setHitlerFlippedForLibSpyGuess}/>
       <Box sx={{display: {xs:'flex', sm: 'none'}, marginTop: '15px'}}>
           <LogChat game={game} name={name} boardDimensions={boardDimensions} playersDimensions={playersDimensions}/>
         </Box>
