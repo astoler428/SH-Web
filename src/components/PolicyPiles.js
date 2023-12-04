@@ -12,10 +12,18 @@ export default function PolicyPiles({game, boardDimensions}) {
   const discardPileLength = game.deck.discardPile.length
   const [policyPilesState, setPolicyPilesState] = useState({drawPile: drawPileLength, discardPile: discardPileLength})
   const [newPolicyPilesState, setNewPolicyPilesState] = useState({drawPile: drawPileLength, discardPile: discardPileLength})
+  const [isResizing, setIsResizing] = useState(false)
 
   const initialDelay = .2
   const delayBetweenPolicies = .2
   const additionalDelayAffectingLabelValue = 800
+
+  useEffect(() => {
+    window.addEventListener('resize', () => {
+      setIsResizing(true)
+      setTimeout(() => setIsResizing(false), 200)
+    })
+  }, [])
 
   useEffect(() => {
     if(game.topDecked && drawPileLength > policyPilesState.drawPile){ //means reshuffled
@@ -80,7 +88,7 @@ export default function PolicyPiles({game, boardDimensions}) {
       top = policyPilesWidth*1.6
     }
     const delay = policyPilesState.drawPile - newPolicyPilesState.drawPile > 0 ? descDelay(i, policyPilesState.drawPile) : ascDelay(i, policyPilesState.drawPile)
-    const transition = `top 1s ${delay}s cubic-bezier(0.36, 0.7, 0.51, 0.94)`
+    const transition = isResizing ? '' : `top 1s ${delay}s cubic-bezier(0.36, 0.7, 0.51, 0.94)`
     drawPilePolicies.push(<img src={PolicyBack} key={i} draggable='false' style={{position: 'absolute', top, left: 0, width: '100%', transition}}/>)
   }
 
@@ -91,7 +99,7 @@ export default function PolicyPiles({game, boardDimensions}) {
       top = policyPilesWidth*1.6
     }
     const delay = policyPilesState.discardPile - newPolicyPilesState.discardPile > 0 ? descDelay(i, policyPilesState.discardPile) : ascDelay(i, policyPilesState.discardPile)
-    const transition = `top 1s ${delay}s cubic-bezier(0.36, 0.7, 0.51, 0.94)`
+    const transition = isResizing ? '' : `top 1s ${delay}s cubic-bezier(0.36, 0.7, 0.51, 0.94)`
     discardPilePolicies.push(<img src={PolicyBack} key={i} draggable='false' style={{position: 'absolute', top, left: 0, width: '100%', transition}}/>)
   }
 
