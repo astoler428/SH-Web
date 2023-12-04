@@ -11,8 +11,8 @@ import DefaulDiscardDialog from './DefaultDiscardDialog'
 export default function Action({game, name, id, setError, blur, setBlur, boardDimensions, playersDimensions, pauseActions, setPauseActions}) {
   const [showDiscardDialog, setShowDiscardDialog] = useState(false)
   const [centerContent, setCenterContent] = useState(false)
-  const [actionContent, setActionContent] = useState(false)
-  const [actionTitle, setActionTitle] = useState(false)
+  const [actionContent, setActionContent] = useState(null)
+  const [actionTitle, setActionTitle] = useState(null)
   const [otherContent, setOtherContent] = useState(null)
   const [uncenterContentTime, setUncenterContentTime] = useState(new Date().getTime())
   const [showTop3PoliciesNotClaim, setShowTop3PoliciesNotClaim] = useState(true) //first show policies
@@ -110,6 +110,17 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
     }
   }
 
+  // console.log(game.status, actionTitle)
+
+  /**
+   * order:
+   * previousActionContent set and centered
+   * new status comes in: new content is determined but old content is set
+   * immediately set to uncenter in useEffect, which does the fade
+   * at the same time, pause actions is set
+   * after pause actions is done - new content is set and centered
+   */
+
 
   useEffect(()=>{
     if(status === Status.SHOW_VOTE_RESULT && keepShowingVoteSelection){
@@ -133,7 +144,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
   }, [status, showTop3PoliciesNotClaim, keepShowingVoteSelection])
 
   useEffect(() => {
-    if(!centerContent && !pauseActions){
+    if(!centerContent && content && !pauseActions){  //need !centerContent otherwise infinite loop since this depends on centerContent and only set if there is content to set (otherwise flash)
       const setEverything = () => {
         setActionContent(content)
         setActionTitle(title)
@@ -165,18 +176,21 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
     }
   }, [centerContent, pauseActions])
 
+  console.log(centerContent)
 
 
   useEffect(() => {
-    setActionContent(content)
-    setActionTitle(title)
-    setOtherContent(
-    <Box sx={{display: 'flex', flexDirection: 'column', gap: 1, width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`}}>
+    if(centerContent && !pauseActions){
+      setActionContent(content)
+      setActionTitle(title)
+      setOtherContent(
+        <Box sx={{display: 'flex', flexDirection: 'column', gap: 1, width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`}}>
       {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && <Button variant='contained' color='secondary' sx={{fontSize: {xs: 'min(1em, 16px)'} }} onClick={handleVetoRequest}>Request Veto</Button>}
       {showDefaultOption && <Button variant='contained' style={{backgroundColor: colors.default}} sx={{fontSize: {xs: 'min(1em, 16px)'}}} onClick={handleDefaultAction}>Default to Role</Button>}
       {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && <Button variant='contained' color='secondary' sx={{fontSize: {xs: 'min(1em, 16px)'}}} onClick={() => setShowTop3PoliciesNotClaim(false)}>Make Claim</Button> }
     </Box>
     )
+  }
   }, [boardDimensions, playersDimensions])
 
   useEffect(() => {
@@ -224,7 +238,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
 
   function showPresClaims(){
     return (
-    <Box onClick={handlePresClaim} sx={{display: 'flex', flexDirection: 'column', width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`, gap: {xs: 1, sm: .5, md: 2}}}>
+    <Box onClick={handlePresClaim} sx={{display: 'flex', flexDirection: 'column', width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`, gap: {xs: 1, sm: .5, md: 1}}}>
       <Button variant='contained' data-key={PRES3.RRR} sx={{'&:hover': {backgroundColor: colors.fascBackground}, backgroundColor: colors.fasc, fontSize: {xs: 'min(1em, 16px)'}}}>3 Fascist policies</Button>
       <Button variant='contained' data-key={PRES3.RRB} color='inherit' sx={{lineHeight: {xs: '1.2em'}, fontSize: {xs: 'min(1em, 16px)'}}}>2 Fascist and a Liberal policy</Button>
       <Button variant='contained' data-key={PRES3.RBB} sx={{'&:hover': {backgroundColor: colors.libBackground},lineHeight: {xs: '1.2em'}, backgroundColor: colors.lib, fontSize: {xs: 'min(1em, 16px)'}}}>2 Liberal and a Fascist policy</Button>
@@ -235,7 +249,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
 
   function showChanClaims(){
     return (
-    <Box onClick={handleChanClaim} sx={{display: 'flex', flexDirection: 'column', width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`, gap: {xs: 1, md: 2}}}>
+    <Box onClick={handleChanClaim} sx={{display: 'flex', flexDirection: 'column', width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`, gap: {xs: 1, md: 1}}}>
       <Button variant='contained' data-key={CHAN2.RR} sx={{'&:hover': {backgroundColor: colors.fascBackground}, backgroundColor: colors.fasc, fontSize: {xs: 'min(1em, 16px)'}}}>2 Fascist policies</Button>
       <Button variant='contained' data-key={CHAN2.RB} color='inherit' sx={{lineHeight: {xs: '1.2em'}, fontSize: {xs: 'min(1em, 16px)'}}}>A Fascist and a Liberal policy</Button>
       <Button variant='contained' data-key={CHAN2.BB} sx={{'&:hover': {backgroundColor: colors.libBackground}, backgroundColor: colors.lib, fontSize: {xs: 'min(1em, 16px)'}}}>2 Liberal policies</Button>
@@ -245,7 +259,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
 
   function showInvClaims(){
     return (
-    <Box onClick={handleInvClaim} sx={{display: 'flex', flexDirection: 'column', width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`, gap: {xs: 1, md: 2}}}>
+    <Box onClick={handleInvClaim} sx={{display: 'flex', flexDirection: 'column', width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`, gap: {xs: 1, md: 1}}}>
       <Button variant='contained' data-key={Team.LIB}  sx={{'&:hover': {backgroundColor: colors.libBackground}, backgroundColor: colors.lib, fontSize: {xs: 'min(1em, 16px)'}}}>Liberal</Button>
       <Button variant='contained' data-key={Team.FASC} sx={{'&:hover': {backgroundColor: colors.fascBackground}, backgroundColor: colors.fasc, fontSize: {xs: 'min(1em, 16px)'}}}>Fascist</Button>
     </Box>
@@ -259,7 +273,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
     return (
       showTop3PoliciesNotClaim ? top3 :
       <>
-        <Box onClick={handleInspect3Claim} sx={{display: 'flex', flexDirection: 'column', width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`, gap: {xs: 1, sm: .5, md: 2}}}>
+        <Box onClick={handleInspect3Claim} sx={{display: 'flex', flexDirection: 'column', width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`, gap: {xs: 1, sm: .5, md: 1}}}>
           <Button variant='contained' data-key={PRES3.RRR} sx={{'&:hover': {backgroundColor: colors.fascBackground}, backgroundColor: colors.fasc, fontSize: {xs: 'min(1em, 16px)'}}}>3 Fascist policies</Button>
           <Button variant='contained' data-key={PRES3.RRB} color='inherit' sx={{lineHeight: {sm: '12px', md: '16px'}, fontSize: {xs: 'min(1em, 16px)'}}}>2 Fascist and a Liberal policy</Button>
           <Button variant='contained' data-key={PRES3.RBB} sx={{'&:hover': {backgroundColor: colors.libBackground}, backgroundColor: colors.lib, lineHeight: {sm: '12px', md: '16px'}, fontSize: {xs: 'min(1em, 16px)'}}}>2 Liberal and a Fascist policy</Button>

@@ -3,8 +3,8 @@ import {Box} from '@mui/material'
 import fasc5PlayerBoard from '../img/fasc5PlayerBoard.png'
 import fasc7PlayerBoard from '../img/fasc7PlayerBoard.png'
 import fasc9PlayerBoard from '../img/fasc9PlayerBoard.png'
-import libBoard from '../img/libBoard.png'
-import libPolicyPng from '../img/LibPolicy.png'
+import libBoard from '../img/libBoard.svg'
+import libPolicyPng from '../img/LibPolicy.svg'
 import fascPolicyPng from '../img/FascPolicy.png'
 import policyBackPng from '../img/PolicyBack.png';
 import Action from './Action';

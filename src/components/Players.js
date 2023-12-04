@@ -240,10 +240,10 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
           </div>
           {showPlayerCardLabels && //used to be !(gameOver(status))
             <>
-          {game.currentPres === player.name && <img src={presPng} draggable='false' style={{width: "100%", position: 'absolute', zIndex: 75, bottom: 0}}/>}
-          {game.currentChan === player.name && <img src={chanPng} draggable='false' style={{width: "100%", position: 'absolute', zIndex: 75, bottom: 0}}/>}
-          {game.prevPres === player.name && <img src={presPng} draggable='false' style={{opacity: .3, width: "100%", position: 'absolute', zIndex: 75, top: 0}}/>}
-          {game.prevChan === player.name && <img src={chanPng} draggable='false' style={{opacity: .3, width: "100%", position: 'absolute', zIndex: 75, top: 0}}/>}
+          <img src={presPng} draggable='false' style={{opacity: game.currentPres === player.name ? 1: 0, transition: 'opacity 1s', width: "100%", position: 'absolute', zIndex: 75, bottom: 0}}/>
+          <img src={chanPng} draggable='false' style={{opacity: game.currentChan === player.name ? 1: 0, transition: 'opacity 1s', width: "100%", position: 'absolute', zIndex: 75, bottom: 0}}/>
+          <img src={presPng} draggable='false' style={{opacity: game.prevPres === player.name ? .3 : 0, transition: 'opacity 1s', width: "100%", position: 'absolute', zIndex: 75, top: 0}}/>
+          <img src={chanPng} draggable='false' style={{opacity: game.prevChan === player.name ? .3 : 0, transition: 'opacity 1s', width: "100%", position: 'absolute', zIndex: 75, top: 0}}/>
           {makingDecision &&
           <Box sx={{ position: 'absolute', zIndex: 100, left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
             <CircularProgress thickness={2.5} style={{color: colors.hidden, width: `calc(${playersDimensions.x}px / ${2.5*n} )`, height: `calc(${playersDimensions.x}px / ${2.5*n} )`}} />
