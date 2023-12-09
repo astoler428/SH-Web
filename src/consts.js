@@ -186,14 +186,25 @@ export const choosableAnimation = (width) =>`
   }
 }
 `
-export const policyPileAnimation = (top) =>`
-@keyframes policyPile {
+export const policyPileDownAnimation = (top) =>`
+@keyframes policyPileDown {
   0% {
     top: 0;
-    visibility: visible;
+    animation-timing-function: cubic-bezier(.36,.7,.51,.94);
   }
   100% {
     top: ${top}px;
+  }
+}
+`
+export const policyPileUpAnimation = (top) =>`
+@keyframes policyPileUp {
+  0% {
+    top: ${top};
+    animation-timing-function: cubic-bezier(.36,.7,.51,.94);
+  }
+  100% {
+    top: 0px;
   }
 }
 `

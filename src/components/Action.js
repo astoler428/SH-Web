@@ -14,7 +14,6 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
   const [actionContent, setActionContent] = useState(null)
   const [actionTitle, setActionTitle] = useState(null)
   const [otherContent, setOtherContent] = useState(null)
-  const [uncenterContentTime, setUncenterContentTime] = useState(new Date().getTime())
   const [showTop3PoliciesNotClaim, setShowTop3PoliciesNotClaim] = useState(true) //first show policies
   const [keepShowingVoteSelection, setKeepShowingVoteSelection] = useState(true) //when show vote starts - keep showing the players selected vote
   const isCurrentPres = game.currentPres === name
@@ -139,12 +138,10 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
     if(status !== Status.SHOW_VOTE_RESULT && !keepShowingVoteSelection){
       setKeepShowingVoteSelection(true)
     }
-    // setUncenterContentTime(new Date().getTime())
-
   }, [status, showTop3PoliciesNotClaim, keepShowingVoteSelection])
 
   useEffect(() => {
-    if(!centerContent && content && !pauseActions){  //need !centerContent otherwise infinite loop since this depends on centerContent and only set if there is content to set (otherwise flash)
+    if(!centerContent && (content || title) && !pauseActions){  //need !centerContent otherwise infinite loop since this depends on centerContent and only set if there is content to set (otherwise flash)
       const setEverything = () => {
         setActionContent(content)
         setActionTitle(title)
@@ -165,19 +162,8 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
       else{
         setEverything()
       }
-      // const timeDifference = new Date().getTime() - uncenterContentTime
-      // if(timeDifference >= 700){
-      //   setEverything()
-      // }
-      // else{
-      //   setTimeout(setEverything, 700 - timeDifference) //needs to be enough time for left to transition back plus buffer to register
-      // }
-
     }
   }, [centerContent, pauseActions])
-
-  console.log(centerContent)
-
 
   useEffect(() => {
     if(centerContent && !pauseActions){
@@ -285,7 +271,7 @@ export default function Action({game, name, id, setError, blur, setBlur, boardDi
 
   function showVetoOptions(){
     return (
-    <Box onClick={handleVetoReply} sx={{display: 'flex', flexDirection: 'column', width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`, gap: {xs: 2}}}>
+    <Box onClick={handleVetoReply} sx={{display: 'flex', flexDirection: 'column', width: '80%', maxWidth: `min(250px, ${boardDimensions.x/2}px)`, gap: {xs: 1}}}>
       <Button variant='contained' data-key={true} sx={{'&:hover': {backgroundColor: colors.libBackground}, backgroundColor: colors.lib, fontSize: {xs: 'min(1em, 16px)'}}}>Accept</Button>
       <Button variant='contained' data-key={false} sx={{'&:hover': {backgroundColor: colors.fascBackground}, backgroundColor: colors.fasc, fontSize: {xs: 'min(1em, 16px)'}}}>Decline</Button>
     </Box>

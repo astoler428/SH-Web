@@ -171,7 +171,7 @@ export default function Game({name, game, setGame, isConnected}) {
       pauseActions(7500)
     }
     else if(game?.status === Status.PRES_DISCARD){
-      pauseActions(1400)
+      pauseActions(1700)
     }
     else if(game?.status === Status.VOTE){
       pauseActions(800)
