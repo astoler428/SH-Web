@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from 'react-router'
 import client, {post} from '../api/api'
 import { socket } from '../socket'
-import {Status, UPDATE, colors, gameEndedWithPolicyEnactment, gameOver} from '../consts'
+import {Status, UPDATE, colors, gameEndedWithPolicyEnactment, gameOver, TOP_DECK_DELAY} from '../consts'
 import Players from '../components/Players';
 import Board from '../components/Board';
 import Loading from '../components/Loading';
@@ -224,7 +224,7 @@ export default function Game({name, game, setGame, isConnected}) {
   useEffect(() => {
     if(gameOver(game?.status)){
 
-      const delay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess) ? (game.topDecked ? 5000 : 4000) : 1000
+      const delay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess) ? (game.topDecked ? 4000 + 1000*TOP_DECK_DELAY : 4000) : 1000
       setTimeout(() => setRunConfetti(true), delay)
       setTimeout(() => setRecycleConfetti(false), delay + 6000)
     }

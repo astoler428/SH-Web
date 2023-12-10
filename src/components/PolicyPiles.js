@@ -21,7 +21,7 @@ export default function PolicyPiles({game, boardDimensions}) {
 
   useEffect(() => {
     if(game.topDecked && drawPileLength > policyPilesState.drawPile){ //means reshuffled
-      setTimeout(() => setPolicyPileCountDisplay(prevState => ({...prevState, drawPile: prevState.drawPile - 1})), (initialDelay + 1) * 1000 - 300) //subtracting a little bc animation seems done earlier
+      setTimeout(() => setPolicyPileCountDisplay(prevState => ({...prevState, drawPile: prevState.drawPile - 1})), (initialDelay + 1) * 1000) //subtracting a little bc animation seems done earlier
       setTimeout(() => {
         setReadyToReshuffle(true)
         setTimeout(() => setPolicyPilesState({drawPile: drawPileLength, discardPile: discardPileLength}), drawPileAnimationTotalLength*1000)
@@ -32,8 +32,8 @@ export default function PolicyPiles({game, boardDimensions}) {
     }
     setReadyToReshuffle(false)
     if(policyPilesState.drawPile !== drawPileLength){
-      setTimeout(() => setPolicyPileCountDisplay(prevState => ({...prevState, drawPile: drawPileLength})), drawPileLength === 0 ? initialDelay * 1000 : drawPileAnimationTotalLength*1000 - 300) //subtracting a little bc animation seems done earlier
-      setTimeout(() => setPolicyPilesState(prevState => ({...prevState, drawPile: drawPileLength})), drawPileAnimationTotalLength*1000)
+      setTimeout(() => setPolicyPileCountDisplay(prevState => ({...prevState, drawPile: drawPileLength})), drawPileLength === 0 ? initialDelay * 1000 : drawPileAnimationTotalLength*1000) //subtracting a little bc animation seems done earlier
+      setTimeout(() => setPolicyPilesState(prevState => ({...prevState, drawPile: drawPileLength})), 8000)//drawPileAnimationTotalLength*1000)
     }
     if(policyPilesState.discardPile !== discardPileLength){
 
@@ -44,8 +44,8 @@ export default function PolicyPiles({game, boardDimensions}) {
 
 
   const policyPilesWidth = boardDimensions.x/12
-  const policyPileDownKeyFrames = policyPileDownAnimation(policyPilesWidth*1.5)
-  const policyPileUpKeyFrames = policyPileUpAnimation(policyPilesWidth*1.5)
+  const policyPileDownKeyFrames = policyPileDownAnimation(policyPilesWidth*1.45)
+  const policyPileUpKeyFrames = policyPileUpAnimation(policyPilesWidth*1.45)
   const countStyles = {
     position: 'absolute',
     top: 0,
@@ -101,7 +101,7 @@ export default function PolicyPiles({game, boardDimensions}) {
     }
     else{
       for(let i = 0; i < drawPileLength; i++){
-        const top = i >= policyPilesState.drawPile ? policyPilesWidth * 1.6 : 0
+        const top = i >= policyPilesState.drawPile ? policyPilesWidth * 1.45 : 0
         const animation = i >= policyPilesState.drawPile ? `1s policyPileUp ${ascDelay(i, policyPilesState.drawPile)}s forwards` : ''
         drawPilePolicies.push(<img src={PolicyBack} key={i} draggable='false' style={{position: 'absolute', top, left: 0, width: '100%', animation }}/>)
       }
@@ -117,7 +117,7 @@ export default function PolicyPiles({game, boardDimensions}) {
   if(policyPilesState.discardPile < discardPileLength){
     //discarding policies
     for(let i = 0; i < discardPileLength; i++){
-      const top = i >= policyPilesState.discardPile ? policyPilesWidth * 1.6 : 0
+      const top = i >= policyPilesState.discardPile ? policyPilesWidth * 1.45 : 0
       const animation = i >= policyPilesState.discardPile ? `1s policyPileUp ${ascDelay(i, policyPilesState.discardPile)}s forwards` : ''
       discardPilePolicies.push(<img src={PolicyBack} key={i} draggable='false' style={{position: 'absolute', top, left: 0, width: '100%', animation }}/>)
     }
@@ -152,7 +152,7 @@ export default function PolicyPiles({game, boardDimensions}) {
         <style>{policyPileUpKeyFrames}</style>
       <Box sx={{position: 'absolute', left: boardDimensions.x/22.5, bottom: boardDimensions.x/9.8, width: policyPilesWidth*1.25}}>
         <img src={DrawPile} draggable='false' style={{ width: '100%' }}/>
-        <Box sx={{position: 'absolute', overflow: 'hidden', left: boardDimensions.x/95, bottom: boardDimensions.x/38, width: policyPilesWidth}}>
+        <Box sx={{position: 'absolute', overflow: 'hidden', left: boardDimensions.x/95, bottom: boardDimensions.x/30, width: policyPilesWidth, display: 'flex'}}>
         <img className="find-me" src={PolicyBack} draggable='false' style={{width: '100%', visibility: 'hidden'}}/>
           {drawPilePolicies}
           <Box sx={{...countStyles, visibility: policyPileCountDisplay.drawPile === 0 ? 'hidden' : 'visible'}}>
@@ -163,7 +163,7 @@ export default function PolicyPiles({game, boardDimensions}) {
         </Box>
       <Box sx={{position: 'absolute', right: boardDimensions.x/22.2, bottom: boardDimensions.x/9.8, width: policyPilesWidth*1.25}}>
         <img src={DiscardPile} draggable='false' style={{ width: '100%' }}/>
-        <Box sx={{position: 'absolute', overflow: 'hidden', left: boardDimensions.x/95, bottom: boardDimensions.x/38, width: policyPilesWidth}}>
+        <Box sx={{position: 'absolute', overflow: 'hidden', left: boardDimensions.x/95, bottom: boardDimensions.x/30, width: policyPilesWidth, display: 'flex'}}>
           <img src={PolicyBack} draggable='false' style={{width: '100%', visibility: 'hidden'}}/>
           {discardPilePolicies}
           <Box sx={{...countStyles, visibility: policyPileCountDisplay.discardPile === 0 ? 'hidden' : 'visible'}}>

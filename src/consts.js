@@ -160,6 +160,7 @@ export const PRES3 = {
   BBB: 'BBB'
 }
 
+export const TOP_DECK_DELAY = 1.5
 export const inGov = (game, name) => (game.currentPres === name || game.currentChan === name) &&
 (game.status === Status.PRES_DISCARD || game.status === Status.CHAN_PLAY || game.status === Status.VETO_DECLINED || game.status === Status.VETO_REPLY)
 

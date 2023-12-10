@@ -9,7 +9,7 @@ import fascPolicyPng from '../img/FascPolicy.png'
 import policyBackPng from '../img/PolicyBack.png';
 import Action from './Action';
 import PolicyPiles from './PolicyPiles';
-import { enactPolicyAnimation, Policy, Status } from '../consts'
+import { enactPolicyAnimation, Policy, TOP_DECK_DELAY } from '../consts'
 
 
 //set policy border radius relative to the policyWidth here and everywhere
@@ -35,7 +35,7 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
   useEffect(() => {
     let timeout = 5800
     if(game.topDecked && (boardState.lib < game.LibPoliciesEnacted || boardState.fasc < game.FascPoliciesEnacted)){ //need additional policy check to ensure a refresh doesn't reanimate
-      timeout = 6800
+      timeout += TOP_DECK_DELAY*1000
       if(boardState.lib < game.LibPoliciesEnacted){
         setAnimate(Policy.LIB)
       }
@@ -72,7 +72,7 @@ export default function Board({game, name, id, setError, showInvCard, boardRef, 
   }, [game.FascPoliciesEnacted, game.LibPoliciesEnacted, game.tracker]) //was game.status
 
     if(boardState.tracker === 3){
-      policyDelay = 1
+      policyDelay = TOP_DECK_DELAY
     }
 
     if(animate === Policy.LIB){
