@@ -246,10 +246,10 @@ export default function LogChat({game, name, boardDimensions, playersDimensions}
 
   //flex 1 on Box at sm is so that it expands horizontally when side by side for flexDirection row
   //problems arise with overflow of content in Paper when it has flex 1 in xs and it's flexDirection col
-  //height in xs is subtracting 30px for appbar, and 15px for marginTop, 5px is to leave a margin bottom
+  //height in xs is subtracting 30px for appbar, and 15px for marginTop, 5px is to` leave a margin bottom
   return (
     <>
-    <Box sx={{position: 'relative', display: 'flex', justifyContent: 'center', flex: {sm: 1}, width: {xs: '100vw', sm: '50vw'}, height: {xs: `calc(100vh - 30px - ${boardDimensions.y}px - ${playersDimensions.y}px - 15px - 5px)`, sm: `${boardDimensions.y}px`}, minHeight: {xs: '210px'}, display: 'flex', flexDirection: 'column', margin: 0, padding: 0}}>
+    <Box sx={{position: 'relative', display: 'flex', flex: {sm: 1}, justifyContent: 'center', width: {xs: '100vw', sm: '50vw'}, height: {xs: `calc(100vh - 30px - ${boardDimensions.y}px - ${playersDimensions.y}px - 15px - 5px)`, sm: `${boardDimensions.y}px`}, minHeight: {xs: '210px'}, display: 'flex', flexDirection: 'column', margin: 0, padding: 0}}>
       <StatusMessage game={game}/>
       <Paper ref={paperRef} elevation={0} sx={{width:'100%', border: '1px solid black', fontSize: {xs: '12px', md: '16px'}, flex: 1, borderRadius: '0', overflow: 'auto', bgcolor: colors.hidden, paddingBottom: '45px'}}>
           {log}

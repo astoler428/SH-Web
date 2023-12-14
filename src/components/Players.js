@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {colors, Status, gameOver, gameEndedWithPolicyEnactment, Role, Team, GameType, Vote, choosableAnimation, upAndDownAnimation, flipAndDownAnimation, upAnimation, flipAnimation, flipAndUnflipAnimation, stillAnimation} from '../consts'
-import {Card, CircularProgress, Grid, Typography, Box} from '@mui/material'
+import {Card, CircularProgress, Grid, Typography, Box, Tooltip} from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 
@@ -25,13 +25,20 @@ import partyBack from '../img/PartyBack.png'
 // const colors.lib = 'deepskyblue'
 // const colors.hidden = '#f5f5f5'
 
-export default function Players({name, game, handleChoosePlayer, playerImageRefs, playersRef, playersDimensions, boardDimensions, pauseActions, hitlerFlippedForLibSpyGuess, setHitlerFlippedForLibSpyGuess}) {
+
+export default function Players({name, game, handleChoosePlayer, playerImageRefs, playersRef, playersDimensions, boardDimensions, pauseActions, hitlerFlippedForLibSpyGuess, setHitlerFlippedForLibSpyGuess, roleOpen}) {
   const [firstRender, setFirstRender] = useState(true)
-  // const [pauseChoosing, setPauseChoosing] = useState(false)
   const [showPlayerCardLabels, setShowPlayerCardLabels] = useState(true) //basically just gameover or not but want a delay
+  const [openToolTip, setOpenToolTip] = useState(game.players.map(() => false))
+  const [forceOpenToolTip, setForceOpenToolTip] = useState(game.players.map(() => false))
+  const [shownFascState, setShownFascState] = useState(game.players.map(() => false))
+  const [hitlerConfirmed, setHitlerConfirmed] = useState(false)
+  const [timeoutIds, setTimeoutIds] = useState(game.players.map(() => null))
   const thisPlayer = game.players.find(player => player.name === name)
   const n = game.players.length
   const status = game.status
+  const revealWhenHitlerConfirmed = false //can turn it on or off
+
 
   const choosing = !pauseActions && ((game.currentPres === name &&
   (status === Status.CHOOSE_CHAN ||
@@ -44,7 +51,11 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
   const getRoleImg = (player) => game.settings.type === GameType.MIXED_ROLES && player.role !== Role.HITLER ? [player.role === Role.FASC ? fascistPng : liberalPng, getTeamImg(player)[1]] : player.role === Role.HITLER ? [hitlerPng,colors.hitler] : player.role === Role.FASC ? [fascistPng,colors.fasc] : player.role === Role.LIB_SPY ? [liberalSpyPng, colors.lib] : [liberalPng,colors.lib]
   const getTeamImg = (player) => player.team === Team.FASC ? [fascPartyPng, colors.fasc] : [libPartyPng, colors.lib]
   const getVote = (player) => player.vote === Vote.JA ? jaPng : player.vote === Vote.NEIN ? neinPng : errorPng
-
+  const setNewState = (prevState, idx, val) => {
+    const newState = [...prevState]
+    newState[idx] = val
+    return newState
+  }
   const gameOverDelay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess) ? (game.topDecked ? 7 : 6) : 2
 
   const renderPlayers = game?.players?.map((player, idx) => {
@@ -64,7 +75,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
     const thisPlayerInvestigatedPlayer = thisPlayer.investigations.some(invName => invName === player.name)
 
     //check if player is choosable
-    if(choosing && player.name !== name){
+    if(choosing && player.name !== name){ //possibly allow a self investigation in blind game
       if(status === Status.LIB_SPY_GUESS){
         choosable = player.team === Team.LIB || (!game.settings.hitlerKnowsFasc && player.role !== Role.HITLER)
       }
@@ -209,6 +220,20 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
       nameColorTransition = 'color .1s'
     }
 
+    const showToolTip = player.name === name || (thisPlayer.confirmedFasc && (player.confirmedFasc || player.role === Role.HITLER))
+    let tooltipTitle = ``
+    if(player.name === name){
+      tooltipTitle = 'You'
+    }
+    else if(player.role === Role.HITLER){
+      tooltipTitle = !revealWhenHitlerConfirmed ? `Hitler` : (player.confirmedFasc ? 'Confirmed Hitler' : 'Blind Hitler')
+    }
+    else if(player.team === Team.FASC && player.confirmedFasc){
+      tooltipTitle = 'Confirmed Fascist'
+    }
+
+
+
     const flipAndDownkeyFrameStyles = flipAndDownAnimation(playersDimensions.y, 1/flipAndDownDuration * 100)
     const upKeyFrameStyles = upAnimation(playersDimensions.y)
     const flipKeyFrameStyles = flipAnimation()
@@ -216,10 +241,23 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
     const flipAndUnflipKeyFrameStyles = flipAndUnflipAnimation(status === Status.SHOW_LIB_SPY_GUESS ? 33 : 20)
     const stillKeyFrameStyles = stillAnimation()
     const choosableKeyFrameStyles = choosableAnimation(playersDimensions.y < 110 ? 1.5 : 3.5)
+
+    function handleOpenToolTipChange(idx, val){
+      if(val === false && forceOpenToolTip[idx]){
+        return
+      }
+      setOpenToolTip(prevState => setNewState(prevState, idx, val))
+    }
     return (
     <Grid key={idx} item xs={12/n} sx={{}}>
       <Box sx={{opacity: player.socketId? 1 : .3, display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+        {showToolTip ?
+        <Tooltip open={openToolTip[idx]} onOpen={() => handleOpenToolTipChange(idx, true)} onClose={() => handleOpenToolTipChange(idx, false)} title={tooltipTitle} placement='top'>
+          <Typography maxWidth='80%' sx={{fontSize: {xs: `calc(${playersDimensions.x}px / ${7*n})`}, margin: `1px 0`, color: nameColor, whiteSpace: 'nowrap', fontFamily: 'inter', fontWeight: 500, overflow: 'hidden', cursor: 'default', transition: nameColorTransition}}>{idx+1}. {player.name}</Typography>
+        </Tooltip>
+        :
         <Typography maxWidth='80%' sx={{fontSize: {xs: `calc(${playersDimensions.x}px / ${7*n})`}, margin: `1px 0`, color: nameColor, whiteSpace: 'nowrap', fontFamily: 'inter', fontWeight: 500, overflow: 'hidden', transition: nameColorTransition}}>{idx+1}. {player.name}</Typography>
+        }
         <Card data-key={player.name} onClick={choosing && choosable ? handleChoosePlayer : ()=>{}} sx={{cursor: choosable ? 'pointer' : 'auto', animation: chooseAnimation, display: 'flex', flexDirection: 'column', position: 'relative', backgroundColor: '#404040'}}>
           <style>{flipAndDownkeyFrameStyles}</style>
           <style>{upKeyFrameStyles}</style>
@@ -269,7 +307,42 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
 
   useEffect(() => {
     setFirstRender(false)
+    game.players.forEach(player => player.team === Team.FASC ? console.log(player.name + player.role) : "")
+
   }, [])
+
+  useEffect(() => {
+    //if you are not confirmed fasc yet, don't update anything
+    //if the roleDialog is open, likely means you just confirmed fasc, don't show yet because it's blocking
+    if(!thisPlayer.confirmedFasc || roleOpen){
+      return
+    }
+    game.players.forEach((player, idx) => {
+      //never do this for yourself
+      if(player.name !== name && ((player.confirmedFasc && !shownFascState[idx]) || (player.role === Role.HITLER && !hitlerConfirmed)) ){
+        //timeout because showing right after roleDialog has a chance to fully close causes a glitch in tooltip position
+        if(player.role === Role.HITLER && player.confirmedFasc){
+          setHitlerConfirmed(true)
+        }
+        if(shownFascState[idx] && !revealWhenHitlerConfirmed){
+          //if already shown, then here because hitler just confirmed
+          return
+        }
+        let timeoutId
+        clearTimeout(timeoutIds[idx])
+        setTimeout(() => {
+          setOpenToolTip(prevState => setNewState(prevState, idx, true))
+          setShownFascState(prevState => setNewState(prevState, idx, true))
+          setForceOpenToolTip(prevState => setNewState(prevState, idx, true))
+          timeoutId = setTimeout(() => {
+            setForceOpenToolTip(prevState => setNewState(prevState, idx, false))
+            setOpenToolTip(prevState => setNewState(prevState, idx, false))
+          }, 5000)
+          setTimeoutIds(prevState => setNewState(prevState, idx, timeoutId))
+        }, 500)
+      }
+    })
+  }, [game, roleOpen])
 
   useEffect(() => {
     if(status === Status.LIB_SPY_GUESS){
@@ -303,6 +376,7 @@ export default function Players({name, game, handleChoosePlayer, playerImageRefs
   }
 
   //xs: `min(100vw, calc(70px * ${n}))`,
+
   return (
     <Box ref={playersRef} sx={{width: {xs: 'calc(100vw-10px)', sm: `calc((100vh - (56px + ${boardDimensions.y}px)) / 1.8 * ${n} )`}, minWidth: {sm: `calc(60px * ${n})`, md: `calc(90px * ${n})`}, maxWidth: {sm: `min(calc(100vw - 10px), calc(140px * ${n}))`}, display: 'flex', margin: '0 5px'}}>
         <Grid container spacing={{xs: .5, sm: 1}}>

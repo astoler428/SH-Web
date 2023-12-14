@@ -254,7 +254,7 @@ export default function Game({name, game, setGame, isConnected}) {
           <LogChat game={game} name={name} boardDimensions={boardDimensions} playersDimensions={playersDimensions}/>
         </Box>
       </Box>
-      <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} playerImageRefs={playerImageRefs} playersRef={playersRef} playersDimensions={playersDimensions} boardDimensions={boardDimensions} pauseActions={pauseActions} hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess} setHitlerFlippedForLibSpyGuess={setHitlerFlippedForLibSpyGuess}/>
+      <Players name={name} game={game} handleChoosePlayer={handleChoosePlayer} playerImageRefs={playerImageRefs} playersRef={playersRef} playersDimensions={playersDimensions} boardDimensions={boardDimensions} pauseActions={pauseActions} hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess} setHitlerFlippedForLibSpyGuess={setHitlerFlippedForLibSpyGuess} roleOpen={roleOpen}/>
       <Box sx={{display: {xs:'flex', sm: 'none'}, marginTop: '15px'}}>
           <LogChat game={game} name={name} boardDimensions={boardDimensions} playersDimensions={playersDimensions}/>
         </Box>
