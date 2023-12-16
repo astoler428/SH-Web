@@ -105,6 +105,7 @@ export const GameSettings = {
   REDDOWN: "redDown",
   HITLERKNOWSFASC: "hitlerKnowsFasc",
   SIMPLEBLIND: "simpleBlind",
+  COMPLETEBLIND: "completeBlind",
   TEAMLIBSPY: "teamLibSpy",
 };
 

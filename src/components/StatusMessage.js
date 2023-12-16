@@ -8,10 +8,7 @@ export default function StatusMessage({ game }) {
 
   switch (status) {
     case Status.STARTED:
-      message =
-        game.settings.type === GameType.BLIND
-          ? "Roles are hidden"
-          : "Showing roles";
+      message = game.settings.type === GameType.BLIND ? "Roles are hidden" : "Showing roles";
       break;
     case Status.CHOOSE_CHAN:
       message = "President to select chancellor";

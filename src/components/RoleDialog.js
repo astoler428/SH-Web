@@ -8,23 +8,9 @@ import fascistPng from "../img/Fascist.png";
 import roleBackPng from "../img/RoleBack.png";
 import libParty from "../img/LibParty.png";
 import fascParty from "../img/FascParty.png";
-import {
-  Role,
-  gameOver,
-  GameType,
-  Team,
-  Status,
-  inGov,
-  claiming,
-} from "../consts";
+import { Role, gameOver, GameType, Team, Status, inGov, claiming } from "../consts";
 
-export default function RoleDialog({
-  thisPlayer,
-  game,
-  roleOpen,
-  setRoleOpen,
-  setConfirmFascOpen,
-}) {
+export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, setConfirmFascOpen }) {
   let roleImg, teamImg;
   switch (thisPlayer?.role) {
     case Role.FASC:
@@ -42,11 +28,7 @@ export default function RoleDialog({
     default:
       roleImg = roleBackPng;
   }
-  if (
-    game.settings.type === GameType.BLIND &&
-    !thisPlayer.confirmedFasc &&
-    !gameOver(game.status)
-  ) {
+  if (game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver(game.status)) {
     roleImg = roleBackPng;
   }
 
@@ -60,13 +42,8 @@ export default function RoleDialog({
   }
 
   const disableConfirmFasc =
-    inGov(game, thisPlayer.name) ||
-    (game.currentPres === thisPlayer.name &&
-      game.status === Status.CHAN_CLAIM) ||
-    claiming(game, thisPlayer.name);
-  const confirmFascText = disableConfirmFasc
-    ? "Cannot confirm fascist until after claims"
-    : "confirm fascist";
+    inGov(game, thisPlayer.name) || (game.currentPres === thisPlayer.name && game.status === Status.CHAN_CLAIM) || claiming(game, thisPlayer.name);
+  const confirmFascText = disableConfirmFasc ? "Cannot confirm fascist until after claims" : "confirm fascist";
 
   //for the player who incorrectly confirmed fasc, close their role automatically
   React.useEffect(() => {
@@ -78,19 +55,10 @@ export default function RoleDialog({
   }, [game.status]);
 
   return (
-    <Dialog
-      open={roleOpen}
-      onClose={() => setRoleOpen(false)}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
-      <DialogContent
-        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-      >
+    <Dialog open={roleOpen} onClose={() => setRoleOpen(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+      <DialogContent sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
         {game.settings.type === GameType.MIXED_ROLES && (
-          <Box
-            sx={{ width: { xs: 140, sm: 200 }, marginRight: { xs: 2, sm: 4 } }}
-          >
+          <Box sx={{ width: { xs: 140, sm: 200 }, marginRight: { xs: 2, sm: 4 } }}>
             <img src={teamImg} draggable="false" style={{ width: "100%" }} />
           </Box>
         )}
@@ -98,20 +66,13 @@ export default function RoleDialog({
           <img src={roleImg} draggable="false" style={{ width: "100%" }} />
         </Box>
       </DialogContent>
-      {game.settings.type === GameType.BLIND &&
-        !thisPlayer.confirmedFasc &&
-        !gameOver(game.status) && (
-          <DialogActions sx={{ display: "flex", justifyContent: "center" }}>
-            <Button
-              disabled={disableConfirmFasc}
-              onClick={() => setConfirmFascOpen(true)}
-              variant="contained"
-              color="error"
-            >
-              {confirmFascText}
-            </Button>
-          </DialogActions>
-        )}
+      {game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver(game.status) && !game.settings.completeBlind && (
+        <DialogActions sx={{ display: "flex", justifyContent: "center" }}>
+          <Button disabled={disableConfirmFasc} onClick={() => setConfirmFascOpen(true)} variant="contained" color="error">
+            {confirmFascText}
+          </Button>
+        </DialogActions>
+      )}
     </Dialog>
   );
 }

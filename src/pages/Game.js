@@ -3,26 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router";
 import client, { post } from "../api/api";
 import { socket } from "../socket";
-import {
-  Status,
-  UPDATE,
-  colors,
-  gameEndedWithPolicyEnactment,
-  gameOver,
-  TOP_DECK_DELAY,
-} from "../consts";
+import { Status, UPDATE, colors, gameEndedWithPolicyEnactment, gameOver, TOP_DECK_DELAY } from "../consts";
 import Players from "../components/Players";
 import Board from "../components/Board";
 import Loading from "../components/Loading";
-import {
-  Typography,
-  IconButton,
-  Snackbar,
-  AppBar,
-  Toolbar,
-  Button,
-  Box,
-} from "@mui/material";
+import { Typography, IconButton, Snackbar, AppBar, Toolbar, Button, Box } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import RoleDialog from "../components/RoleDialog";
 import ConfirmFascDialog from "../components/ConfirmFascDialog";
@@ -41,8 +26,7 @@ export default function Game({ name, game, setGame, isConnected }) {
   const [error, setError] = useState(null);
   const [boardDimensions, setBoardDimensions] = useState({ x: 0, y: 0 });
   const [playersDimensions, setPlayersDimensions] = useState({ x: 0, y: 0 });
-  const [hitlerFlippedForLibSpyGuess, setHitlerFlippedForLibSpyGuess] =
-    useState(false);
+  const [hitlerFlippedForLibSpyGuess, setHitlerFlippedForLibSpyGuess] = useState(false);
   const [opacity, setOpacity] = useState(0);
   const boardRef = useRef(null);
   const playersRef = useRef(null);
@@ -145,12 +129,7 @@ export default function Game({ name, game, setGame, isConnected }) {
 
   const action = (
     <React.Fragment>
-      <IconButton
-        size="small"
-        aria-label="close"
-        color="inherit"
-        onClick={() => setError(null)}
-      >
+      <IconButton size="small" aria-label="close" color="inherit" onClick={() => setError(null)}>
         <CloseIcon fontSize="small" />
       </IconButton>
     </React.Fragment>
@@ -160,10 +139,7 @@ export default function Game({ name, game, setGame, isConnected }) {
   //need to check that all images are done loading first
   useEffect(() => {
     function handleBoardResize() {
-      if (
-        boardRef.current &&
-        boardImageRefs.current.every(img => img.complete)
-      ) {
+      if (boardRef.current && boardImageRefs.current.every(img => img.complete)) {
         setBoardDimensions({
           x: boardRef.current.offsetWidth,
           y: boardRef.current.offsetHeight,
@@ -209,8 +185,7 @@ export default function Game({ name, game, setGame, isConnected }) {
 
   useEffect(() => {
     if (game?.remakeId) {
-      const timeout =
-        (game.players.findIndex(player => player.name === name) + 1) * 1000; //timeout so all players don't join at once and cause concurrency issue
+      const timeout = (game.players.findIndex(player => player.name === name) + 1) * 1000; //timeout so all players don't join at once and cause concurrency issue
       setTimeout(() => navigate(`/lobby/${game.remakeId}`), timeout);
     }
   }, [game]);
@@ -218,10 +193,7 @@ export default function Game({ name, game, setGame, isConnected }) {
   // determine dimensions of player area
   useEffect(() => {
     function handlePlayersResize() {
-      if (
-        playersRef.current &&
-        playerImageRefs.current.every(img => img.complete)
-      ) {
+      if (playersRef.current && playerImageRefs.current.every(img => img.complete)) {
         setPlayersDimensions({
           x: playersRef.current.offsetWidth,
           y: playersRef.current.offsetHeight,
@@ -240,14 +212,7 @@ export default function Game({ name, game, setGame, isConnected }) {
 
   useEffect(() => {
     if (gameOver(game?.status)) {
-      const delay = gameEndedWithPolicyEnactment(
-        game,
-        hitlerFlippedForLibSpyGuess
-      )
-        ? game.topDecked
-          ? 4000 + 1000 * TOP_DECK_DELAY
-          : 4000
-        : 1000;
+      const delay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess) ? (game.topDecked ? 4000 + 1000 * TOP_DECK_DELAY : 4000) : 1000;
       setTimeout(() => setRunConfetti(true), delay);
       setTimeout(() => setRecycleConfetti(false), delay + 6000);
     }
@@ -262,20 +227,8 @@ export default function Game({ name, game, setGame, isConnected }) {
             transition: "opacity 1.5s cubic-bezier(0.16, 0.62, 1, 1)",
           }}
         >
-          {game.status === Status.END_LIB && (
-            <Confetti
-              colors={[colors.lib, colors.libDark]}
-              run={runConfetti}
-              recycle={recycleConfetti}
-            />
-          )}
-          {game.status === Status.END_FASC && (
-            <Confetti
-              colors={[colors.fasc, colors.hitler]}
-              run={runConfetti}
-              recycle={recycleConfetti}
-            />
-          )}
+          {game.status === Status.END_LIB && <Confetti colors={[colors.lib, colors.libDark]} run={runConfetti} recycle={recycleConfetti} />}
+          {game.status === Status.END_FASC && <Confetti colors={[colors.fasc, colors.hitler]} run={runConfetti} recycle={recycleConfetti} />}
           <AppBar
             sx={{
               display: "flex",
@@ -295,11 +248,7 @@ export default function Game({ name, game, setGame, isConnected }) {
               >
                 Game ID: {id}
               </Typography>
-              <Button
-                color="inherit"
-                onClick={() => setRoleOpen(true)}
-                sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}
-              >
+              <Button color="inherit" onClick={() => setRoleOpen(true)} sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}>
                 Role
               </Button>
               <Button
@@ -312,13 +261,7 @@ export default function Game({ name, game, setGame, isConnected }) {
             </Toolbar>
           </AppBar>
           <Box sx={{ marginTop: { xs: "30px", sm: "56px" } }} />
-          <RoleDialog
-            thisPlayer={thisPlayer}
-            game={game}
-            roleOpen={roleOpen}
-            setRoleOpen={setRoleOpen}
-            setConfirmFascOpen={setConfirmFascOpen}
-          />
+          <RoleDialog thisPlayer={thisPlayer} game={game} roleOpen={roleOpen} setRoleOpen={setRoleOpen} setConfirmFascOpen={setConfirmFascOpen} />
           <Box
             sx={{
               display: "flex",
@@ -340,12 +283,7 @@ export default function Game({ name, game, setGame, isConnected }) {
             />
             {/* hacky, but logChat gets hidden on xs and rendered a few lines down to be below the players */}
             <Box sx={{ display: { xs: "none", sm: "flex", flex: 1 } }}>
-              <LogChat
-                game={game}
-                name={name}
-                boardDimensions={boardDimensions}
-                playersDimensions={playersDimensions}
-              />
+              <LogChat game={game} name={name} boardDimensions={boardDimensions} playersDimensions={playersDimensions} />
             </Box>
           </Box>
           <Players
@@ -362,26 +300,11 @@ export default function Game({ name, game, setGame, isConnected }) {
             roleOpen={roleOpen}
           />
           <Box sx={{ display: { xs: "flex", sm: "none" }, marginTop: "15px" }}>
-            <LogChat
-              game={game}
-              name={name}
-              boardDimensions={boardDimensions}
-              playersDimensions={playersDimensions}
-            />
+            <LogChat game={game} name={name} boardDimensions={boardDimensions} playersDimensions={playersDimensions} />
           </Box>
           {/* Snackbar is used in mixed role to let know if you can't discard */}
-          <Snackbar
-            open={error !== null}
-            onClose={() => setError(null)}
-            message={error}
-            autoHideDuration={5000}
-            action={action}
-          />
-          <ConfirmFascDialog
-            confirmFascOpen={confirmFascOpen}
-            setConfirmFascOpen={setConfirmFascOpen}
-            handleConfirmFasc={handleConfirmFasc}
-          />
+          <Snackbar open={error !== null} onClose={() => setError(null)} message={error} autoHideDuration={5000} action={action} />
+          <ConfirmFascDialog confirmFascOpen={confirmFascOpen} setConfirmFascOpen={setConfirmFascOpen} handleConfirmFasc={handleConfirmFasc} />
         </Box>
       ) : (
         <Loading />

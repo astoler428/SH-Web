@@ -2,48 +2,21 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Button, Typography, Box } from "@mui/material";
 import libPolicyPng from "../img/LibPolicy.png";
 import fascPolicyPng from "../img/FascPolicy.png";
+import policyBackPng from "../img/PolicyBack.png";
 import jaPng from "../img/Ja.png";
 import neinPng from "../img/Nein.png";
-import {
-  Color,
-  draws3,
-  PRES3,
-  CHAN2,
-  Status,
-  Vote,
-  Team,
-  Role,
-  GameType,
-  RRR,
-  RRB,
-  RBB,
-  BBB,
-  colors,
-} from "../consts";
+import { Color, draws3, PRES3, CHAN2, Status, Vote, Team, Role, GameType, RRR, RRB, RBB, BBB, colors } from "../consts";
 import { post } from "../api/api";
 import DefaulDiscardDialog from "./DefaultDiscardDialog";
 
-export default function Action({
-  game,
-  name,
-  id,
-  setError,
-  blur,
-  setBlur,
-  boardDimensions,
-  playersDimensions,
-  pauseActions,
-  setPauseActions,
-}) {
+export default function Action({ game, name, id, setError, blur, setBlur, boardDimensions, playersDimensions, pauseActions, setPauseActions }) {
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
   const [centerContent, setCenterContent] = useState(false);
   const [actionContent, setActionContent] = useState(null);
   const [actionTitle, setActionTitle] = useState(null);
   const [otherContent, setOtherContent] = useState(null);
-  const [showTop3PoliciesNotClaim, setShowTop3PoliciesNotClaim] =
-    useState(true); //first show policies
-  const [keepShowingVoteSelection, setKeepShowingVoteSelection] =
-    useState(true); //when show vote starts - keep showing the players selected vote
+  const [showTop3PoliciesNotClaim, setShowTop3PoliciesNotClaim] = useState(true); //first show policies
+  const [keepShowingVoteSelection, setKeepShowingVoteSelection] = useState(true); //when show vote starts - keep showing the players selected vote
   const isCurrentPres = game.currentPres === name;
   const isCurrentChan = game.currentChan === name;
   const thisPlayer = game.players.find(player => player.name === name);
@@ -56,11 +29,17 @@ export default function Action({
     _blur = false,
     showDefaultOption = false;
 
-  if (
-    (status === Status.VOTE ||
-      (status === Status.SHOW_VOTE_RESULT && keepShowingVoteSelection)) &&
-    thisPlayer.alive
-  ) {
+  const disabledStyles = game.settings.completeBlind
+    ? {
+        userSelect: "none",
+        pointerEvents: "none",
+        cursor: "default",
+        filter: "contrast(35%)",
+        // backgroundColor: "rgba(0, 0, 0, 0.12)",
+      }
+    : {};
+
+  if ((status === Status.VOTE || (status === Status.SHOW_VOTE_RESULT && keepShowingVoteSelection)) && thisPlayer.alive) {
     title = "SELECT A VOTE.";
     content = showVoteCards();
     _blur = true;
@@ -121,9 +100,7 @@ export default function Action({
     showDefaultOption = game.settings.type === GameType.BLIND ? true : false;
     switch (status) {
       case Status.CHAN_PLAY:
-        title = `CHOOSE A POLICY TO PLAY${
-          inVetoZone ? ` OR REQUEST A VETO.` : `.`
-        }`;
+        title = `CHOOSE A POLICY TO PLAY${inVetoZone ? ` OR REQUEST A VETO.` : `.`}`;
         content = showChanPolicies();
         _blur = true;
         break;
@@ -176,6 +153,7 @@ export default function Action({
   useEffect(() => {
     if (!centerContent && (content || title) && !pauseActions) {
       //need !centerContent otherwise infinite loop since this depends on centerContent and only set if there is content to set (otherwise flash)
+
       const setEverything = () => {
         setActionContent(content);
         setActionTitle(title);
@@ -190,12 +168,7 @@ export default function Action({
             }}
           >
             {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && (
-              <Button
-                variant="contained"
-                color="secondary"
-                sx={{ fontSize: { xs: "min(1em, 16px)" } }}
-                onClick={handleVetoRequest}
-              >
+              <Button variant="contained" color="secondary" sx={{ fontSize: { xs: "min(1em, 16px)" } }} onClick={handleVetoRequest}>
                 Request Veto
               </Button>
             )}
@@ -209,23 +182,25 @@ export default function Action({
                 Default to Role
               </Button>
             )}
-            {showTop3PoliciesNotClaim &&
-              isCurrentPres &&
-              status === Status.INSPECT_TOP3 && (
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  sx={{ fontSize: { xs: "min(1em, 16px)" } }}
-                  onClick={() => setShowTop3PoliciesNotClaim(false)}
-                >
-                  Make Claim
-                </Button>
-              )}
+            {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && (
+              <Button
+                variant="contained"
+                color="secondary"
+                sx={{ fontSize: { xs: "min(1em, 16px)" } }}
+                onClick={() => setShowTop3PoliciesNotClaim(false)}
+              >
+                Make Claim
+              </Button>
+            )}
           </Box>
         );
         setBlur(_blur);
         setCenterContent(true);
       };
+
+      if (game.settings.completeBlind && (showDefaultOption || status === Status.INSPECT_TOP3)) {
+        // handleDefaultAction();
+      }
       if (status === Status.INSPECT_TOP3 && !showTop3PoliciesNotClaim) {
         //need this here because there's no status change, so the automatic pause of 700 isn't set in game
         setTimeout(setEverything, 700);
@@ -250,12 +225,7 @@ export default function Action({
           }}
         >
           {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && (
-            <Button
-              variant="contained"
-              color="secondary"
-              sx={{ fontSize: { xs: "min(1em, 16px)" } }}
-              onClick={handleVetoRequest}
-            >
+            <Button variant="contained" color="secondary" sx={{ fontSize: { xs: "min(1em, 16px)" } }} onClick={handleVetoRequest}>
               Request Veto
             </Button>
           )}
@@ -269,18 +239,16 @@ export default function Action({
               Default to Role
             </Button>
           )}
-          {showTop3PoliciesNotClaim &&
-            isCurrentPres &&
-            status === Status.INSPECT_TOP3 && (
-              <Button
-                variant="contained"
-                color="secondary"
-                sx={{ fontSize: { xs: "min(1em, 16px)" } }}
-                onClick={() => setShowTop3PoliciesNotClaim(false)}
-              >
-                Make Claim
-              </Button>
-            )}
+          {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && (
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{ fontSize: { xs: "min(1em, 16px)" } }}
+              onClick={() => setShowTop3PoliciesNotClaim(false)}
+            >
+              Make Claim
+            </Button>
+          )}
         </Box>
       );
     }
@@ -293,12 +261,7 @@ export default function Action({
       setOtherContent(
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
           {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && (
-            <Button
-              variant="contained"
-              color="secondary"
-              sx={{ fontSize: { xs: "min(1em, 16px)" } }}
-              onClick={handleVetoRequest}
-            >
+            <Button variant="contained" color="secondary" sx={{ fontSize: { xs: "min(1em, 16px)" } }} onClick={handleVetoRequest}>
               Request Veto
             </Button>
           )}
@@ -312,18 +275,16 @@ export default function Action({
               Default to Role
             </Button>
           )}
-          {showTop3PoliciesNotClaim &&
-            isCurrentPres &&
-            status === Status.INSPECT_TOP3 && (
-              <Button
-                variant="contained"
-                color="secondary"
-                sx={{ fontSize: { xs: "min(1em, 16px)" } }}
-                onClick={() => setShowTop3PoliciesNotClaim(false)}
-              >
-                Make Claim
-              </Button>
-            )}
+          {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && (
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{ fontSize: { xs: "min(1em, 16px)" } }}
+              onClick={() => setShowTop3PoliciesNotClaim(false)}
+            >
+              Make Claim
+            </Button>
+          )}
         </Box>
       );
     }
@@ -338,10 +299,7 @@ export default function Action({
           src={jaPng}
           style={{
             width: boardDimensions.x / 4.5,
-            boxShadow:
-              thisPlayer.vote === Vote.JA
-                ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0`
-                : "none",
+            boxShadow: thisPlayer.vote === Vote.JA ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
             cursor: status === Status.SHOW_VOTE_RESULT ? "auto" : "pointer",
             transition: "box-shadow .3s",
           }}
@@ -352,10 +310,7 @@ export default function Action({
           src={neinPng}
           style={{
             width: boardDimensions.x / 4.5,
-            boxShadow:
-              thisPlayer.vote === Vote.NEIN
-                ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0`
-                : "none",
+            boxShadow: thisPlayer.vote === Vote.NEIN ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
             cursor: status === Status.SHOW_VOTE_RESULT ? "auto" : "pointer",
             transition: "box-shadow .3s",
           }}
@@ -366,7 +321,7 @@ export default function Action({
 
   function showPresPolicies() {
     const presPolicies = game.presCards.map(card => {
-      const policyImg = getPolicyImg(card);
+      const policyImg = game.settings.completeBlind ? policyBackPng : getPolicyImg(card);
       return (
         <img
           key={Math.random()}
@@ -375,7 +330,7 @@ export default function Action({
           data-key={card.color}
           onClick={handlePresDiscard}
           src={policyImg}
-          style={{ width: boardDimensions.x / 6, cursor: "pointer" }}
+          style={{ width: boardDimensions.x / 6, cursor: "pointer", ...disabledStyles }}
         />
       );
     });
@@ -384,7 +339,7 @@ export default function Action({
 
   function showChanPolicies() {
     const chanCards = game.chanCards.map(card => {
-      const policyImg = getPolicyImg(card);
+      const policyImg = game.settings.completeBlind ? policyBackPng : getPolicyImg(card);
       return (
         <img
           key={Math.random()}
@@ -393,7 +348,7 @@ export default function Action({
           data-key={card.color}
           onClick={handleChanPlay}
           src={policyImg}
-          style={{ width: boardDimensions.x / 6, cursor: "pointer" }}
+          style={{ width: boardDimensions.x / 6, cursor: "pointer", ...disabledStyles }}
         />
       );
     });
@@ -415,6 +370,7 @@ export default function Action({
         <Button
           variant="contained"
           data-key={PRES3.RRR}
+          disabled={game.settings.completeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.fascBackground },
             backgroundColor: colors.fasc,
@@ -426,6 +382,7 @@ export default function Action({
         <Button
           variant="contained"
           data-key={PRES3.RRB}
+          disabled={game.settings.completeBlind}
           color="inherit"
           sx={{
             lineHeight: { xs: "1.2em" },
@@ -437,6 +394,7 @@ export default function Action({
         <Button
           variant="contained"
           data-key={PRES3.RBB}
+          disabled={game.settings.completeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.libBackground },
             lineHeight: { xs: "1.2em" },
@@ -449,6 +407,7 @@ export default function Action({
         <Button
           variant="contained"
           data-key={PRES3.BBB}
+          disabled={game.settings.completeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.darkLibBackground },
             backgroundColor: colors.libDark,
@@ -476,6 +435,7 @@ export default function Action({
         <Button
           variant="contained"
           data-key={CHAN2.RR}
+          disabled={game.settings.completeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.fascBackground },
             backgroundColor: colors.fasc,
@@ -487,6 +447,7 @@ export default function Action({
         <Button
           variant="contained"
           data-key={CHAN2.RB}
+          disabled={game.settings.completeBlind}
           color="inherit"
           sx={{
             lineHeight: { xs: "1.2em" },
@@ -498,6 +459,7 @@ export default function Action({
         <Button
           variant="contained"
           data-key={CHAN2.BB}
+          disabled={game.settings.completeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.libBackground },
             backgroundColor: colors.lib,
@@ -525,6 +487,7 @@ export default function Action({
         <Button
           variant="contained"
           data-key={Team.LIB}
+          disabled={game.settings.completeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.libBackground },
             backgroundColor: colors.lib,
@@ -536,6 +499,7 @@ export default function Action({
         <Button
           variant="contained"
           data-key={Team.FASC}
+          disabled={game.settings.completeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.fascBackground },
             backgroundColor: colors.fasc,
@@ -555,7 +519,7 @@ export default function Action({
       <img
         key={Math.random()}
         draggable="false"
-        src={getPolicyImg(card)}
+        src={game.settings.completeBlind ? policyBackPng : getPolicyImg(card)}
         style={{ width: boardDimensions.x / 6 }}
       />
     ));
@@ -576,6 +540,7 @@ export default function Action({
           <Button
             variant="contained"
             data-key={PRES3.RRR}
+            disabled={game.settings.completeBlind}
             sx={{
               "&:hover": { backgroundColor: colors.fascBackground },
               backgroundColor: colors.fasc,
@@ -587,6 +552,7 @@ export default function Action({
           <Button
             variant="contained"
             data-key={PRES3.RRB}
+            disabled={game.settings.completeBlind}
             color="inherit"
             sx={{
               lineHeight: { sm: "12px", md: "16px" },
@@ -598,6 +564,7 @@ export default function Action({
           <Button
             variant="contained"
             data-key={PRES3.RBB}
+            disabled={game.settings.completeBlind}
             sx={{
               "&:hover": { backgroundColor: colors.libBackground },
               backgroundColor: colors.lib,
@@ -610,6 +577,7 @@ export default function Action({
           <Button
             variant="contained"
             data-key={PRES3.BBB}
+            disabled={game.settings.completeBlind}
             sx={{
               "&:hover": { backgroundColor: colors.darkLibBackground },
               backgroundColor: colors.libDark,
@@ -638,6 +606,7 @@ export default function Action({
         <Button
           variant="contained"
           data-key={true}
+          disabled={game.settings.completeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.libBackground },
             backgroundColor: colors.lib,
@@ -649,6 +618,7 @@ export default function Action({
         <Button
           variant="contained"
           data-key={false}
+          disabled={game.settings.completeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.fascBackground },
             backgroundColor: colors.fasc,
@@ -677,7 +647,7 @@ export default function Action({
     if (validDiscardDueToMixedRole(cardColor)) {
       await post(`/game/presDiscard/${id}`, { cardColor });
     } else {
-      setError(`You cannot discGard a ${cardColor} policy.`);
+      setError(`You cannot discard a ${cardColor} policy.`);
     }
   }
 
@@ -759,13 +729,7 @@ export default function Action({
   //does not show default discard if deducable what was dropped
   useEffect(() => {
     if (status === Status.CHAN_CLAIM) {
-      const presDraw =
-        draws3[
-          game.presCards.reduce(
-            (acc, policy) => acc + (policy.color === Color.BLUE ? 1 : 0),
-            0
-          )
-        ];
+      const presDraw = draws3[game.presCards.reduce((acc, policy) => acc + (policy.color === Color.BLUE ? 1 : 0), 0)];
       if (
         presDraw === BBB ||
         presDraw === RRR ||
@@ -783,16 +747,10 @@ export default function Action({
     }
     if (thisPlayer.team === Team.LIB && thisPlayer.role === Role.FASC) {
       //lib who has to play red is either discarding a blue or they are all red
-      return (
-        cardColor === Color.BLUE ||
-        game.presCards.every(card => card.color === Color.RED)
-      );
+      return cardColor === Color.BLUE || game.presCards.every(card => card.color === Color.RED);
     } else if (thisPlayer.team === Team.FASC && thisPlayer.role === Role.LIB) {
       //fasc who has to play blue unless all red
-      return (
-        cardColor === Color.RED ||
-        game.presCards.every(card => card.color === Color.BLUE)
-      );
+      return cardColor === Color.RED || game.presCards.every(card => card.color === Color.BLUE);
     }
     return true;
   }
@@ -803,16 +761,10 @@ export default function Action({
     }
     if (thisPlayer.team === Team.LIB && thisPlayer.role === Role.FASC) {
       //lib who has to play red is either discarding a blue or they are all red
-      return (
-        cardColor === Color.RED ||
-        game.chanCards.every(card => card.color === Color.BLUE)
-      );
+      return cardColor === Color.RED || game.chanCards.every(card => card.color === Color.BLUE);
     } else if (thisPlayer.team === Team.FASC && thisPlayer.role === Role.LIB) {
       //fasc who has to play blue unless all red
-      return (
-        cardColor === Color.BLUE ||
-        game.chanCards.every(card => card.color === Color.RED)
-      );
+      return cardColor === Color.BLUE || game.chanCards.every(card => card.color === Color.RED);
     }
     return true;
   }
@@ -828,9 +780,7 @@ export default function Action({
           left: centerContent ? "50%" : "-50%",
           transform: "translate(-50%, -50%)",
           opacity: centerContent ? 1 : 0,
-          transition: centerContent
-            ? "left 1s ease-in-out"
-            : "left 0s .4s, opacity .4s ease-in-out",
+          transition: centerContent ? "left 1s ease-in-out" : "left 0s .4s, opacity .4s ease-in-out",
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-evenly",

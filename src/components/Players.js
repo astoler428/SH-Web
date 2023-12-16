@@ -16,14 +16,7 @@ import {
   flipAndUnflipAnimation,
   stillAnimation,
 } from "../consts";
-import {
-  Card,
-  CircularProgress,
-  Grid,
-  Typography,
-  Box,
-  Tooltip,
-} from "@mui/material";
+import { Card, CircularProgress, Grid, Typography, Box, Tooltip } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 
@@ -64,12 +57,8 @@ export default function Players({
   const [firstRender, setFirstRender] = useState(true);
   const [showPlayerCardLabels, setShowPlayerCardLabels] = useState(true); //basically just gameover or not but want a delay
   const [openToolTip, setOpenToolTip] = useState(game.players.map(() => false));
-  const [forceOpenToolTip, setForceOpenToolTip] = useState(
-    game.players.map(() => false)
-  );
-  const [shownFascState, setShownFascState] = useState(
-    game.players.map(() => false)
-  );
+  const [forceOpenToolTip, setForceOpenToolTip] = useState(game.players.map(() => false));
+  const [shownFascState, setShownFascState] = useState(game.players.map(() => false));
   const [hitlerConfirmed, setHitlerConfirmed] = useState(false);
   const [timeoutIds, setTimeoutIds] = useState(game.players.map(() => null));
   const thisPlayer = game.players.find(player => player.name === name);
@@ -79,22 +68,13 @@ export default function Players({
 
   const choosing =
     !pauseActions &&
-    ((game.currentPres === name &&
-      (status === Status.CHOOSE_CHAN ||
-        status === Status.INV ||
-        status === Status.SE ||
-        status === Status.GUN)) ||
+    ((game.currentPres === name && (status === Status.CHOOSE_CHAN || status === Status.INV || status === Status.SE || status === Status.GUN)) ||
       (thisPlayer.role === Role.HITLER && status === Status.LIB_SPY_GUESS));
 
-  const currentPres = game.players.find(
-    player => player.name === game.currentPres
-  );
+  const currentPres = game.players.find(player => player.name === game.currentPres);
   const getRoleImg = player =>
     game.settings.type === GameType.MIXED_ROLES && player.role !== Role.HITLER
-      ? [
-          player.role === Role.FASC ? fascistPng : liberalPng,
-          getTeamImg(player)[1],
-        ]
+      ? [player.role === Role.FASC ? fascistPng : liberalPng, getTeamImg(player)[1]]
       : player.role === Role.HITLER
       ? [hitlerPng, colors.hitler]
       : player.role === Role.FASC
@@ -102,29 +82,14 @@ export default function Players({
       : player.role === Role.LIB_SPY
       ? [liberalSpyPng, colors.lib]
       : [liberalPng, colors.lib];
-  const getTeamImg = player =>
-    player.team === Team.FASC
-      ? [fascPartyPng, colors.fasc]
-      : [libPartyPng, colors.lib];
-  const getVote = player =>
-    player.vote === Vote.JA
-      ? jaPng
-      : player.vote === Vote.NEIN
-      ? neinPng
-      : errorPng;
+  const getTeamImg = player => (player.team === Team.FASC ? [fascPartyPng, colors.fasc] : [libPartyPng, colors.lib]);
+  const getVote = player => (player.vote === Vote.JA ? jaPng : player.vote === Vote.NEIN ? neinPng : errorPng);
   const setNewState = (prevState, idx, val) => {
     const newState = [...prevState];
     newState[idx] = val;
     return newState;
   };
-  const gameOverDelay = gameEndedWithPolicyEnactment(
-    game,
-    hitlerFlippedForLibSpyGuess
-  )
-    ? game.topDecked
-      ? 7
-      : 6
-    : 2;
+  const gameOverDelay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess) ? (game.topDecked ? 7 : 6) : 2;
 
   const renderPlayers = game?.players?.map((player, idx) => {
     let choosable = false;
@@ -140,22 +105,17 @@ export default function Players({
     let nameColorTransition = "color 1.5s";
     let flipAndDownDuration = 4; //varies based on vote split
 
-    const thisPlayerInvestigatedPlayer = thisPlayer.investigations.some(
-      invName => invName === player.name
-    );
+    const thisPlayerInvestigatedPlayer = thisPlayer.investigations.some(invName => invName === player.name);
 
     //check if player is choosable
     if (choosing && player.name !== name) {
       //possibly allow a self investigation in blind game
       if (status === Status.LIB_SPY_GUESS) {
-        choosable =
-          player.team === Team.LIB ||
-          (!game.settings.hitlerKnowsFasc && player.role !== Role.HITLER);
+        choosable = player.team === Team.LIB || (!game.settings.hitlerKnowsFasc && player.role !== Role.HITLER);
       } else if (!player.alive) {
         choosable = false;
       } else if (status === Status.CHOOSE_CHAN) {
-        choosable =
-          game.prevChan !== player.name && game.prevPres !== player.name;
+        choosable = game.prevChan !== player.name && game.prevPres !== player.name;
       } else if (status === Status.INV) {
         choosable = !player.investigated;
       } else {
@@ -185,11 +145,7 @@ export default function Players({
       }
     }
     if (game.currentChan === player.name) {
-      if (
-        status === Status.CHAN_PLAY ||
-        status === Status.CHAN_CLAIM ||
-        status === Status.VETO_DECLINED
-      ) {
+      if (status === Status.CHAN_PLAY || status === Status.CHAN_CLAIM || status === Status.VETO_DECLINED) {
         makingDecision = true;
       }
     }
@@ -208,18 +164,12 @@ export default function Players({
 
     //your own role
     if (player.name === name) {
-      [roleContent, nameColor] = showOwnRole(player)
-        ? getRoleImg(player)
-        : [roleBackPng, colors.hidden];
+      [roleContent, nameColor] = showOwnRole(player) ? getRoleImg(player) : [roleBackPng, colors.hidden];
     }
     //fasc see other fasc
-    else if (
-      player.team === Team.FASC &&
-      thisPlayer.team === Team.FASC &&
-      showOtherFasc(thisPlayer, player)
-    ) {
+    else if (player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)) {
       [, nameColor] = getRoleImg(player);
-    } else if (thisPlayerInvestigatedPlayer) {
+    } else if (thisPlayerInvestigatedPlayer && !game.settings.completeBlind) {
       [, nameColor] = getTeamImg(player);
     }
 
@@ -235,11 +185,7 @@ export default function Players({
         roleContentFlip = getRoleImg(player)[0];
         roleAnimation = "flip 1s forwards 2s";
         nameColorTransition = "color 1s 2s";
-      } else if (
-        player.team === Team.FASC &&
-        thisPlayer.team === Team.FASC &&
-        showOtherFasc(thisPlayer, player)
-      ) {
+      } else if (player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)) {
         roleContent = roleBackPng;
         roleContentFlip = getRoleImg(player)[0];
         roleAnimation = "flipAndUnflip 5s forwards 4s";
@@ -255,23 +201,14 @@ export default function Players({
         overlayContent = voteBackPng;
         overlayContentFlip = getVote(player);
 
-        const jas = game.players.reduce(
-          (acc, player) => (player.vote === Vote.JA ? acc + 1 : acc),
-          0
-        );
-        const numVotes = game.players.reduce(
-          (n, player) => (player.alive ? n + 1 : n),
-          0
-        );
+        const jas = game.players.reduce((acc, player) => (player.vote === Vote.JA ? acc + 1 : acc), 0);
+        const numVotes = game.players.reduce((n, player) => (player.alive ? n + 1 : n), 0);
         const voteSplit = Math.min(jas, numVotes - jas);
         flipAndDownDuration = voteSplit <= 1 ? 4 : voteSplit <= 3 ? 5 : 6;
         animation = `flipAndDown ${flipAndDownDuration}s forwards`;
       }
-    } else if (
-      status === Status.INV_CLAIM &&
-      player.name === currentPres.investigations.slice(-1)[0]
-    ) {
-      if (currentPres.name === name) {
+    } else if (status === Status.INV_CLAIM && player.name === currentPres.investigations.slice(-1)[0]) {
+      if (currentPres.name === name && !game.settings.completeBlind) {
         nameColor = getTeamImg(player)[1];
         nameColorTransition = "color 1s 1s";
         overlayContent = getTeamImg(player)[0];
@@ -279,11 +216,7 @@ export default function Players({
         overlayContent = partyBack;
       }
       animation = "upAndDown 3s forwards";
-    } else if (
-      status === Status.LIB_SPY_GUESS &&
-      player.role === Role.HITLER &&
-      player.name !== name
-    ) {
+    } else if (status === Status.LIB_SPY_GUESS && player.role === Role.HITLER && player.name !== name) {
       roleContent = roleBackPng;
       roleContentFlip = hitlerPng;
       const delay = game.topDecked ? 7 : 6;
@@ -291,13 +224,8 @@ export default function Players({
       nameColor = colors.hitler;
       nameColorTransition = `color 1.5s ${delay + 1.5}s`;
     } else if (status === Status.SHOW_LIB_SPY_GUESS) {
-      const spyGuessedPlayer = game.players.find(
-        player => player.guessedToBeLibSpy
-      );
-      if (
-        spyGuessedPlayer.name === player.name &&
-        thisPlayer.name !== spyGuessedPlayer.name
-      ) {
+      const spyGuessedPlayer = game.players.find(player => player.guessedToBeLibSpy);
+      if (spyGuessedPlayer.name === player.name && thisPlayer.name !== spyGuessedPlayer.name) {
         roleContent = roleBackPng;
         roleContentFlip = getRoleImg(player)[0];
         roleAnimation = "flipAndUnflip 3s forwards";
@@ -322,37 +250,23 @@ export default function Players({
       nameColorTransition = "color .1s";
     }
 
-    const showToolTip =
-      player.name === name ||
-      (thisPlayer.confirmedFasc &&
-        (player.confirmedFasc || player.role === Role.HITLER));
+    const showToolTip = player.name === name || (thisPlayer.confirmedFasc && (player.confirmedFasc || player.role === Role.HITLER));
     let tooltipTitle = ``;
     if (player.name === name) {
       tooltipTitle = "You";
     } else if (player.role === Role.HITLER) {
-      tooltipTitle = !revealWhenHitlerConfirmed
-        ? `Hitler`
-        : player.confirmedFasc
-        ? "Confirmed Hitler"
-        : "Blind Hitler";
+      tooltipTitle = !revealWhenHitlerConfirmed ? `Hitler` : player.confirmedFasc ? "Confirmed Hitler" : "Blind Hitler";
     } else if (player.team === Team.FASC && player.confirmedFasc) {
       tooltipTitle = "Confirmed Fascist";
     }
 
-    const flipAndDownkeyFrameStyles = flipAndDownAnimation(
-      playersDimensions.y,
-      (1 / flipAndDownDuration) * 100
-    );
+    const flipAndDownkeyFrameStyles = flipAndDownAnimation(playersDimensions.y, (1 / flipAndDownDuration) * 100);
     const upKeyFrameStyles = upAnimation(playersDimensions.y);
     const flipKeyFrameStyles = flipAnimation();
     const upAndDownKeyFrameStyles = upAndDownAnimation(playersDimensions.y);
-    const flipAndUnflipKeyFrameStyles = flipAndUnflipAnimation(
-      status === Status.SHOW_LIB_SPY_GUESS ? 33 : 20
-    );
+    const flipAndUnflipKeyFrameStyles = flipAndUnflipAnimation(status === Status.SHOW_LIB_SPY_GUESS ? 33 : 20);
     const stillKeyFrameStyles = stillAnimation();
-    const choosableKeyFrameStyles = choosableAnimation(
-      playersDimensions.y < 110 ? 1.5 : 3.5
-    );
+    const choosableKeyFrameStyles = choosableAnimation(playersDimensions.y < 110 ? 1.5 : 3.5);
 
     function handleOpenToolTipChange(idx, val) {
       if (val === false && forceOpenToolTip[idx]) {
@@ -434,10 +348,7 @@ export default function Players({
             <style>{stillKeyFrameStyles}</style>
             <style>{choosableKeyFrameStyles}</style>
             {/* first rolebackimg is just a place holder */}
-            <img
-              src={roleBackPng}
-              style={{ width: "100%", visibility: "hidden" }}
-            />
+            <img src={roleBackPng} style={{ width: "100%", visibility: "hidden" }} />
             <div
               style={{
                 position: "absolute",
@@ -626,9 +537,7 @@ export default function Players({
 
   useEffect(() => {
     setFirstRender(false);
-    game.players.forEach(player =>
-      player.team === Team.FASC ? console.log(player.name + player.role) : ""
-    );
+    game.players.forEach(player => (player.team === Team.FASC ? console.log(player.name + player.role) : ""));
   }, []);
 
   useEffect(() => {
@@ -639,11 +548,7 @@ export default function Players({
     }
     game.players.forEach((player, idx) => {
       //never do this for yourself
-      if (
-        player.name !== name &&
-        ((player.confirmedFasc && !shownFascState[idx]) ||
-          (player.role === Role.HITLER && !hitlerConfirmed))
-      ) {
+      if (player.name !== name && ((player.confirmedFasc && !shownFascState[idx]) || (player.role === Role.HITLER && !hitlerConfirmed))) {
         //timeout because showing right after roleDialog has a chance to fully close causes a glitch in tooltip position
         if (player.role === Role.HITLER && player.confirmedFasc) {
           setHitlerConfirmed(true);
@@ -659,9 +564,7 @@ export default function Players({
           setShownFascState(prevState => setNewState(prevState, idx, true));
           setForceOpenToolTip(prevState => setNewState(prevState, idx, true));
           timeoutId = setTimeout(() => {
-            setForceOpenToolTip(prevState =>
-              setNewState(prevState, idx, false)
-            );
+            setForceOpenToolTip(prevState => setNewState(prevState, idx, false));
             setOpenToolTip(prevState => setNewState(prevState, idx, false));
           }, 5000);
           setTimeoutIds(prevState => setNewState(prevState, idx, timeoutId));
