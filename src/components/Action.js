@@ -120,8 +120,44 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     }
   }
 
-  // console.log(game.status, actionTitle)
-
+  const fixedOtherContent = (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 1,
+        width: "80%",
+        maxWidth: `min(250px, ${boardDimensions.x / 2}px)`,
+      }}
+    >
+      {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && (
+        <Button
+          variant="contained"
+          color="secondary"
+          disabled={game.settings.completeBlind}
+          sx={{ fontSize: { xs: "min(1em, 16px)" } }}
+          onClick={handleVetoRequest}
+        >
+          Request Veto
+        </Button>
+      )}
+      {showDefaultOption && (
+        <Button
+          variant="contained"
+          style={{ backgroundColor: colors.default }}
+          sx={{ fontSize: { xs: "min(1em, 16px)" } }}
+          onClick={handleDefaultAction}
+        >
+          Default to Role
+        </Button>
+      )}
+      {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && (
+        <Button variant="contained" color="secondary" sx={{ fontSize: { xs: "min(1em, 16px)" } }} onClick={() => setShowTop3PoliciesNotClaim(false)}>
+          Make Claim
+        </Button>
+      )}
+    </Box>
+  );
   /**
    * order:
    * previousActionContent set and centered
@@ -157,50 +193,16 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
       const setEverything = () => {
         setActionContent(content);
         setActionTitle(title);
-        setOtherContent(
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 1,
-              width: "80%",
-              maxWidth: `min(250px, ${boardDimensions.x / 2}px)`,
-            }}
-          >
-            {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && (
-              <Button variant="contained" color="secondary" sx={{ fontSize: { xs: "min(1em, 16px)" } }} onClick={handleVetoRequest}>
-                Request Veto
-              </Button>
-            )}
-            {showDefaultOption && (
-              <Button
-                variant="contained"
-                style={{ backgroundColor: colors.default }}
-                sx={{ fontSize: { xs: "min(1em, 16px)" } }}
-                onClick={handleDefaultAction}
-              >
-                Default to Role
-              </Button>
-            )}
-            {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && (
-              <Button
-                variant="contained"
-                color="secondary"
-                sx={{ fontSize: { xs: "min(1em, 16px)" } }}
-                onClick={() => setShowTop3PoliciesNotClaim(false)}
-              >
-                Make Claim
-              </Button>
-            )}
-          </Box>
-        );
+        setOtherContent(fixedOtherContent);
         setBlur(_blur);
         setCenterContent(true);
       };
 
-      if (game.settings.completeBlind && (showDefaultOption || status === Status.INSPECT_TOP3)) {
-        // handleDefaultAction();
-      }
+      //alternate complete blind interaction player doesn't have to click
+      // if (game.settings.completeBlind && (showDefaultOption || status === Status.INSPECT_TOP3)) {
+      // handleDefaultAction();
+      // }
+
       if (status === Status.INSPECT_TOP3 && !showTop3PoliciesNotClaim) {
         //need this here because there's no status change, so the automatic pause of 700 isn't set in game
         setTimeout(setEverything, 700);
@@ -214,43 +216,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     if (centerContent && !pauseActions) {
       setActionContent(content);
       setActionTitle(title);
-      setOtherContent(
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 1,
-            width: "80%",
-            maxWidth: `min(250px, ${boardDimensions.x / 2}px)`,
-          }}
-        >
-          {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && (
-            <Button variant="contained" color="secondary" sx={{ fontSize: { xs: "min(1em, 16px)" } }} onClick={handleVetoRequest}>
-              Request Veto
-            </Button>
-          )}
-          {showDefaultOption && (
-            <Button
-              variant="contained"
-              style={{ backgroundColor: colors.default }}
-              sx={{ fontSize: { xs: "min(1em, 16px)" } }}
-              onClick={handleDefaultAction}
-            >
-              Default to Role
-            </Button>
-          )}
-          {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && (
-            <Button
-              variant="contained"
-              color="secondary"
-              sx={{ fontSize: { xs: "min(1em, 16px)" } }}
-              onClick={() => setShowTop3PoliciesNotClaim(false)}
-            >
-              Make Claim
-            </Button>
-          )}
-        </Box>
-      );
+      setOtherContent(fixedOtherContent);
     }
   }, [boardDimensions, playersDimensions]);
 
@@ -258,35 +224,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     if (game.status === Status.VOTE) {
       setActionContent(content);
       setActionTitle(title);
-      setOtherContent(
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-          {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && (
-            <Button variant="contained" color="secondary" sx={{ fontSize: { xs: "min(1em, 16px)" } }} onClick={handleVetoRequest}>
-              Request Veto
-            </Button>
-          )}
-          {showDefaultOption && (
-            <Button
-              variant="contained"
-              style={{ backgroundColor: colors.default }}
-              sx={{ fontSize: { xs: "min(1em, 16px)" } }}
-              onClick={handleDefaultAction}
-            >
-              Default to Role
-            </Button>
-          )}
-          {showTop3PoliciesNotClaim && isCurrentPres && status === Status.INSPECT_TOP3 && (
-            <Button
-              variant="contained"
-              color="secondary"
-              sx={{ fontSize: { xs: "min(1em, 16px)" } }}
-              onClick={() => setShowTop3PoliciesNotClaim(false)}
-            >
-              Make Claim
-            </Button>
-          )}
-        </Box>
-      );
+      setOtherContent(fixedOtherContent);
     }
   }, [thisPlayer.vote]); //Otherwise actionContent does not update with the new vote info
 
