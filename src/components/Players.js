@@ -169,7 +169,7 @@ export default function Players({
     //fasc see other fasc
     else if (player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)) {
       [, nameColor] = getRoleImg(player);
-    } else if (thisPlayerInvestigatedPlayer && !game.settings.completeBlind) {
+    } else if (thisPlayerInvestigatedPlayer && !game.settings.cooperativeBlind) {
       [, nameColor] = getTeamImg(player);
     }
 
@@ -208,7 +208,7 @@ export default function Players({
         animation = `flipAndDown ${flipAndDownDuration}s forwards`;
       }
     } else if (status === Status.INV_CLAIM && player.name === currentPres.investigations.slice(-1)[0]) {
-      if (currentPres.name === name && !game.settings.completeBlind) {
+      if (currentPres.name === name && !game.settings.cooperativeBlind) {
         nameColor = getTeamImg(player)[1];
         nameColorTransition = "color 1s 1s";
         overlayContent = getTeamImg(player)[0];
@@ -604,7 +604,7 @@ export default function Players({
   }
 
   //xs: `min(100vw, calc(70px * ${n}))`,
-
+  game.players.forEach(player => console.log(player.team, player.role, player.identity));
   return (
     <Box
       ref={playersRef}

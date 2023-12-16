@@ -66,7 +66,7 @@ export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, se
           <img src={roleImg} draggable="false" style={{ width: "100%" }} />
         </Box>
       </DialogContent>
-      {game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver(game.status) && !game.settings.completeBlind && (
+      {game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver(game.status) && !game.settings.cooperativeBlind && (
         <DialogActions sx={{ display: "flex", justifyContent: "center" }}>
           <Button disabled={disableConfirmFasc} onClick={() => setConfirmFascOpen(true)} variant="contained" color="error">
             {confirmFascText}

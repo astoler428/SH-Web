@@ -29,7 +29,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     _blur = false,
     showDefaultOption = false;
 
-  const disabledStyles = game.settings.completeBlind
+  const disabledStyles = game.settings.cooperativeBlind
     ? {
         userSelect: "none",
         pointerEvents: "none",
@@ -134,7 +134,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
         <Button
           variant="contained"
           color="secondary"
-          disabled={game.settings.completeBlind}
+          disabled={game.settings.cooperativeBlind}
           sx={{ fontSize: { xs: "min(1em, 16px)" } }}
           onClick={handleVetoRequest}
         >
@@ -199,7 +199,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
       };
 
       //alternate complete blind interaction player doesn't have to click
-      // if (game.settings.completeBlind && (showDefaultOption || status === Status.INSPECT_TOP3)) {
+      // if (game.settings.cooperativeBlind && (showDefaultOption || status === Status.INSPECT_TOP3)) {
       // handleDefaultAction();
       // }
 
@@ -259,7 +259,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
 
   function showPresPolicies() {
     const presPolicies = game.presCards.map(card => {
-      const policyImg = game.settings.completeBlind ? policyBackPng : getPolicyImg(card);
+      const policyImg = game.settings.cooperativeBlind ? policyBackPng : getPolicyImg(card);
       return (
         <img
           key={Math.random()}
@@ -277,7 +277,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
 
   function showChanPolicies() {
     const chanCards = game.chanCards.map(card => {
-      const policyImg = game.settings.completeBlind ? policyBackPng : getPolicyImg(card);
+      const policyImg = game.settings.cooperativeBlind ? policyBackPng : getPolicyImg(card);
       return (
         <img
           key={Math.random()}
@@ -308,7 +308,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
         <Button
           variant="contained"
           data-key={PRES3.RRR}
-          disabled={game.settings.completeBlind}
+          disabled={game.settings.cooperativeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.fascBackground },
             backgroundColor: colors.fasc,
@@ -320,7 +320,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
         <Button
           variant="contained"
           data-key={PRES3.RRB}
-          disabled={game.settings.completeBlind}
+          disabled={game.settings.cooperativeBlind}
           color="inherit"
           sx={{
             lineHeight: { xs: "1.2em" },
@@ -332,7 +332,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
         <Button
           variant="contained"
           data-key={PRES3.RBB}
-          disabled={game.settings.completeBlind}
+          disabled={game.settings.cooperativeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.libBackground },
             lineHeight: { xs: "1.2em" },
@@ -345,7 +345,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
         <Button
           variant="contained"
           data-key={PRES3.BBB}
-          disabled={game.settings.completeBlind}
+          disabled={game.settings.cooperativeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.darkLibBackground },
             backgroundColor: colors.libDark,
@@ -373,7 +373,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
         <Button
           variant="contained"
           data-key={CHAN2.RR}
-          disabled={game.settings.completeBlind}
+          disabled={game.settings.cooperativeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.fascBackground },
             backgroundColor: colors.fasc,
@@ -385,7 +385,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
         <Button
           variant="contained"
           data-key={CHAN2.RB}
-          disabled={game.settings.completeBlind}
+          disabled={game.settings.cooperativeBlind}
           color="inherit"
           sx={{
             lineHeight: { xs: "1.2em" },
@@ -397,7 +397,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
         <Button
           variant="contained"
           data-key={CHAN2.BB}
-          disabled={game.settings.completeBlind}
+          disabled={game.settings.cooperativeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.libBackground },
             backgroundColor: colors.lib,
@@ -425,7 +425,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
         <Button
           variant="contained"
           data-key={Team.LIB}
-          disabled={game.settings.completeBlind}
+          disabled={game.settings.cooperativeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.libBackground },
             backgroundColor: colors.lib,
@@ -437,7 +437,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
         <Button
           variant="contained"
           data-key={Team.FASC}
-          disabled={game.settings.completeBlind}
+          disabled={game.settings.cooperativeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.fascBackground },
             backgroundColor: colors.fasc,
@@ -457,7 +457,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
       <img
         key={Math.random()}
         draggable="false"
-        src={game.settings.completeBlind ? policyBackPng : getPolicyImg(card)}
+        src={game.settings.cooperativeBlind ? policyBackPng : getPolicyImg(card)}
         style={{ width: boardDimensions.x / 6 }}
       />
     ));
@@ -478,7 +478,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
           <Button
             variant="contained"
             data-key={PRES3.RRR}
-            disabled={game.settings.completeBlind}
+            disabled={game.settings.cooperativeBlind}
             sx={{
               "&:hover": { backgroundColor: colors.fascBackground },
               backgroundColor: colors.fasc,
@@ -490,7 +490,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
           <Button
             variant="contained"
             data-key={PRES3.RRB}
-            disabled={game.settings.completeBlind}
+            disabled={game.settings.cooperativeBlind}
             color="inherit"
             sx={{
               lineHeight: { sm: "12px", md: "16px" },
@@ -502,7 +502,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
           <Button
             variant="contained"
             data-key={PRES3.RBB}
-            disabled={game.settings.completeBlind}
+            disabled={game.settings.cooperativeBlind}
             sx={{
               "&:hover": { backgroundColor: colors.libBackground },
               backgroundColor: colors.lib,
@@ -515,7 +515,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
           <Button
             variant="contained"
             data-key={PRES3.BBB}
-            disabled={game.settings.completeBlind}
+            disabled={game.settings.cooperativeBlind}
             sx={{
               "&:hover": { backgroundColor: colors.darkLibBackground },
               backgroundColor: colors.libDark,
@@ -544,7 +544,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
         <Button
           variant="contained"
           data-key={true}
-          disabled={game.settings.completeBlind}
+          disabled={game.settings.cooperativeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.libBackground },
             backgroundColor: colors.lib,
@@ -556,7 +556,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
         <Button
           variant="contained"
           data-key={false}
-          disabled={game.settings.completeBlind}
+          disabled={game.settings.cooperativeBlind}
           sx={{
             "&:hover": { backgroundColor: colors.fascBackground },
             backgroundColor: colors.fasc,

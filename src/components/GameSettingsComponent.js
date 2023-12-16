@@ -63,6 +63,11 @@ export default function GameSettingsComponent({ game, name, handleSettingsChange
               />
               <FormControlLabel
                 disabled={game.settings?.type !== GameType.BLIND}
+                control={<Checkbox checked={game.settings?.cooperativeBlind} onChange={() => handleSettingsChange(GameSettings.COOPERATIVEBLIND)} />}
+                label="Cooperative blind"
+              />
+              <FormControlLabel
+                disabled={game.settings?.type !== GameType.BLIND}
                 control={<Checkbox checked={game.settings?.completeBlind} onChange={() => handleSettingsChange(GameSettings.COMPLETEBLIND)} />}
                 label="Complete blind"
               />
@@ -97,6 +102,11 @@ export default function GameSettingsComponent({ game, name, handleSettingsChange
               <ListItem>
                 <Typography variant="h7">
                   Simple blind: <span style={styles}>{game.settings.simpleBlind ? "Yes" : "No"}</span>
+                </Typography>
+              </ListItem>
+              <ListItem>
+                <Typography variant="h7">
+                  Cooperative blind: <span style={styles}>{game.settings.cooperativeBlind ? "Yes" : "No"}</span>
                 </Typography>
               </ListItem>
               <ListItem>

@@ -105,6 +105,7 @@ export const GameSettings = {
   REDDOWN: "redDown",
   HITLERKNOWSFASC: "hitlerKnowsFasc",
   SIMPLEBLIND: "simpleBlind",
+  COOPERATIVEBLIND: "cooperativeBlind",
   COMPLETEBLIND: "completeBlind",
   TEAMLIBSPY: "teamLibSpy",
 };
@@ -170,18 +171,12 @@ export const inGov = (game, name) =>
 
 // export const presOrChanDuringClaiming = (game, name) => (game.currentPres === name || game.currentChan === name) && (game.status === Status.PRES_CLAIM || game.status === Status.CHAN_CLAIM)
 export const claiming = (game, name) =>
-  (game.currentPres === name && game.status === Status.PRES_CLAIM) ||
-  (game.currentChan === name && game.status === Status.CHAN_CLAIM);
+  (game.currentPres === name && game.status === Status.PRES_CLAIM) || (game.currentChan === name && game.status === Status.CHAN_CLAIM);
 
-export const gameOver = status =>
-  status === Status.END_FASC || status === Status.END_LIB;
+export const gameOver = status => status === Status.END_FASC || status === Status.END_LIB;
 
-export const gameEndedWithPolicyEnactment = (
-  game,
-  hitlerFlippedForLibSpyGuess
-) =>
-  (game.LibPoliciesEnacted === 5 && !hitlerFlippedForLibSpyGuess) ||
-  game.FascPoliciesEnacted === 6;
+export const gameEndedWithPolicyEnactment = (game, hitlerFlippedForLibSpyGuess) =>
+  (game.LibPoliciesEnacted === 5 && !hitlerFlippedForLibSpyGuess) || game.FascPoliciesEnacted === 6;
 
 export const choosableAnimation = width => `
 @keyframes choosable {
@@ -317,13 +312,7 @@ export const stillAnimation = () => `
   }
 `;
 
-export const enactPolicyAnimation = (
-  policyWidth,
-  left,
-  bottom,
-  policyGap,
-  policyNum
-) => {
+export const enactPolicyAnimation = (policyWidth, left, bottom, policyGap, policyNum) => {
   return `
   @keyframes enact {
     0% {

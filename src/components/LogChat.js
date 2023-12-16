@@ -1,57 +1,31 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Box, Paper, TextField, Typography, ListItem } from "@mui/material";
-import {
-  Team,
-  gameOver,
-  Status,
-  LogType,
-  Role,
-  Policy,
-  GameType,
-  inGov,
-  colors,
-} from "../consts";
+import { Team, gameOver, Status, LogType, Role, Policy, GameType, inGov, colors } from "../consts";
 import { socket } from "../socket";
 import StatusMessage from "./StatusMessage";
 
-export default function LogChat({
-  game,
-  name,
-  boardDimensions,
-  playersDimensions,
-}) {
+export default function LogChat({ game, name, boardDimensions, playersDimensions }) {
   const [message, setMessage] = useState("");
   const scrollRef = useRef(undefined);
   const paperRef = useRef(undefined);
   const messageInputRef = useRef(undefined);
 
   const thisPlayer = game.players.find(player => player.name === name);
-  const disabled =
-    !gameOver(game.status) &&
-    (!thisPlayer.alive ||
-      inGov(game, name) ||
-      game.status === Status.LIB_SPY_GUESS);
+  const disabled = !gameOver(game.status) && (!thisPlayer.alive || inGov(game, name) || game.status === Status.LIB_SPY_GUESS);
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyPress);
   }, []);
 
   useEffect(() => {
-    if (
-      paperRef.current.scrollHeight -
-        paperRef.current.clientHeight -
-        Math.round(paperRef.current.scrollTop) <
-      80
-    ) {
+    if (paperRef.current.scrollHeight - paperRef.current.clientHeight - Math.round(paperRef.current.scrollTop) < 80) {
       paperRef.current.scrollTo({
         behavior: "auto",
         top: paperRef.current.scrollHeight,
       });
     }
-
     // const scrollLabelRect = scrollRef.current.getBoundingClientRect()
     // const textFieldRect = messageInputRef.current.getBoundingClientRect()
-
     // if(textFieldRect.bottom - scrollLabelRect.bottom > -20){
     //   scrollRef.current?.scrollIntoView({behavior: 'auto', block: 'start'})
     // }
@@ -110,16 +84,26 @@ export default function LogChat({
       <span
         style={{
           fontWeight: 700,
-          color:
-            role === Role.HITLER
-              ? "#A72323"
-              : role === Role.FASC
-              ? colors.fasc
-              : colors.lib,
+          color: role === Role.HITLER ? colors.hitler : role === Role.FASC ? colors.fasc : colors.lib,
         }}
       >
         {opts}
         {role}
+        {plural ? "s" : ""}
+      </span>
+    );
+  }
+
+  function renderTeam(team, plural = false, opts = "") {
+    return (
+      <span
+        style={{
+          fontWeight: 700,
+          color: team === Team.FASC ? colors.fasc : colors.lib,
+        }}
+      >
+        {opts}
+        {team}
         {plural ? "s" : ""}
       </span>
     );
@@ -142,15 +126,9 @@ export default function LogChat({
     );
   }
 
-  const presidentStr = (
-    <span style={{ color: "gold", fontWeight: 800 }}>President</span>
-  );
-  const chancellorStr = (
-    <span style={{ color: "gold", fontWeight: 800 }}>Chancellor</span>
-  );
-  const claimsStr = (
-    <span style={{ color: "gold", fontWeight: 800 }}>claims</span>
-  );
+  const presidentStr = <span style={{ color: "gold", fontWeight: 800 }}>President</span>;
+  const chancellorStr = <span style={{ color: "gold", fontWeight: 800 }}>Chancellor</span>;
+  const claimsStr = <span style={{ color: "gold", fontWeight: 800 }}>claims</span>;
   const liberalStr = renderRole(Role.LIB);
   const liberalsStr = renderRole(Role.LIB, true);
   const fascistStr = renderRole(Role.FASC);
@@ -175,7 +153,7 @@ export default function LogChat({
 
     if (!entry.type) {
       return (
-        <ListItem key={i} sx={{ margin: "0", padding: "0", marginLeft: "5px" }}>
+        <ListItem key={i} sx={{ margin: "0", padding: "0", paddingLeft: "5px" }}>
           <Typography
             sx={{
               marginLeft: "0px",
@@ -187,8 +165,7 @@ export default function LogChat({
           >
             {dateStr}
             {renderName(entry.name)}
-            <span style={{ fontWeight: 500, fontSize: "1em" }}>:</span>{" "}
-            {entry.message}
+            <span style={{ fontWeight: 500, fontSize: "1em" }}>:</span> {entry.message}
           </Typography>
         </ListItem>
       );
@@ -196,8 +173,7 @@ export default function LogChat({
 
     const pres = entry.payload?.pres && renderName(entry.payload.pres);
     const chan = entry.payload?.chan && renderName(entry.payload.chan);
-    const investigatee =
-      entry.payload?.investigatee && renderName(entry.payload.investigatee);
+    const investigatee = entry.payload?.investigatee && renderName(entry.payload.investigatee);
     const name = entry.payload?.name && renderName(entry.payload.name);
     const claim = entry.payload?.claim && entry.payload.claim;
 
@@ -207,16 +183,14 @@ export default function LogChat({
       case LogType.INTRO_DECK:
         logEntry = (
           <span>
-            Deck shuffled: {renderRole(Role.LIB, false, `6 `)} and{" "}
-            {renderRole(Role.FASC, false, `11 `)} policies.
+            Deck shuffled: {renderRole(Role.LIB, false, `6 `)} and {renderRole(Role.FASC, false, `11 `)} policies.
           </span>
         );
         break;
       case LogType.INTRO_ROLES:
         logEntry = (
           <span>
-            The roles are dealt with {Math.ceil((game.players.length + 1) / 2)}{" "}
-            {liberalsStr} and {Math.floor((game.players.length - 1) / 2)}{" "}
+            The roles are dealt with {Math.ceil((game.players.length + 1) / 2)} {liberalsStr} and {Math.floor((game.players.length - 1) / 2)}{" "}
             {fascistsStr}.
           </span>
         );
@@ -231,8 +205,7 @@ export default function LogChat({
       case LogType.INTRO_MIXED:
         logEntry = (
           <span>
-            {hitlerStr} is a {fascistStr} but other party membership and roles
-            may be mixed. Your party membership is your team. Your role is the
+            {hitlerStr} is a {fascistStr} but other party membership and roles may be mixed. Your party membership is your team. Your role is the
             policies you play.
           </span>
         );
@@ -240,72 +213,64 @@ export default function LogChat({
       case LogType.INTRO_HITLER_KNOWS_FASC:
         logEntry = (
           <span>
-            {hitlerStr} knows the other{" "}
-            {game.players.length >= 7 ? fascistsStr : fascistStr}.
+            {hitlerStr} knows the other {game.players.length >= 7 ? fascistsStr : fascistStr}.
           </span>
         );
         break;
       case LogType.INTRO_RED_DOWN:
-        logEntry = (
-          <span>The game begins with a {fascistStr} policy enacted.</span>
-        );
+        logEntry = <span>The game begins with a {fascistStr} policy enacted.</span>;
         break;
       case LogType.INDIVIDUAL_SEAT:
-        const rolePhrase =
-          game.settings.type === GameType.BLIND ? (
-            <span>a hidden</span>
-          ) : (
-            <span>the {renderRole(thisPlayer.role)}</span>
+        let rolePhrase = "";
+        if (game.settings.type === GameType.MIXED_ROLES) {
+          rolePhrase = (
+            <span>
+              the {renderTeam(thisPlayer.team)} team and {renderRole(thisPlayer.role)}
+            </span>
           );
+        } else if (game.settings.type === GameType.BLIND) {
+          if (game.settings.completeBlind) {
+            rolePhrase = <span>the {renderRole(thisPlayer.identity)} identity and a hidden</span>;
+          } else {
+            rolePhrase = <span>a hidden</span>;
+          }
+        } else {
+          rolePhrase = <span>the {renderRole(thisPlayer.role)}</span>;
+        }
         const seatNum = game.players.indexOf(thisPlayer) + 1;
         logEntry = (
           <span>
-            You receive {rolePhrase} role and take seat{" "}
-            <span style={{ color: "black", fontWeight: 700 }}>#{seatNum}.</span>{" "}
+            You receive {rolePhrase} role and take seat <span style={{ color: "black", fontWeight: 700 }}>#{seatNum}</span>.
           </span>
         );
         break;
       case LogType.HITLER_SEAT:
-        const hitlerPlayer = game.players.find(
-          player => player.role === Role.HITLER
-        );
+        const hitlerPlayer = game.players.find(player => player.role === Role.HITLER);
         logEntry = (
           <span>
-            You see that {hitlerStr} is {renderName(hitlerPlayer.name)}{" "}
+            You see that {hitlerStr} is {renderName(hitlerPlayer.name)}.
           </span>
         );
         break;
       case LogType.OTHER_FASCIST_SEATS:
-        const otherFasc = game.players.filter(
-          player =>
-            player.team === Team.FASC &&
-            player.role !== Role.HITLER &&
-            player.name !== thisPlayer.name
-        );
+        const otherFasc = game.players.filter(player => player.team === Team.FASC && player.role !== Role.HITLER && player.name !== thisPlayer.name);
         if (game.players.length >= 9 && thisPlayer.role === Role.HITLER) {
           logEntry = (
             <span>
-              You see that the other {fascistsStr} are{" "}
-              {renderName(otherFasc[0].name)}, {renderName(otherFasc[1].name)}{" "}
-              and {renderName(otherFasc[2].name)}.{" "}
+              You see that the other {fascistsStr} are {renderName(otherFasc[0].name)}, {renderName(otherFasc[1].name)} and{" "}
+              {renderName(otherFasc[2].name)}.{" "}
             </span>
           );
-        } else if (
-          game.players.length >= 9 ||
-          (game.players.length >= 7 && thisPlayer.role === Role.HITLER)
-        ) {
+        } else if (game.players.length >= 9 || (game.players.length >= 7 && thisPlayer.role === Role.HITLER)) {
           logEntry = (
             <span>
-              You see that the other {fascistsStr} are{" "}
-              {renderName(otherFasc[0].name)} and{" "}
-              {renderName(otherFasc[1].name)}.{" "}
+              You see that the other {fascistsStr} are {renderName(otherFasc[0].name)} and {renderName(otherFasc[1].name)}.{" "}
             </span>
           );
         } else {
           logEntry = (
             <span>
-              You see that the other {fascistStr} is{" "}
-              {renderName(otherFasc[0].name)}.{" "}
+              You see that the other {fascistStr} is {renderName(otherFasc[0].name)}.{" "}
             </span>
           );
         }
@@ -319,12 +284,7 @@ export default function LogChat({
         break;
       case LogType.ENACT_POLICY:
         const policy = entry.payload.policy;
-        logEntry = (
-          <span>
-            A {policy === Policy.FASC ? fascistStr : liberalStr} policy is
-            enacted.
-          </span>
-        );
+        logEntry = <span>A {policy === Policy.FASC ? fascistStr : liberalStr} policy is enacted.</span>;
         break;
       case LogType.CHAN_CLAIM:
         logEntry = (
@@ -350,8 +310,7 @@ export default function LogChat({
       case LogType.INV_CLAIM:
         logEntry = (
           <span>
-            {presidentStr} {pres} {claimsStr} {investigatee} is{" "}
-            {renderRole(claim)}.
+            {presidentStr} {pres} {claimsStr} {investigatee} is {renderRole(claim)}.
           </span>
         );
         break;
@@ -373,9 +332,8 @@ export default function LogChat({
       case LogType.INSPECT_TOP3_CLAIM:
         logEntry = (
           <span>
-            {presidentStr} {pres} claims the top 3 policies are{" "}
-            {renderPolicies(claim)}. The 3 policies are shuffled and then
-            returned to the top of the deck.
+            {presidentStr} {pres} claims the top 3 policies are {renderPolicies(claim)}. The 3 policies are shuffled and then returned to the top of
+            the deck.
           </span>
         );
         break;
@@ -398,8 +356,7 @@ export default function LogChat({
         const vetoAccepted = entry.payload.vetoAccepted;
         logEntry = vetoAccepted ? (
           <span>
-            {presidentStr} {pres} accepts veto. The election tracker moves
-            forward.
+            {presidentStr} {pres} accepts veto. The election tracker moves forward.
           </span>
         ) : (
           <span>
@@ -415,11 +372,7 @@ export default function LogChat({
         );
         break;
       case LogType.ELECTION_FAIL:
-        logEntry = (
-          <span>
-            The election fails and the election tracker moves forward.
-          </span>
-        );
+        logEntry = <span>The election fails and the election tracker moves forward.</span>;
         break;
       case LogType.TOP_DECK:
         logEntry = <span>Three failed elections. Top decking.</span>;
@@ -428,8 +381,7 @@ export default function LogChat({
       case LogType.HITLER_TO_GUESS_LIB_SPY:
         logEntry = (
           <span>
-            The {liberalsStr} enacted 5 {liberalStr} policies and the{" "}
-            {liberalSpyStr} played a {renderPolicies("R")} policy.
+            The {liberalsStr} enacted 5 {liberalStr} policies and the {liberalSpyStr} played a {renderPolicies("R")} policy.
           </span>
         );
         break;
@@ -442,16 +394,8 @@ export default function LogChat({
         );
         break;
       case LogType.SHUFFLE_DECK:
-        const libCount = renderRole(
-          Role.LIB,
-          false,
-          `${entry.payload.libCount} `
-        );
-        const fascCount = renderRole(
-          Role.FASC,
-          false,
-          `${entry.payload.fascCount} `
-        );
+        const libCount = renderRole(Role.LIB, false, `${entry.payload.libCount} `);
+        const fascCount = renderRole(Role.FASC, false, `${entry.payload.fascCount} `);
         logEntry = (
           <span>
             The deck is shuffled: {libCount} and {fascCount} policies.
@@ -482,24 +426,18 @@ export default function LogChat({
         logEntry = <span>{hitlerStr} has been shot.</span>;
         break;
       case LogType.DECK:
-        const remainingPolicies = renderPolicies(
-          entry.payload.remainingPolicies
-        );
+        const remainingPolicies = renderPolicies(entry.payload.remainingPolicies);
         logEntry =
           remainingPolicies.length === 1 ? (
-            <span>
-              The remaining policy in the draw pile is {remainingPolicies}
-            </span>
+            <span>The remaining policy in the draw pile is {remainingPolicies}</span>
           ) : (
-            <span>
-              The remaining policies in the draw pile are {remainingPolicies}
-            </span>
+            <span>The remaining policies in the draw pile are {remainingPolicies}</span>
           );
         break;
     }
 
     return (
-      <ListItem key={i} sx={{ margin: "0", padding: "0", marginLeft: "5px" }}>
+      <ListItem key={i} sx={{ margin: "0", padding: "0", paddingLeft: "5px" }}>
         <Typography
           sx={{
             marginLeft: "0px",
@@ -558,10 +496,7 @@ export default function LogChat({
           }}
         >
           {log}
-          <ListItem
-            sx={{ height: "0", padding: "0", margin: "0" }}
-            ref={scrollRef}
-          ></ListItem>
+          <ListItem sx={{ height: "0", padding: "0", margin: "0" }} ref={scrollRef}></ListItem>
           <form sx={{ height: 0, position: "absolute", bottom: -1 }}>
             <button
               style={{
