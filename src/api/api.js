@@ -8,13 +8,12 @@ const client = Axios.create({
   },
 });
 
-export async function post(path, payload){
+export async function post(path, payload) {
   try {
-    return await client.post(path, payload)
-  }
-  catch (err) {
-    console.log(err)
-    console.log(err?.response?.data?.message)
+    return await client.post(path, payload);
+  } catch (err) {
+    console.log(err);
+    console.log(err?.response?.data?.message);
   }
 }
 

@@ -1,96 +1,108 @@
-import React, {useEffect, useRef} from 'react'
-import { useParams } from 'react-router'
-import { UPDATE, Status, GameSettings } from '../consts'
-import { socket } from '../socket'
+import React, { useEffect, useRef } from "react";
+import { useParams } from "react-router";
+import { UPDATE, Status, GameSettings } from "../consts";
+import { socket } from "../socket";
 import { useNavigate } from "react-router-dom";
-import client, {post} from '../api/api';
-import { Typography, Box, Toolbar, Button, AppBar } from '@mui/material';
-import GameSettingsComponent from '../components/GameSettingsComponent';
+import client, { post } from "../api/api";
+import { Typography, Box, Toolbar, Button, AppBar } from "@mui/material";
+import GameSettingsComponent from "../components/GameSettingsComponent";
 
-
-export default function Lobby({name, game, setGame, isConnected}) {
-  const navigate = useNavigate()
-  const params = useParams()
-  const id = params.id
-  const enteringGameRef = useRef(false)
+export default function Lobby({ name, game, setGame, isConnected }) {
+  const navigate = useNavigate();
+  const params = useParams();
+  const id = params.id;
+  const enteringGameRef = useRef(false);
 
   //join game (redundant but just in case someone navigates directly to the url)
-  useEffect(()=>{
-    if(isConnected){
-      joinGame()
+  useEffect(() => {
+    if (isConnected) {
+      joinGame();
     }
-    async function joinGame(){
+    async function joinGame() {
       try {
-        await client.post(`/game/join/${id}`, {name, socketId: socket.id})
-      }
-      catch (err) {
-        console.log(err?.response?.data?.message)
-        navigate('/')
+        await client.post(`/game/join/${id}`, { name, socketId: socket.id });
+      } catch (err) {
+        console.log(err?.response?.data?.message);
+        navigate("/");
       }
     }
-  }, [id, name, navigate, setGame, isConnected])
+  }, [id, name, navigate, setGame, isConnected]);
 
   //click listener to start the game - a socket message update comes in causing navigation
-  async function startGame(){
-    if(game.host === name){
-      await post(`/game/start/${id}`)
+  async function startGame() {
+    if (game.host === name) {
+      await post(`/game/start/${id}`);
     }
   }
 
   //listening for updates - in lobby the only updates are the players gotten from the updated game obj
   // and whether or not to join the game
-  useEffect(()=>{
-    socket.on(UPDATE, handleUpdate)
+  useEffect(() => {
+    socket.on(UPDATE, handleUpdate);
 
-    function handleUpdate(game){
-      setGame(game)
-      if(game && game.status !== Status.CREATED){
+    function handleUpdate(game) {
+      setGame(game);
+      if (game && game.status !== Status.CREATED) {
         // enteringGameRef.current = true
         // navigate(`/game/${id}`)
-        goToGame()
+        goToGame();
       }
     }
 
     //called on cleanup - if leaving the lobby (takes into account may be leaving lobby to enter game)
-    async function leaveGame(){
-      await post(`/game/leave/${id}`, {socketId: socket.id, enteringGame: enteringGameRef.current})
+    async function leaveGame() {
+      await post(`/game/leave/${id}`, {
+        socketId: socket.id,
+        enteringGame: enteringGameRef.current,
+      });
     }
 
     return () => {
-      socket.off(UPDATE, handleUpdate)
-      leaveGame()
+      socket.off(UPDATE, handleUpdate);
+      leaveGame();
     };
-  }, []) //will these be an issue causing dismout and leave game to be called?
+  }, []); //will these be an issue causing dismout and leave game to be called?
 
-
-  function goToGame(){
-    enteringGameRef.current = true
-    navigate(`/game/${id}`)
+  function goToGame() {
+    enteringGameRef.current = true;
+    navigate(`/game/${id}`);
   }
 
-
-  async function handleSettingsChange(propName, propValue){
-    if(game.host === name){
-      propValue = propName === GameSettings.TYPE ? propValue : !game.settings[propName]
-      await post(`/game/settings/${id}`, {gameSettings: {...game.settings, [propName]: propValue}})
+  async function handleSettingsChange(propName, propValue) {
+    if (game.host === name) {
+      propValue =
+        propName === GameSettings.TYPE ? propValue : !game.settings[propName];
+      await post(`/game/settings/${id}`, {
+        gameSettings: { ...game.settings, [propName]: propValue },
+      });
     }
   }
 
-  const players = game?.players?.map((player, idx) =>
-     <Typography
-     key={player.name}
-     variant='h6'
-     sx={{fontSize: '20px', marginBottom: '-3px', whiteSpace: 'nowrap', overflow: 'hidden', fontWeight: player.name === name ? 'bold' : 'normal', color: player.name === name ? '#7e22ce' : 'black'}}
-     >
-    {idx+1}. {player.name}
+  const players = game?.players?.map((player, idx) => (
+    <Typography
+      key={player.name}
+      variant="h6"
+      sx={{
+        fontSize: "20px",
+        marginBottom: "-3px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        fontWeight: player.name === name ? "bold" : "normal",
+        color: player.name === name ? "#7e22ce" : "black",
+      }}
+    >
+      {idx + 1}. {player.name}
     </Typography>
-  )
+  ));
 
-  const startGameButtonText = game?.players?.length < 5 ?
-    `Waiting for more players` :
-    game?.host === name ?  `Start Game` : `WAITING for ${game?.host} to start game`
+  const startGameButtonText =
+    game?.players?.length < 5
+      ? `Waiting for more players`
+      : game?.host === name
+      ? `Start Game`
+      : `WAITING for ${game?.host} to start game`;
 
-  const disabled = !game || game?.players?.length < 5 || game?.host !== name
+  const disabled = !game || game?.players?.length < 5 || game?.host !== name;
 
   return (
     <>
@@ -101,25 +113,43 @@ export default function Lobby({name, game, setGame, isConnected}) {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Box sx={{width: '100%', display: 'flex', justifyContent: 'center'}}>
+      <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
         <Box
           sx={{
-            marginTop: {xs: '30px', sm: '10vh'},
-            display:"flex",
-            flexDirection: 'column',
-            width:'100%',
-            maxWidth: '320px',
-            gap:{xs: 1.5, sm: 4},
+            marginTop: { xs: "30px", sm: "10vh" },
+            display: "flex",
+            flexDirection: "column",
+            width: "100%",
+            maxWidth: "320px",
+            gap: { xs: 1.5, sm: 4 },
           }}
-          >
-        <GameSettingsComponent game={game} name={name} handleSettingsChange={handleSettingsChange}/>
-        <Box>
-          <Typography variant='h5' sx={{fontSize: '27px', marginBottom: '5px', display: 'block', fontWeight: 500, fontFamily: 'inter', letterSpacing: '-.5px' }}>Players</Typography>
-          {players}
+        >
+          <GameSettingsComponent
+            game={game}
+            name={name}
+            handleSettingsChange={handleSettingsChange}
+          />
+          <Box>
+            <Typography
+              variant="h5"
+              sx={{
+                fontSize: "27px",
+                marginBottom: "5px",
+                display: "block",
+                fontWeight: 500,
+                fontFamily: "inter",
+                letterSpacing: "-.5px",
+              }}
+            >
+              Players
+            </Typography>
+            {players}
+          </Box>
+          <Button variant="contained" disabled={disabled} onClick={startGame}>
+            {startGameButtonText}
+          </Button>
         </Box>
-        <Button variant='contained' disabled={disabled} onClick={startGame}>{startGameButtonText}</Button>
       </Box>
-    </Box>
     </>
-  )
+  );
 }
