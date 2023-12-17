@@ -127,6 +127,12 @@ export const Role = {
   LIB_SPY: "Liberal Spy",
 };
 
+export const Identity = {
+  LIB: "Liberal",
+  FASC: "Fascist",
+  HITLER: "Hitler",
+};
+
 export const Color = {
   RED: "R",
   BLUE: "B",

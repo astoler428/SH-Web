@@ -15,6 +15,7 @@ import {
   flipAnimation,
   flipAndUnflipAnimation,
   stillAnimation,
+  Identity,
 } from "../consts";
 import { Card, CircularProgress, Grid, Typography, Box, Tooltip } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -34,6 +35,7 @@ import chanPng from "../img/Chancellor.png";
 import voteBackPng from "../img/VoteBack.png";
 import errorPng from "../img/Error.png";
 import partyBack from "../img/PartyBack.png";
+import { blue } from "@mui/material/colors";
 //card height to width ratio = 1.36
 
 // const colors.hitler = '#A72323'
@@ -84,6 +86,14 @@ export default function Players({
       : [liberalPng, colors.lib];
   const getTeamImg = player => (player.team === Team.FASC ? [fascPartyPng, colors.fasc] : [libPartyPng, colors.lib]);
   const getVote = player => (player.vote === Vote.JA ? jaPng : player.vote === Vote.NEIN ? neinPng : errorPng);
+  const getCompleteBlindTintBackgroundColor = player =>
+    !game.settings.completeBlind
+      ? "transparent"
+      : player.identity === Identity.HITLER
+      ? colors.hitler
+      : player.identity === Identity.FASC
+      ? colors.fasc
+      : colors.lib;
   const setNewState = (prevState, idx, val) => {
     const newState = [...prevState];
     newState[idx] = val;
@@ -99,10 +109,14 @@ export default function Players({
     let roleContentFlip = roleBackPng;
     let overlayContent = null;
     let overlayContentFlip = null;
+    // let completeBlindBoxShadowColor = null;
+    let completeBlindTintBackgroundColor = "transparent";
     let animation = "";
     let roleAnimation = "";
     let chooseAnimation = "";
     let nameColorTransition = "color 1.5s";
+    // let completeBlindBoxShadowColorTransition = "box-shadow 1s 2s";
+    let completeBlindTintBackgroundColorTransition = "backgroundColor 1s 2s";
     let flipAndDownDuration = 4; //varies based on vote split
 
     const thisPlayerInvestigatedPlayer = thisPlayer.investigations.some(invName => invName === player.name);
@@ -165,6 +179,10 @@ export default function Players({
     //your own role
     if (player.name === name) {
       [roleContent, nameColor] = showOwnRole(player) ? getRoleImg(player) : [roleBackPng, colors.hidden];
+      completeBlindTintBackgroundColor = getCompleteBlindTintBackgroundColor(player);
+      completeBlindTintBackgroundColorTransition = `background-color 1s 2s`;
+      // completeBlindBoxShadowColor = getCompleteBlindBoxShadowColor(player);
+      // completeBlindBoxShadowColorTransition = `box-shadow 1s 2s`;
     }
     //fasc see other fasc
     else if (player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)) {
@@ -177,15 +195,27 @@ export default function Players({
       [roleContent, nameColor] = getRoleImg(player);
     }
 
+    //show for complete blind
+    if (player.team === Team.FASC && showFascistInCompleteBlind(player)) {
+      [, nameColor] = getRoleImg(player);
+    }
+
     //animations
 
-    if (status === Status.STARTED && game.settings.type !== GameType.BLIND) {
-      if (player.name === name) {
-        roleContent = roleBackPng;
-        roleContentFlip = getRoleImg(player)[0];
-        roleAnimation = "flip 1s forwards 2s";
-        nameColorTransition = "color 1s 2s";
-      } else if (player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)) {
+    if (status === Status.STARTED) {
+      if (game.settings.type !== GameType.BLIND) {
+        if (player.name === name) {
+          roleContent = roleBackPng;
+          roleContentFlip = getRoleImg(player)[0];
+          roleAnimation = "flip 1s forwards 2s";
+          nameColorTransition = "color 1s 2s";
+        } else if (player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)) {
+          roleContent = roleBackPng;
+          roleContentFlip = getRoleImg(player)[0];
+          roleAnimation = "flipAndUnflip 5s forwards 4s";
+          nameColorTransition = "color 1s 4s";
+        }
+      } else if (game.settings.completeBlind && player.team === Team.FASC && showFascistInCompleteBlind(player)) {
         roleContent = roleBackPng;
         roleContentFlip = getRoleImg(player)[0];
         roleAnimation = "flipAndUnflip 5s forwards 4s";
@@ -233,6 +263,10 @@ export default function Players({
       }
     } else if (gameOver(status)) {
       [, nameColor] = getRoleImg(player);
+      completeBlindTintBackgroundColor = getCompleteBlindTintBackgroundColor(player);
+      completeBlindTintBackgroundColorTransition = `background-color 1s ${gameOverDelay + 6}s`; // + 3s is when flip finishes (see below), give time to look
+      // completeBlindBoxShadowColor = getCompleteBlindBoxShadowColor(player);
+      // completeBlindBoxShadowColorTransition = `box-shadow 1s ${gameOverDelay + 3}s`; //wait for flip to finish
 
       //flip over everyone elses role, unless blind in which case your needs flipping too if not confirmed, or libSpy and hitler already flipped
       //maybe set this based on whether the roleContent is already a role
@@ -247,6 +281,8 @@ export default function Players({
 
     if (firstRender) {
       nameColor = colors.hidden;
+      // completeBlindBoxShadowColor = null;
+      completeBlindTintBackgroundColor = "transparent";
       nameColorTransition = "color .1s";
     }
 
@@ -274,6 +310,7 @@ export default function Players({
       }
       setOpenToolTip(prevState => setNewState(prevState, idx, val));
     }
+
     return (
       <Grid key={idx} item xs={12 / n} sx={{}}>
         <Box
@@ -334,6 +371,8 @@ export default function Players({
             sx={{
               cursor: choosable ? "pointer" : "auto",
               animation: chooseAnimation,
+              // boxShadow: `0 0 0 4px ${completeBlindBoxShadowColor}`,
+              // transition: completeBlindBoxShadowColorTransition,
               display: "flex",
               flexDirection: "column",
               position: "relative",
@@ -364,6 +403,18 @@ export default function Players({
                 animation: roleAnimation,
               }}
             >
+              <Box
+                sx={{
+                  position: "absolute",
+                  width: "102%",
+                  height: "102%",
+                  // transform: "translate(-.1%, -0%)",
+                  backgroundColor: completeBlindTintBackgroundColor,
+                  transition: completeBlindTintBackgroundColorTransition,
+                  zIndex: 1,
+                  opacity: 0.8,
+                }}
+              ></Box>
               <img
                 ref={el => (playerImageRefs.current[idx] = el)}
                 src={roleContent}
@@ -503,7 +554,7 @@ export default function Players({
                     color: "red",
                   }}
                 />
-                {player.name === name && !showOwnRole(player) && (
+                {player.name === name && !showOwnRole(player) && !game.settings.completeBlind && (
                   <QuestionMarkIcon
                     sx={{
                       width: "100%",
@@ -528,6 +579,7 @@ export default function Players({
   /**
    * zIndex order:
    * roleContent: 10
+   * Alliance color opacity: 15
    * blind ? role: 25
    * overlayContent: 50
    * prev and current pres and chan: 75
@@ -603,6 +655,15 @@ export default function Players({
     return false;
   }
 
+  function showFascistInCompleteBlind(player) {
+    if (thisPlayer.identity === Identity.FASC) {
+      return true;
+    } else if (thisPlayer.identity === Identity.HITLER && (player.role === Role.HITLER || game.settings.hitlerKnowsFasc)) {
+      return true;
+    }
+    return false;
+  }
+
   //xs: `min(100vw, calc(70px * ${n}))`,
   game.players.forEach(player => console.log(player.team, player.role, player.identity));
   return (
@@ -619,7 +680,9 @@ export default function Players({
         margin: "0 5px",
       }}
     >
-      <Grid container spacing={{ xs: 0.5, sm: 1 }}>
+      <Grid container spacing={{ xs: 1, sm: 1 }}>
+        {" "}
+        {/**used to be xs: .5 */}
         {renderPlayers}
       </Grid>
     </Box>
