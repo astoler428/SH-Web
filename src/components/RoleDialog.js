@@ -8,7 +8,8 @@ import fascistPng from "../img/Fascist.png";
 import roleBackPng from "../img/RoleBack.png";
 import libParty from "../img/LibParty.png";
 import fascParty from "../img/FascParty.png";
-import { Role, gameOver, GameType, Team, Status, inGov, claiming } from "../consts";
+import { Role, GameType, Team, Status, colors } from "../consts";
+import { inGov, claiming, gameOver, isBlindSetting } from "../helperFunctions";
 
 export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, setConfirmFascOpen }) {
   let roleImg, teamImg;
@@ -28,7 +29,7 @@ export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, se
     default:
       roleImg = roleBackPng;
   }
-  if (game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver(game.status)) {
+  if (isBlindSetting(game.settings.type) && !thisPlayer.confirmedFasc && !gameOver(game.status)) {
     roleImg = roleBackPng;
   }
 
@@ -66,9 +67,17 @@ export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, se
           <img src={roleImg} draggable="false" style={{ width: "100%" }} />
         </Box>
       </DialogContent>
-      {game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver(game.status) && !game.settings.cooperativeBlind && (
+      {game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver(game.status) && (
         <DialogActions sx={{ display: "flex", justifyContent: "center" }}>
-          <Button disabled={disableConfirmFasc} onClick={() => setConfirmFascOpen(true)} variant="contained" color="error">
+          <Button
+            disabled={disableConfirmFasc}
+            onClick={() => setConfirmFascOpen(true)}
+            variant="contained"
+            sx={{
+              "&:hover": { backgroundColor: colors.fascBackground },
+              backgroundColor: colors.fasc,
+            }}
+          >
             {confirmFascText}
           </Button>
         </DialogActions>

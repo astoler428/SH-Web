@@ -1,8 +1,10 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Box, Paper, TextField, Typography, ListItem } from "@mui/material";
-import { Team, gameOver, Status, LogType, Role, Policy, GameType, inGov, colors } from "../consts";
+import { Team, Status, LogType, Role, Policy, GameType, colors } from "../consts";
+import { inGov, gameOver, isBlindSetting } from "../helperFunctions";
 import { socket } from "../socket";
 import StatusMessage from "./StatusMessage";
+import Game from "../pages/Game";
 
 export default function LogChat({ game, name, boardDimensions, playersDimensions }) {
   const [message, setMessage] = useState("");
@@ -228,8 +230,8 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
               the {renderTeam(thisPlayer.team)} team and {renderRole(thisPlayer.role)}
             </span>
           );
-        } else if (game.settings.type === GameType.BLIND) {
-          if (game.settings.completeBlind) {
+        } else if (isBlindSetting(game.settings.type)) {
+          if (game.settings.type === GameType.TOTALLY_BLIND) {
             rolePhrase = <span>the {renderRole(thisPlayer.identity)} identity and a hidden</span>;
           } else {
             rolePhrase = <span>a hidden</span>;
@@ -403,13 +405,13 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
         );
         break;
       case LogType.LIB_WIN:
-        logEntry = <span>{liberalsStr} win the game.</span>;
+        logEntry = <span>The {liberalsStr} win the game.</span>;
         break;
       case LogType.FASC_WIN:
-        logEntry = <span>{fascistsStr} win the game.</span>;
+        logEntry = <span>The {fascistsStr} win the game.</span>;
         break;
       case LogType.LIB_SPY_WIN:
-        logEntry = <span>{liberalSpyStr} wins the game.</span>;
+        logEntry = <span>The {liberalSpyStr} wins the game.</span>;
         break;
       case LogType.LIB_SPY_FAIL:
         const B = renderPolicies("B");

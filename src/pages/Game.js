@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router";
 import client, { post } from "../api/api";
 import { socket } from "../socket";
-import { Status, UPDATE, colors, gameEndedWithPolicyEnactment, gameOver, TOP_DECK_DELAY } from "../consts";
+import { Status, UPDATE, colors, TOP_DECK_DELAY } from "../consts";
+import { gameOver, gameEndedWithPolicyEnactment } from "../helperFunctions";
 import Players from "../components/Players";
 import Board from "../components/Board";
 import Loading from "../components/Loading";
@@ -11,6 +12,7 @@ import { Typography, IconButton, Snackbar, AppBar, Toolbar, Button, Box } from "
 import CloseIcon from "@mui/icons-material/Close";
 import RoleDialog from "../components/RoleDialog";
 import ConfirmFascDialog from "../components/ConfirmFascDialog";
+import GameSettingsDialog from "../components/GameSettingsDialog";
 import LogChat from "../components/LogChat";
 import Confetti from "react-confetti";
 
@@ -22,6 +24,7 @@ export default function Game({ name, game, setGame, isConnected }) {
   const id = params.id;
   const thisPlayer = game?.players.find(player => player.name === name);
   const [roleOpen, setRoleOpen] = useState(false);
+  const [gameSettingsOpen, setGameSettingsOpen] = useState(false);
   const [confirmFascOpen, setConfirmFascOpen] = useState(false);
   const [error, setError] = useState(null);
   const [boardDimensions, setBoardDimensions] = useState({ x: 0, y: 0 });
@@ -248,6 +251,9 @@ export default function Game({ name, game, setGame, isConnected }) {
               >
                 Game ID: {id}
               </Typography>
+              <Button color="inherit" onClick={() => setGameSettingsOpen(true)} sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}>
+                Game Settings
+              </Button>
               <Button color="inherit" onClick={() => setRoleOpen(true)} sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}>
                 Role
               </Button>
@@ -262,6 +268,7 @@ export default function Game({ name, game, setGame, isConnected }) {
           </AppBar>
           <Box sx={{ marginTop: { xs: "30px", sm: "56px" } }} />
           <RoleDialog thisPlayer={thisPlayer} game={game} roleOpen={roleOpen} setRoleOpen={setRoleOpen} setConfirmFascOpen={setConfirmFascOpen} />
+          <GameSettingsDialog game={game} gameSettingsOpen={gameSettingsOpen} setGameSettingsOpen={setGameSettingsOpen} />
           <Box
             sx={{
               display: "flex",

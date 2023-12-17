@@ -14,7 +14,9 @@ import {
   ListItem,
 } from "@mui/material";
 import { GameType, GameSettings } from "../consts";
+import { isBlindSetting } from "../helperFunctions";
 import Loading from "./Loading";
+import NonHostGameSettings from "./NonHostGameSettings";
 
 export default function GameSettingsComponent({ game, name, handleSettingsChange }) {
   const styles = { fontSize: 16, fontWeight: "normal", fontFamily: "inter" };
@@ -40,6 +42,8 @@ export default function GameSettingsComponent({ game, name, handleSettingsChange
                 onChange={e => handleSettingsChange(GameSettings.TYPE, e.target.value)}
               >
                 <MenuItem value={GameType.BLIND}>{GameType.BLIND}</MenuItem>
+                <MenuItem value={GameType.COOPERATIVE_BLIND}>{GameType.COOPERATIVE_BLIND}</MenuItem>
+                {/* <MenuItem value={GameType.TOTALLY_BLIND}>{GameType.TOTALLY_BLIND}</MenuItem> */}
                 <MenuItem value={GameType.NORMAL}>{GameType.NORMAL}</MenuItem>
                 <MenuItem value={GameType.LIB_SPY}>{GameType.LIB_SPY}</MenuItem>
                 <MenuItem value={GameType.MIXED_ROLES}>{GameType.MIXED_ROLES}</MenuItem>
@@ -52,16 +56,16 @@ export default function GameSettingsComponent({ game, name, handleSettingsChange
                 label="Start with red down"
               />
               <FormControlLabel
-                disabled={game.settings?.type === GameType.BLIND}
+                disabled={isBlindSetting(game.settings.type)}
                 control={<Checkbox checked={game.settings?.hitlerKnowsFasc} onChange={() => handleSettingsChange(GameSettings.HITLERKNOWSFASC)} />}
                 label="Hitler knows fascists in 7+"
               />
               <FormControlLabel
-                disabled={game.settings?.type !== GameType.BLIND}
+                disabled={!isBlindSetting(game.settings.type)}
                 control={<Checkbox checked={game.settings?.simpleBlind} onChange={() => handleSettingsChange(GameSettings.SIMPLEBLIND)} />}
                 label="Simple blind"
               />
-              <FormControlLabel
+              {/* <FormControlLabel
                 disabled={game.settings?.type !== GameType.BLIND}
                 control={<Checkbox checked={game.settings?.cooperativeBlind} onChange={() => handleSettingsChange(GameSettings.COOPERATIVEBLIND)} />}
                 label="Cooperative blind"
@@ -70,7 +74,7 @@ export default function GameSettingsComponent({ game, name, handleSettingsChange
                 disabled={game.settings?.type !== GameType.BLIND}
                 control={<Checkbox checked={game.settings?.completeBlind} onChange={() => handleSettingsChange(GameSettings.COMPLETEBLIND)} />}
                 label="Complete blind"
-              />
+              /> */}
               {/* <FormControlLabel
           disabled={game.settings?.type !== GameType.LIB_SPY}
           control={<Checkbox
@@ -82,40 +86,7 @@ export default function GameSettingsComponent({ game, name, handleSettingsChange
             </FormGroup>
           </Box>
         ) : (
-          <Card sx={{ display: "flex", justifyContent: "center" }}>
-            <List sx={{ fontWeight: "bold", margin: "6px 0" }}>
-              <ListItem>
-                <Typography variant="h7">
-                  Game type: <span style={styles}>{game.settings.type}</span>
-                </Typography>
-              </ListItem>
-              <ListItem>
-                <Typography variant="h7">
-                  Start with red down: <span style={styles}>{game.settings.redDown ? "Yes" : "No"}</span>
-                </Typography>
-              </ListItem>
-              <ListItem>
-                <Typography variant="h7">
-                  Hitler knows Fascists in 7+: <span style={styles}>{game.settings.hitlerKnowsFasc ? "Yes" : "No"}</span>
-                </Typography>
-              </ListItem>
-              <ListItem>
-                <Typography variant="h7">
-                  Simple blind: <span style={styles}>{game.settings.simpleBlind ? "Yes" : "No"}</span>
-                </Typography>
-              </ListItem>
-              <ListItem>
-                <Typography variant="h7">
-                  Cooperative blind: <span style={styles}>{game.settings.cooperativeBlind ? "Yes" : "No"}</span>
-                </Typography>
-              </ListItem>
-              <ListItem>
-                <Typography variant="h7">
-                  Complete blind: <span style={styles}>{game.settings.completeBlind ? "Yes" : "No"}</span>
-                </Typography>
-              </ListItem>
-            </List>
-          </Card>
+          <NonHostGameSettings game={game} />
         )}
       </>
     );

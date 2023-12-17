@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import { GameType, Status, colors } from "../consts";
+import { isBlindSetting } from "../helperFunctions";
 
 export default function StatusMessage({ game }) {
   let message;
@@ -8,7 +9,7 @@ export default function StatusMessage({ game }) {
 
   switch (status) {
     case Status.STARTED:
-      message = game.settings.type === GameType.BLIND ? "Roles are hidden" : "Showing roles";
+      message = isBlindSetting(game.settings.type) ? "Roles are hidden" : "Showing roles";
       break;
     case Status.CHOOSE_CHAN:
       message = "President to select chancellor";

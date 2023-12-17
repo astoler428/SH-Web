@@ -6,6 +6,7 @@ import policyBackPng from "../img/PolicyBack.png";
 import jaPng from "../img/Ja.png";
 import neinPng from "../img/Nein.png";
 import { Color, draws3, PRES3, CHAN2, Status, Vote, Team, Role, GameType, RRR, RRB, RBB, BBB, colors } from "../consts";
+import { isBlindSetting } from "../helperFunctions";
 import { post } from "../api/api";
 import DefaulDiscardDialog from "./DefaultDiscardDialog";
 
@@ -29,7 +30,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     _blur = false,
     showDefaultOption = false;
 
-  const disabled = game.settings.cooperativeBlind || game.settings.completeBlind;
+  const disabled = game.settings.type === GameType.COOPERATIVE_BLIND || game.settings.type === GameType.TOTALLY_BLIND;
   const disabledStyles = disabled
     ? {
         userSelect: "none",
@@ -47,7 +48,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   } else if (status === Status.LIB_SPY_GUESS && isHitler) {
     title = "GUESS THE LIBERAL SPY.";
   } else if (isCurrentPres) {
-    showDefaultOption = game.settings.type === GameType.BLIND ? true : false;
+    showDefaultOption = isBlindSetting(game.settings.type) ? true : false;
     switch (status) {
       case Status.PRES_DISCARD:
         title = "CHOOSE A POLICY TO DISCARD. ";
@@ -98,7 +99,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
         showDefaultOption = false;
     }
   } else if (isCurrentChan) {
-    showDefaultOption = game.settings.type === GameType.BLIND ? true : false;
+    showDefaultOption = isBlindSetting(game.settings.type) ? true : false;
     switch (status) {
       case Status.CHAN_PLAY:
         title = `CHOOSE A POLICY TO PLAY${inVetoZone ? ` OR REQUEST A VETO.` : `.`}`;
@@ -644,7 +645,8 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   }
 
   async function handleDefaultAction() {
-    if (status === Status.PRES_DISCARD) {
+    //different kinds of blind call handleDefaultAction now
+    if (status === Status.PRES_DISCARD && game.settings.type === GameType.BLIND) {
       setShowDiscardDialog(true);
     }
     if (status === Status.VETO_DECLINED) {

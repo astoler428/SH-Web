@@ -6,11 +6,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
-export default function ConfirmFascDialog({
-  confirmFascOpen,
-  setConfirmFascOpen,
-  handleConfirmFasc,
-}) {
+export default function ConfirmFascDialog({ confirmFascOpen, setConfirmFascOpen, handleConfirmFasc }) {
   return (
     <div>
       <Dialog
@@ -21,9 +17,7 @@ export default function ConfirmFascDialog({
       >
         <DialogTitle id="alert-dialog-title">{"Are you sure?"}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            If you are Liberal, all the Liberals lose.
-          </DialogContentText>
+          <DialogContentText id="alert-dialog-description">If you are liberal, all the liberals lose.</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setConfirmFascOpen(false)}>Nevermind</Button>

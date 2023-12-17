@@ -2,8 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import {
   colors,
   Status,
-  gameOver,
-  gameEndedWithPolicyEnactment,
   Role,
   Team,
   GameType,
@@ -17,6 +15,7 @@ import {
   stillAnimation,
   Identity,
 } from "../consts";
+import { gameOver, gameEndedWithPolicyEnactment, isBlindSetting } from "../helperFunctions";
 import { Card, CircularProgress, Grid, Typography, Box, Tooltip } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
@@ -28,6 +27,8 @@ import fascistPng from "../img/Fascist.png";
 import roleBackPng from "../img/RoleBack.png";
 import libPartyPng from "../img/LibParty.png";
 import fascPartyPng from "../img/FascParty.png";
+import fascistLiberalPng from "../img/FascistLiberal.png";
+import liberalFascistPng from "../img/LiberalFascist.png";
 import jaPng from "../img/Ja.png";
 import neinPng from "../img/Nein.png";
 import presPng from "../img/President.png";
@@ -35,7 +36,6 @@ import chanPng from "../img/Chancellor.png";
 import voteBackPng from "../img/VoteBack.png";
 import errorPng from "../img/Error.png";
 import partyBack from "../img/PartyBack.png";
-import { blue } from "@mui/material/colors";
 //card height to width ratio = 1.36
 
 // const colors.hitler = '#A72323'
@@ -58,15 +58,15 @@ export default function Players({
 }) {
   const [firstRender, setFirstRender] = useState(true);
   const [showPlayerCardLabels, setShowPlayerCardLabels] = useState(true); //basically just gameover or not but want a delay
-  const [openToolTip, setOpenToolTip] = useState(game.players.map(() => false));
-  const [forceOpenToolTip, setForceOpenToolTip] = useState(game.players.map(() => false));
+  const [openTooltip, setOpenTooltip] = useState(game.players.map(() => false));
+  const [forceOpenTooltip, setForceOpenTooltip] = useState(game.players.map(() => false));
   const [shownFascState, setShownFascState] = useState(game.players.map(() => false));
   const [hitlerConfirmed, setHitlerConfirmed] = useState(false);
   const [timeoutIds, setTimeoutIds] = useState(game.players.map(() => null));
   const thisPlayer = game.players.find(player => player.name === name);
   const n = game.players.length;
   const status = game.status;
-  const revealWhenHitlerConfirmed = false; //can turn it on or off
+  const revealWhenHitlerConfirmedFlag = false; //can turn it on or off
 
   const choosing =
     !pauseActions &&
@@ -75,8 +75,8 @@ export default function Players({
 
   const currentPres = game.players.find(player => player.name === game.currentPres);
   const getRoleImg = player =>
-    game.settings.type === GameType.MIXED_ROLES && player.role !== Role.HITLER
-      ? [player.role === Role.FASC ? fascistPng : liberalPng, getTeamImg(player)[1]]
+    game.settings.type === GameType.MIXED_ROLES
+      ? getMixedImg(player)
       : player.role === Role.HITLER
       ? [hitlerPng, colors.hitler]
       : player.role === Role.FASC
@@ -85,15 +85,22 @@ export default function Players({
       ? [liberalSpyPng, colors.lib]
       : [liberalPng, colors.lib];
   const getTeamImg = player => (player.team === Team.FASC ? [fascPartyPng, colors.fasc] : [libPartyPng, colors.lib]);
+  const getMixedImg = player => {
+    if (player.role === Role.HITLER) {
+      return [hitlerPng, colors.hitler];
+    } else if (player.role === Role.LIB && player.team === Team.LIB) {
+      return [liberalPng, colors.lib];
+    } else if (player.role === Role.LIB && player.team === Team.FASC) {
+      return [fascistLiberalPng, colors.fasc];
+    } else if (player.role === Role.FASC && player.team === Team.FASC) {
+      return [fascistPng, colors.fasc];
+    } else {
+      return [liberalFascistPng, colors.lib];
+    }
+  };
   const getVote = player => (player.vote === Vote.JA ? jaPng : player.vote === Vote.NEIN ? neinPng : errorPng);
-  const getCompleteBlindTintBackgroundColor = player =>
-    !game.settings.completeBlind
-      ? "transparent"
-      : player.identity === Identity.HITLER
-      ? colors.hitler
-      : player.identity === Identity.FASC
-      ? colors.fasc
-      : colors.lib;
+  const getTotallyBlindTintBackgroundColor = player =>
+    player.identity === Identity.HITLER ? colors.hitler : player.identity === Identity.FASC ? colors.fasc : colors.lib;
   const setNewState = (prevState, idx, val) => {
     const newState = [...prevState];
     newState[idx] = val;
@@ -109,15 +116,17 @@ export default function Players({
     let roleContentFlip = roleBackPng;
     let overlayContent = null;
     let overlayContentFlip = null;
-    // let completeBlindBoxShadowColor = null;
-    let completeBlindTintBackgroundColor = "transparent";
+    // let totallyBlindBoxShadowColor = null;
+    let totallyBlindTintBackgroundColor = "transparent";
     let animation = "";
     let roleAnimation = "";
     let chooseAnimation = "";
     let nameColorTransition = "color 1.5s";
-    // let completeBlindBoxShadowColorTransition = "box-shadow 1s 2s";
-    let completeBlindTintBackgroundColorTransition = "backgroundColor 1s 2s";
+    // let totallyBlindBoxShadowColorTransition = "box-shadow 1s 2s";
+    let totallyBlindTintBackgroundColorTransition = "backgroundColor 1s 2s";
     let flipAndDownDuration = 4; //varies based on vote split
+    let showTooltip = false;
+    let tooltipTitle = ``;
 
     const thisPlayerInvestigatedPlayer = thisPlayer.investigations.some(invName => invName === player.name);
 
@@ -174,21 +183,51 @@ export default function Players({
       makingDecision = false;
     }
 
-    //content of role and name color
+    //content of role and name color and tooltip
+
+    // const showToolTip = player.name === name || (thisPlayer.confirmedFasc && (player.confirmedFasc || player.role === Role.HITLER));
+
+    // } else if (player.role === Role.HITLER) {
+    //   tooltipTitle = !revealWhenHitlerConfirmedFlag ? `Hitler` : player.confirmedFasc ? "Confirmed Hitler" : "Blind Hitler";
+    // } else if (player.team === Team.FASC && player.confirmedFasc) {
+    //   tooltipTitle = "Confirmed Fascist";
+    // }
+
+    //check investigation shows role and not or fasc investigates fasc in blind should say blind fasc?
 
     //your own role
     if (player.name === name) {
       [roleContent, nameColor] = showOwnRole(player) ? getRoleImg(player) : [roleBackPng, colors.hidden];
-      completeBlindTintBackgroundColor = getCompleteBlindTintBackgroundColor(player);
-      completeBlindTintBackgroundColorTransition = `background-color 1s 2s`;
-      // completeBlindBoxShadowColor = getCompleteBlindBoxShadowColor(player);
-      // completeBlindBoxShadowColorTransition = `box-shadow 1s 2s`;
+      if (game.settings.type === GameType.TOTALLY_BLIND) {
+        totallyBlindTintBackgroundColor = getTotallyBlindTintBackgroundColor(player);
+        totallyBlindTintBackgroundColorTransition = `background-color 1s 2s`;
+      }
+      showTooltip = true;
+      tooltipTitle = "You";
     }
     //fasc see other fasc
     else if (player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)) {
       [, nameColor] = getRoleImg(player);
-    } else if (thisPlayerInvestigatedPlayer && !game.settings.cooperativeBlind) {
+      showTooltip = true;
+
+      if (game.settings.type === GameType.BLIND) {
+        if (player.role === Role.FASC) {
+          tooltipTitle = player.confirmedFasc ? `Confirmed fascist` : `fascist`;
+        } else if (player.role === Role.HITLER) {
+          tooltipTitle = !revealWhenHitlerConfirmedFlag ? `Hitler` : player.confirmedFasc ? `Confirmed Hitler` : `Blind Hitler`;
+        }
+      } else if (game.settings.type === GameType.MIXED_ROLES) {
+        tooltipTitle = `${player.team} ${player.role}`;
+      } else {
+        tooltipTitle = player.role;
+      }
+    } else if (
+      thisPlayerInvestigatedPlayer &&
+      !(game.settings.type === GameType.COOPERATIVE_BLIND || game.settings.type === GameType.TOTALLY_BLIND)
+    ) {
       [, nameColor] = getTeamImg(player);
+      showTooltip = true;
+      tooltipTitle = `${player.team}`;
     }
 
     if (player.role === Role.HITLER && hitlerFlippedForLibSpyGuess) {
@@ -196,14 +235,14 @@ export default function Players({
     }
 
     //show for complete blind
-    if (player.team === Team.FASC && showFascistInCompleteBlind(player)) {
+    if (player.team === Team.FASC && showFascistInTotallyBlind(player)) {
       [, nameColor] = getRoleImg(player);
     }
 
     //animations
 
     if (status === Status.STARTED) {
-      if (game.settings.type !== GameType.BLIND) {
+      if (!isBlindSetting(game.settings.type)) {
         if (player.name === name) {
           roleContent = roleBackPng;
           roleContentFlip = getRoleImg(player)[0];
@@ -215,7 +254,7 @@ export default function Players({
           roleAnimation = "flipAndUnflip 5s forwards 4s";
           nameColorTransition = "color 1s 4s";
         }
-      } else if (game.settings.completeBlind && player.team === Team.FASC && showFascistInCompleteBlind(player)) {
+      } else if (game.settings.type === GameType.TOTALLY_BLIND && player.team === Team.FASC && showFascistInTotallyBlind(player)) {
         roleContent = roleBackPng;
         roleContentFlip = getRoleImg(player)[0];
         roleAnimation = "flipAndUnflip 5s forwards 4s";
@@ -238,8 +277,8 @@ export default function Players({
         animation = `flipAndDown ${flipAndDownDuration}s forwards`;
       }
     } else if (status === Status.INV_CLAIM && player.name === currentPres.investigations.slice(-1)[0]) {
-      if (currentPres.name === name && !game.settings.cooperativeBlind) {
-        nameColor = getTeamImg(player)[1];
+      if (currentPres.name === name && !(game.settings.type === GameType.COOPERATIVE_BLIND || game.settings.type === GameType.TOTALLY_BLIND)) {
+        nameColor = nameColor === colors.hitler ? nameColor : getTeamImg(player)[1]; //if you were already seeing them as hitler, don't switch to fasc color
         nameColorTransition = "color 1s 1s";
         overlayContent = getTeamImg(player)[0];
       } else {
@@ -263,10 +302,12 @@ export default function Players({
       }
     } else if (gameOver(status)) {
       [, nameColor] = getRoleImg(player);
-      completeBlindTintBackgroundColor = getCompleteBlindTintBackgroundColor(player);
-      completeBlindTintBackgroundColorTransition = `background-color 1s ${gameOverDelay + 6}s`; // + 3s is when flip finishes (see below), give time to look
-      // completeBlindBoxShadowColor = getCompleteBlindBoxShadowColor(player);
-      // completeBlindBoxShadowColorTransition = `box-shadow 1s ${gameOverDelay + 3}s`; //wait for flip to finish
+      if (game.settings.type === GameType.TOTALLY_BLIND) {
+        totallyBlindTintBackgroundColor = getTotallyBlindTintBackgroundColor(player);
+        totallyBlindTintBackgroundColorTransition = `background-color 1s ${gameOverDelay + 6}s`; // + 3s is when flip finishes (see below), give time to look
+      }
+      // totallyBlindBoxShadowColor = getTotallyBlindBoxShadowColor(player);
+      // totallyBlindBoxShadowColorTransition = `box-shadow 1s ${gameOverDelay + 3}s`; //wait for flip to finish
 
       //flip over everyone elses role, unless blind in which case your needs flipping too if not confirmed, or libSpy and hitler already flipped
       //maybe set this based on whether the roleContent is already a role
@@ -281,19 +322,9 @@ export default function Players({
 
     if (firstRender) {
       nameColor = colors.hidden;
-      // completeBlindBoxShadowColor = null;
-      completeBlindTintBackgroundColor = "transparent";
+      // totallyBlindBoxShadowColor = null;
+      totallyBlindTintBackgroundColor = "transparent";
       nameColorTransition = "color .1s";
-    }
-
-    const showToolTip = player.name === name || (thisPlayer.confirmedFasc && (player.confirmedFasc || player.role === Role.HITLER));
-    let tooltipTitle = ``;
-    if (player.name === name) {
-      tooltipTitle = "You";
-    } else if (player.role === Role.HITLER) {
-      tooltipTitle = !revealWhenHitlerConfirmed ? `Hitler` : player.confirmedFasc ? "Confirmed Hitler" : "Blind Hitler";
-    } else if (player.team === Team.FASC && player.confirmedFasc) {
-      tooltipTitle = "Confirmed Fascist";
     }
 
     const flipAndDownkeyFrameStyles = flipAndDownAnimation(playersDimensions.y, (1 / flipAndDownDuration) * 100);
@@ -304,11 +335,11 @@ export default function Players({
     const stillKeyFrameStyles = stillAnimation();
     const choosableKeyFrameStyles = choosableAnimation(playersDimensions.y < 110 ? 1.5 : 3.5);
 
-    function handleOpenToolTipChange(idx, val) {
-      if (val === false && forceOpenToolTip[idx]) {
+    function handleOpenTooltip(idx, val) {
+      if (val === false && forceOpenTooltip[idx]) {
         return;
       }
-      setOpenToolTip(prevState => setNewState(prevState, idx, val));
+      setOpenTooltip(prevState => setNewState(prevState, idx, val));
     }
 
     return (
@@ -323,11 +354,11 @@ export default function Players({
             flexDirection: "column",
           }}
         >
-          {showToolTip ? (
+          {showTooltip ? (
             <Tooltip
-              open={openToolTip[idx]}
-              onOpen={() => handleOpenToolTipChange(idx, true)}
-              onClose={() => handleOpenToolTipChange(idx, false)}
+              open={openTooltip[idx]}
+              onOpen={() => handleOpenTooltip(idx, true)}
+              onClose={() => handleOpenTooltip(idx, false)}
               title={tooltipTitle}
               placement="top"
             >
@@ -371,8 +402,8 @@ export default function Players({
             sx={{
               cursor: choosable ? "pointer" : "auto",
               animation: chooseAnimation,
-              // boxShadow: `0 0 0 4px ${completeBlindBoxShadowColor}`,
-              // transition: completeBlindBoxShadowColorTransition,
+              // boxShadow: `0 0 0 4px ${totallyBlindBoxShadowColor}`,
+              // transition: totallyBlindBoxShadowColorTransition,
               display: "flex",
               flexDirection: "column",
               position: "relative",
@@ -406,13 +437,15 @@ export default function Players({
               <Box
                 sx={{
                   position: "absolute",
-                  width: "102%",
-                  height: "102%",
-                  // transform: "translate(-.1%, -0%)",
-                  backgroundColor: completeBlindTintBackgroundColor,
-                  transition: completeBlindTintBackgroundColorTransition,
+                  width: "104%",
+                  height: "104%",
+                  transform: "translate(-.3%, -.3%)",
+                  backgroundColor: totallyBlindTintBackgroundColor,
+                  transition: totallyBlindTintBackgroundColorTransition,
+                  // backgroundColor:
+                  //   player.name === name && player.role !== Role.HITLER && player.role !== player.team ? getTeamImg(player)[1] : "transparent",
                   zIndex: 1,
-                  opacity: 0.8,
+                  opacity: 0.7,
                 }}
               ></Box>
               <img
@@ -554,7 +587,7 @@ export default function Players({
                     color: "red",
                   }}
                 />
-                {player.name === name && !showOwnRole(player) && !game.settings.completeBlind && (
+                {player.name === name && !showOwnRole(player) && game.settings.type !== GameType.TOTALLY_BLIND && (
                   <QuestionMarkIcon
                     sx={{
                       width: "100%",
@@ -605,19 +638,19 @@ export default function Players({
         if (player.role === Role.HITLER && player.confirmedFasc) {
           setHitlerConfirmed(true);
         }
-        if (shownFascState[idx] && !revealWhenHitlerConfirmed) {
+        if (shownFascState[idx] && !revealWhenHitlerConfirmedFlag) {
           //if already shown, then here because hitler just confirmed
           return;
         }
         let timeoutId;
         clearTimeout(timeoutIds[idx]);
         setTimeout(() => {
-          setOpenToolTip(prevState => setNewState(prevState, idx, true));
+          setOpenTooltip(prevState => setNewState(prevState, idx, true));
           setShownFascState(prevState => setNewState(prevState, idx, true));
-          setForceOpenToolTip(prevState => setNewState(prevState, idx, true));
+          setForceOpenTooltip(prevState => setNewState(prevState, idx, true));
           timeoutId = setTimeout(() => {
-            setForceOpenToolTip(prevState => setNewState(prevState, idx, false));
-            setOpenToolTip(prevState => setNewState(prevState, idx, false));
+            setForceOpenTooltip(prevState => setNewState(prevState, idx, false));
+            setOpenTooltip(prevState => setNewState(prevState, idx, false));
           }, 5000);
           setTimeoutIds(prevState => setNewState(prevState, idx, timeoutId));
         }, 500);
@@ -634,12 +667,12 @@ export default function Players({
   }, [status]);
 
   function showOwnRole(player) {
-    return game.settings.type !== GameType.BLIND || player.confirmedFasc;
+    return !isBlindSetting(game.settings.type) || player.confirmedFasc;
   }
 
   function showOtherFasc(fascPlayer, otherFasc) {
-    //in lib spy game, hitler doesnt know fasc
-    if (game.settings.type !== GameType.BLIND) {
+    //FYI on backend, I set hitlerknowsFasc false for a lib spy game
+    if (!isBlindSetting(game.settings.type)) {
       return fascPlayer.role !== Role.HITLER || game.settings.hitlerKnowsFasc;
     }
     if (!fascPlayer.confirmedFasc) {
@@ -655,7 +688,7 @@ export default function Players({
     return false;
   }
 
-  function showFascistInCompleteBlind(player) {
+  function showFascistInTotallyBlind(player) {
     if (thisPlayer.identity === Identity.FASC) {
       return true;
     } else if (thisPlayer.identity === Identity.HITLER && (player.role === Role.HITLER || game.settings.hitlerKnowsFasc)) {
@@ -665,7 +698,6 @@ export default function Players({
   }
 
   //xs: `min(100vw, calc(70px * ${n}))`,
-  game.players.forEach(player => console.log(player.team, player.role, player.identity));
   return (
     <Box
       ref={playersRef}
