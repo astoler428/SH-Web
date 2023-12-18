@@ -1,6 +1,5 @@
 import React from "react";
 import { Typography, Card, List, ListItem } from "@mui/material";
-import { GameSettings } from "../consts";
 import Loading from "./Loading";
 
 export default function NonHostGameSettings({ game }) {

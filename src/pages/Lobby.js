@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import client, { post } from "../api/api";
 import { Typography, Box, Toolbar, Button, AppBar } from "@mui/material";
 import GameSettingsComponent from "../components/GameSettingsComponent";
+import HostGameSettings from "../components/HostGameSettings";
+import NonHostGameSettings from "../components/NonHostGameSettings";
 
 export default function Lobby({ name, game, setGame, isConnected }) {
   const navigate = useNavigate();
@@ -70,8 +72,7 @@ export default function Lobby({ name, game, setGame, isConnected }) {
 
   async function handleSettingsChange(propName, propValue) {
     if (game.host === name) {
-      propValue =
-        propName === GameSettings.TYPE ? propValue : !game.settings[propName];
+      propValue = propName === GameSettings.TYPE ? propValue : !game.settings[propName];
       await post(`/game/settings/${id}`, {
         gameSettings: { ...game.settings, [propName]: propValue },
       });
@@ -96,11 +97,7 @@ export default function Lobby({ name, game, setGame, isConnected }) {
   ));
 
   const startGameButtonText =
-    game?.players?.length < 5
-      ? `Waiting for more players`
-      : game?.host === name
-      ? `Start Game`
-      : `WAITING for ${game?.host} to start game`;
+    game?.players?.length < 5 ? `Waiting for more players` : game?.host === name ? `Start Game` : `WAITING for ${game?.host} to start game`;
 
   const disabled = !game || game?.players?.length < 5 || game?.host !== name;
 
@@ -124,11 +121,8 @@ export default function Lobby({ name, game, setGame, isConnected }) {
             gap: { xs: 1.5, sm: 4 },
           }}
         >
-          <GameSettingsComponent
-            game={game}
-            name={name}
-            handleSettingsChange={handleSettingsChange}
-          />
+          {game.host === name ? <HostGameSettings game={game} handleSettingsChange={handleSettingsChange} /> : <NonHostGameSettings game={game} />}
+          {/* <GameSettingsComponent game={game} name={name} handleSettingsChange={handleSettingsChange} /> */}
           <Box>
             <Typography
               variant="h5"
