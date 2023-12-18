@@ -14,6 +14,14 @@ import {
   flipAndUnflipAnimation,
   stillAnimation,
   Identity,
+  TOP_DECK_DELAY,
+  ENACT_POLICY_DURATION,
+  GAMEOVER_NOT_FROM_POLICY_DELAY,
+  CONFIRM_FASC_DIALOG_DURATION,
+  INV_DURATION,
+  VOTE_DELAY,
+  VOTE_DURATION,
+  HITLER_FLIP_FOR_LIB_SPY_GUESS_DURATION,
 } from "../consts";
 import { gameOver, gameEndedWithPolicyEnactment, isBlindSetting } from "../helperFunctions";
 import { Card, CircularProgress, Grid, Typography, Box, Tooltip } from "@mui/material";
@@ -36,6 +44,7 @@ import chanPng from "../img/Chancellor.png";
 import voteBackPng from "../img/VoteBack.png";
 import errorPng from "../img/Error.png";
 import partyBack from "../img/PartyBack.png";
+import { wait } from "@testing-library/user-event/dist/utils";
 //card height to width ratio = 1.36
 
 // const colors.hitler = '#A72323'
@@ -63,6 +72,7 @@ export default function Players({
   const [shownFascState, setShownFascState] = useState(game.players.map(() => false));
   const [hitlerConfirmed, setHitlerConfirmed] = useState(false);
   const [timeoutIds, setTimeoutIds] = useState(game.players.map(() => null));
+  const [waitToShowOwnRoleAfterConfirmFasc, setWaitToShowOwnRoleAfterConfirmFasc] = useState(true);
   const thisPlayer = game.players.find(player => player.name === name);
   const n = game.players.length;
   const status = game.status;
@@ -106,7 +116,11 @@ export default function Players({
     newState[idx] = val;
     return newState;
   };
-  const gameOverDelay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess) ? (game.topDecked ? 7 : 6) : 2;
+  const gameOverDelay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess)
+    ? game.topDecked
+      ? ENACT_POLICY_DURATION + TOP_DECK_DELAY
+      : ENACT_POLICY_DURATION
+    : GAMEOVER_NOT_FROM_POLICY_DELAY;
 
   const renderPlayers = game?.players?.map((player, idx) => {
     let choosable = false;
@@ -183,18 +197,6 @@ export default function Players({
       makingDecision = false;
     }
 
-    //content of role and name color and tooltip
-
-    // const showToolTip = player.name === name || (thisPlayer.confirmedFasc && (player.confirmedFasc || player.role === Role.HITLER));
-
-    // } else if (player.role === Role.HITLER) {
-    //   tooltipTitle = !revealWhenHitlerConfirmedFlag ? `Hitler` : player.confirmedFasc ? "Confirmed Hitler" : "Blind Hitler";
-    // } else if (player.team === Team.FASC && player.confirmedFasc) {
-    //   tooltipTitle = "Confirmed Fascist";
-    // }
-
-    //check investigation shows role and not or fasc investigates fasc in blind should say blind fasc?
-
     //your own role
     if (player.name === name) {
       [roleContent, nameColor] = showOwnRole(player) ? getRoleImg(player) : [roleBackPng, colors.hidden];
@@ -251,7 +253,7 @@ export default function Players({
         } else if (player.team === Team.FASC && thisPlayer.team === Team.FASC && showOtherFasc(thisPlayer, player)) {
           roleContent = roleBackPng;
           roleContentFlip = getRoleImg(player)[0];
-          roleAnimation = "flipAndUnflip 5s forwards 4s";
+          roleAnimation = "flipAndUnflip 5s forwards 4s"; //matches backend of 9s
           nameColorTransition = "color 1s 4s";
         }
       } else if (game.settings.type === GameType.TOTALLY_BLIND && player.team === Team.FASC && showFascistInTotallyBlind(player)) {
@@ -263,7 +265,7 @@ export default function Players({
     } else if (status === Status.VOTE) {
       if (player.alive) {
         overlayContent = voteBackPng;
-        animation = "up .9s forwards .1s";
+        animation = `up ${VOTE_DURATION}s forwards ${VOTE_DELAY}s`;
       }
     } else if (status === Status.SHOW_VOTE_RESULT) {
       if (player.alive) {
@@ -273,31 +275,31 @@ export default function Players({
         const jas = game.players.reduce((acc, player) => (player.vote === Vote.JA ? acc + 1 : acc), 0);
         const numVotes = game.players.reduce((n, player) => (player.alive ? n + 1 : n), 0);
         const voteSplit = Math.min(jas, numVotes - jas);
-        flipAndDownDuration = voteSplit <= 1 ? 4 : voteSplit <= 3 ? 5 : 6;
+        flipAndDownDuration = voteSplit <= 1 ? 4 : voteSplit <= 3 ? 5 : 6; //matches backend
         animation = `flipAndDown ${flipAndDownDuration}s forwards`;
       }
     } else if (status === Status.INV_CLAIM && player.name === currentPres.investigations.slice(-1)[0]) {
       if (currentPres.name === name && !(game.settings.type === GameType.COOPERATIVE_BLIND || game.settings.type === GameType.TOTALLY_BLIND)) {
         nameColor = nameColor === colors.hitler ? nameColor : getTeamImg(player)[1]; //if you were already seeing them as hitler, don't switch to fasc color
-        nameColorTransition = "color 1s 1s";
+        nameColorTransition = "color 1s 1s"; //timed relative to inv_duration and it's animation keyframes
         overlayContent = getTeamImg(player)[0];
       } else {
         overlayContent = partyBack;
       }
-      animation = "upAndDown 3s forwards";
+      animation = `upAndDown ${INV_DURATION}s forwards`;
     } else if (status === Status.LIB_SPY_GUESS && player.role === Role.HITLER && player.name !== name) {
       roleContent = roleBackPng;
       roleContentFlip = hitlerPng;
-      const delay = game.topDecked ? 7 : 6;
-      roleAnimation = `flip 1.5s forwards ${delay}s`;
+      const delay = game.topDecked ? TOP_DECK_DELAY + ENACT_POLICY_DURATION : ENACT_POLICY_DURATION;
+      roleAnimation = `flip ${HITLER_FLIP_FOR_LIB_SPY_GUESS_DURATION}s forwards ${delay}s`;
       nameColor = colors.hitler;
-      nameColorTransition = `color 1.5s ${delay + 1.5}s`;
+      nameColorTransition = `color ${HITLER_FLIP_FOR_LIB_SPY_GUESS_DURATION}s ${delay}s`;
     } else if (status === Status.SHOW_LIB_SPY_GUESS) {
       const spyGuessedPlayer = game.players.find(player => player.guessedToBeLibSpy);
       if (spyGuessedPlayer.name === player.name && thisPlayer.name !== spyGuessedPlayer.name) {
         roleContent = roleBackPng;
         roleContentFlip = getRoleImg(player)[0];
-        roleAnimation = "flipAndUnflip 3s forwards";
+        roleAnimation = "flipAndUnflip 3s forwards"; //3s matches backend length before determines result of libspyguess
         // nameColorTransition = 'color 1s 1s'
       }
     } else if (gameOver(status)) {
@@ -626,6 +628,12 @@ export default function Players({
   }, []);
 
   useEffect(() => {
+    if (thisPlayer.confirmedFasc) {
+      setTimeout(() => setWaitToShowOwnRoleAfterConfirmFasc(false), CONFIRM_FASC_DIALOG_DURATION * 1000);
+    }
+  }, [thisPlayer.confirmedFasc]);
+
+  useEffect(() => {
     //if you are not confirmed fasc yet, don't update anything
     //if the roleDialog is open, likely means you just confirmed fasc, don't show yet because it's blocking
     if (!thisPlayer.confirmedFasc || roleOpen) {
@@ -667,8 +675,10 @@ export default function Players({
   }, [status]);
 
   function showOwnRole(player) {
-    return !isBlindSetting(game.settings.type) || player.confirmedFasc;
+    return !isBlindSetting(game.settings.type) || (player.confirmedFasc && !waitToShowOwnRoleAfterConfirmFasc);
   }
+
+  console.log(waitToShowOwnRoleAfterConfirmFasc);
 
   function showOtherFasc(fascPlayer, otherFasc) {
     //FYI on backend, I set hitlerknowsFasc false for a lib spy game
@@ -681,7 +691,7 @@ export default function Players({
     // if(fascPlayer.omniFasc){
     //   return true
     // }
-    if (fascPlayer.role !== Role.HITLER || game.settings.hitlerKnowsFasc) {
+    if (!waitToShowOwnRoleAfterConfirmFasc && (fascPlayer.role !== Role.HITLER || game.settings.hitlerKnowsFasc)) {
       //just return true if fasc see all other fasc
       return otherFasc.confirmedFasc || otherFasc.role === Role.HITLER;
     }

@@ -9,7 +9,7 @@ import fascPolicyPng from "../img/FascPolicy.png";
 import policyBackPng from "../img/PolicyBack.png";
 import Action from "./Action";
 import PolicyPiles from "./PolicyPiles";
-import { enactPolicyAnimation, Policy, TOP_DECK_DELAY } from "../consts";
+import { enactPolicyAnimation, Policy, TOP_DECK_DELAY, ENACT_POLICY_DURATION } from "../consts";
 
 //set policy border radius relative to the policyWidth here and everywhere
 export default function Board({
@@ -25,12 +25,7 @@ export default function Board({
   pauseActions,
   setPauseActions,
 }) {
-  const fascBoard =
-    game.players.length < 7
-      ? fasc5PlayerBoard
-      : game.players.length < 9
-      ? fasc7PlayerBoard
-      : fasc9PlayerBoard;
+  const fascBoard = game.players.length < 7 ? fasc5PlayerBoard : game.players.length < 9 ? fasc7PlayerBoard : fasc9PlayerBoard;
   const [blur, setBlur] = useState(false);
   const [animate, setAnimate] = useState(null);
   const policyWidth = boardDimensions.x / 7.8; //7.68//8.2
@@ -57,11 +52,7 @@ export default function Board({
 
   useEffect(() => {
     let timeout = 5800;
-    if (
-      game.topDecked &&
-      (boardState.lib < game.LibPoliciesEnacted ||
-        boardState.fasc < game.FascPoliciesEnacted)
-    ) {
+    if (game.topDecked && (boardState.lib < game.LibPoliciesEnacted || boardState.fasc < game.FascPoliciesEnacted)) {
       //need additional policy check to ensure a refresh doesn't reanimate
       timeout += TOP_DECK_DELAY * 1000;
       if (boardState.lib < game.LibPoliciesEnacted) {
@@ -116,24 +107,12 @@ export default function Board({
 
   if (animate === Policy.LIB) {
     enactPolicyImg = libPolicyPng;
-    enactPolicyKeyFrames = enactPolicyAnimation(
-      policyWidth,
-      libLeft,
-      libBottom,
-      policyGap,
-      game.LibPoliciesEnacted
-    );
-    policyAnimation = `enact 6s ${policyDelay}s`;
+    enactPolicyKeyFrames = enactPolicyAnimation(policyWidth, libLeft, libBottom, policyGap, game.LibPoliciesEnacted);
+    policyAnimation = `enact ${ENACT_POLICY_DURATION}s ${policyDelay}s`;
   } else if (animate === Policy.FASC) {
     enactPolicyImg = fascPolicyPng;
-    enactPolicyKeyFrames = enactPolicyAnimation(
-      policyWidth,
-      fascLeft,
-      fascBottom,
-      policyGap,
-      game.FascPoliciesEnacted
-    );
-    policyAnimation = `enact 6s ${policyDelay}s`;
+    enactPolicyKeyFrames = enactPolicyAnimation(policyWidth, fascLeft, fascBottom, policyGap, game.FascPoliciesEnacted);
+    policyAnimation = `enact ${ENACT_POLICY_DURATION}s ${policyDelay}s`;
   }
 
   const fascCount = boardState.fasc;
@@ -141,25 +120,11 @@ export default function Board({
 
   const fascPolicies = [];
   for (let i = 0; i < fascCount; i++) {
-    fascPolicies.push(
-      <img
-        key={i}
-        draggable="false"
-        src={fascPolicyPng}
-        style={{ width: policyWidth }}
-      />
-    );
+    fascPolicies.push(<img key={i} draggable="false" src={fascPolicyPng} style={{ width: policyWidth }} />);
   }
   const libPolicies = [];
   for (let i = 0; i < libCount; i++) {
-    libPolicies.push(
-      <img
-        key={i}
-        draggable="false"
-        src={libPolicyPng}
-        style={{ width: policyWidth }}
-      />
-    );
+    libPolicies.push(<img key={i} draggable="false" src={libPolicyPng} style={{ width: policyWidth }} />);
   }
 
   return (
@@ -189,29 +154,15 @@ export default function Board({
         <Box
           ref={boardRef}
           sx={{
-            filter: blur
-              ? "contrast(35%) blur(1.5px)"
-              : "blur(0%) contrast(100%)",
+            filter: blur ? "contrast(35%) blur(1.5px)" : "blur(0%) contrast(100%)",
             zIndex: -1,
             display: "flex",
             flexDirection: "column",
             transition: "filter .5s",
           }}
         >
-          <img
-            ref={el => (boardImageRefs.current[0] = el)}
-            key={1}
-            draggable="false"
-            src={fascBoard}
-            style={{ maxWidth: "100%" }}
-          />
-          <img
-            ref={el => (boardImageRefs.current[1] = el)}
-            key={2}
-            draggable="false"
-            src={libBoard}
-            style={{ maxWidth: "100%" }}
-          />
+          <img ref={el => (boardImageRefs.current[0] = el)} key={1} draggable="false" src={fascBoard} style={{ maxWidth: "100%" }} />
+          <img ref={el => (boardImageRefs.current[1] = el)} key={2} draggable="false" src={libBoard} style={{ maxWidth: "100%" }} />
           <Box
             sx={{
               position: "absolute",
@@ -250,11 +201,7 @@ export default function Board({
             }}
           >
             {/*First is just a placeholder img to set the size since the absolute images below don't affect size of Box - since lib and fasc images are slightly different sizes its causing a flicker?*/}
-            <img
-              src={libPolicyPng}
-              draggable="false"
-              style={{ width: "100%", visibility: "hidden" }}
-            />
+            <img src={libPolicyPng} draggable="false" style={{ width: "100%", visibility: "hidden" }} />
             <img
               src={policyBackPng}
               draggable="false"
@@ -287,11 +234,7 @@ export default function Board({
               transition: "1s left ease-in-out",
             }}
           ></div>
-          <PolicyPiles
-            game={game}
-            boardDimensions={boardDimensions}
-            policyWidth={policyWidth}
-          />
+          <PolicyPiles game={game} boardDimensions={boardDimensions} policyWidth={policyWidth} />
         </Box>
       </Box>
     </>

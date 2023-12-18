@@ -14,11 +14,11 @@ export default function GameSettingsDialog({ game, gameSettingsOpen, setGameSett
       <DialogContent sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
         <NonHostGameSettings game={game} />
       </DialogContent>
-      <DialogActions sx={{ display: "flex", justifyContent: "center" }}>
+      {/* <DialogActions sx={{ display: "flex", justifyContent: "center" }}>
         <DialogActions>
           <Button onClick={() => setGameSettingsOpen(false)}>Close</Button>
         </DialogActions>
-      </DialogActions>
+      </DialogActions> */}
     </Dialog>
   );
 }

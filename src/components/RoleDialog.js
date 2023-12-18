@@ -8,11 +8,14 @@ import fascistPng from "../img/Fascist.png";
 import roleBackPng from "../img/RoleBack.png";
 import libParty from "../img/LibParty.png";
 import fascParty from "../img/FascParty.png";
-import { Role, GameType, Team, Status, colors } from "../consts";
+import { Role, GameType, Team, Status, colors, CONFIRM_FASC_DIALOG_DURATION } from "../consts";
 import { inGov, claiming, gameOver, isBlindSetting } from "../helperFunctions";
+import Fade from "@mui/material/Fade";
 
 export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, setConfirmFascOpen }) {
-  let roleImg, teamImg;
+  let roleImg,
+    teamImg,
+    showRoleImg = true;
   switch (thisPlayer?.role) {
     case Role.FASC:
       roleImg = fascistPng;
@@ -30,7 +33,8 @@ export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, se
       roleImg = roleBackPng;
   }
   if (isBlindSetting(game.settings.type) && !thisPlayer.confirmedFasc && !gameOver(game.status)) {
-    roleImg = roleBackPng;
+    // roleImg = roleBackPng;
+    showRoleImg = false;
   }
 
   switch (thisPlayer?.team) {
@@ -51,20 +55,40 @@ export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, se
     if (gameOver(game.status)) {
       setTimeout(() => {
         setRoleOpen(false);
-      }, 1000);
+      }, 2000); //transition duration is 1.5 and after 3 is when animation takes place
     }
   }, [game.status]);
 
   return (
-    <Dialog open={roleOpen} onClose={() => setRoleOpen(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+    <Dialog
+      open={roleOpen}
+      // TransitionComponent={Fade}
+      // transitionDuration={500}
+      onClose={() => setRoleOpen(false)}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
       <DialogContent sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
         {game.settings.type === GameType.MIXED_ROLES && (
           <Box sx={{ width: { xs: 140, sm: 200 }, marginRight: { xs: 2, sm: 4 } }}>
             <img src={teamImg} draggable="false" style={{ width: "100%" }} />
           </Box>
         )}
-        <Box sx={{ width: { xs: 140, sm: 200 } }}>
-          <img src={roleImg} draggable="false" style={{ width: "100%" }} />
+        <Box sx={{ width: { xs: 140, sm: 200 }, position: "relative" }}>
+          <img src={roleImg} draggable="false" style={{ width: "100%", visibility: "hidden" }} /> {/* just a placeholder to for the sizing */}
+          <img
+            src={roleImg}
+            draggable="false"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              opacity: showRoleImg ? 1 : 0,
+              transition: `opacity ${CONFIRM_FASC_DIALOG_DURATION}s cubic-bezier(.96,.01,.54,.72)`, //cubic-bezier(.84,-0.03,.58,.88)",
+            }}
+          />
+          <img src={roleBackPng} draggable="false" style={{ position: "absolute", top: 0, left: 0, width: "100%", opacity: showRoleImg ? 0 : 1 }} />
         </Box>
       </DialogContent>
       {game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver(game.status) && (

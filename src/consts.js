@@ -170,6 +170,13 @@ export const PRES3 = {
 };
 
 export const TOP_DECK_DELAY = 1.5;
+export const ENACT_POLICY_DURATION = 6;
+export const GAMEOVER_NOT_FROM_POLICY_DELAY = 3;
+export const CONFIRM_FASC_DIALOG_DURATION = 1.5;
+export const INV_DURATION = 3;
+export const VOTE_DELAY = 0.2;
+export const VOTE_DURATION = 1;
+export const HITLER_FLIP_FOR_LIB_SPY_GUESS_DURATION = 1.5;
 
 export const choosableAnimation = width => `
 @keyframes choosable {

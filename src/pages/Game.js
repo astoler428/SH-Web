@@ -3,7 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router";
 import client, { post } from "../api/api";
 import { socket } from "../socket";
-import { Status, UPDATE, colors, TOP_DECK_DELAY } from "../consts";
+import {
+  Status,
+  UPDATE,
+  colors,
+  TOP_DECK_DELAY,
+  GAMEOVER_NOT_FROM_POLICY_DELAY,
+  ENACT_POLICY_DURATION,
+  INV_DURATION,
+  VOTE_DELAY,
+  VOTE_DURATION,
+  HITLER_FLIP_FOR_LIB_SPY_GUESS_DURATION,
+} from "../consts";
 import { gameOver, gameEndedWithPolicyEnactment } from "../helperFunctions";
 import Players from "../components/Players";
 import Board from "../components/Board";
@@ -165,17 +176,18 @@ export default function Game({ name, game, setGame, isConnected }) {
 
   useEffect(() => {
     if (game?.status === Status.LIB_SPY_GUESS) {
-      pauseActions(7500);
+      const delay = game.topDecked ? TOP_DECK_DELAY + ENACT_POLICY_DURATION : ENACT_POLICY_DURATION;
+      pauseActions(1000 * (delay + HITLER_FLIP_FOR_LIB_SPY_GUESS_DURATION)); //7500
     } else if (game?.status === Status.PRES_DISCARD) {
-      pauseActions(1700);
+      pauseActions(1700); //.3 is initial delay before policy pile animation, .4 is when 3rd policy is drawn, 1s animation gives 1700
     } else if (game?.status === Status.VOTE) {
-      pauseActions(800);
+      pauseActions(1000 * (VOTE_DELAY + VOTE_DURATION)); //800
     } else if (game?.status === Status.CHAN_CLAIM) {
-      pauseActions(4000);
+      pauseActions((1000 * ENACT_POLICY_DURATION * 2) / 3); //4000
     } else if (game?.status === Status.INV_CLAIM) {
-      pauseActions(3500);
+      pauseActions(1000 * INV_DURATION + 500); //3500
     } else if (game?.status === Status.CHOOSE_CHAN && game.topDecked) {
-      pauseActions(4000);
+      pauseActions((1000 * ENACT_POLICY_DURATION * 2) / 3); //4000
     } else {
       pauseActions(700); // time for fade out content and uncenter
     }
@@ -215,7 +227,11 @@ export default function Game({ name, game, setGame, isConnected }) {
 
   useEffect(() => {
     if (gameOver(game?.status)) {
-      const delay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess) ? (game.topDecked ? 4000 + 1000 * TOP_DECK_DELAY : 4000) : 1000;
+      const delay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess)
+        ? game.topDecked
+          ? 1000 * ((ENACT_POLICY_DURATION * 2) / 3 + TOP_DECK_DELAY)
+          : (1000 * ENACT_POLICY_DURATION * 2) / 3
+        : (1000 * GAMEOVER_NOT_FROM_POLICY_DELAY) / 2;
       setTimeout(() => setRunConfetti(true), delay);
       setTimeout(() => setRecycleConfetti(false), delay + 6000);
     }

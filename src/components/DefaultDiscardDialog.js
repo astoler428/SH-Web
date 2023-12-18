@@ -25,7 +25,9 @@ export default function DefaulDiscardDialog({ game, name, showDiscardDialog, set
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"You discarded:"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title" sx={{ justifyContent: "center", display: "flex" }}>
+          {"Your discard"}
+        </DialogTitle>
         <DialogContent
           sx={{
             display: "flex",
@@ -35,9 +37,9 @@ export default function DefaulDiscardDialog({ game, name, showDiscardDialog, set
         >
           <img src={getPolicyImg(presDiscard)} draggable="false" style={{ width: "50%" }} />
         </DialogContent>
-        <DialogActions>
+        {/* <DialogActions>
           <Button onClick={() => setShowDiscardDialog(false)}>Close</Button>
-        </DialogActions>
+        </DialogActions> */}
       </Dialog>
     </div>
   );
