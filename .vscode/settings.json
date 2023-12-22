@@ -6,5 +6,6 @@
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "prettier.printWidth": 150
+  "prettier.printWidth": 150,
+  "editor.lineNumbers": "relative"
 }
