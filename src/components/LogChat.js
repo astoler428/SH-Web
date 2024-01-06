@@ -231,11 +231,12 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
             </span>
           );
         } else if (isBlindSetting(game.settings.type)) {
-          if (game.settings.type === GameType.TOTALLY_BLIND) {
-            rolePhrase = <span>the {renderRole(thisPlayer.identity)} identity and a hidden</span>;
-          } else {
-            rolePhrase = <span>a hidden</span>;
-          }
+          // if (game.settings.type === GameType.TOTALLY_BLIND) {
+          //   rolePhrase = <span>the {renderRole(thisPlayer.identity)} identity and a hidden</span>;
+          // } else {
+          //   rolePhrase = <span>a hidden</span>;
+          // }
+          rolePhrase = <span>a hidden</span>;
         } else {
           rolePhrase = <span>the {renderRole(thisPlayer.role)}</span>;
         }

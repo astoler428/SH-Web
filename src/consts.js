@@ -108,7 +108,6 @@ export const GameSettings = {
   HITLERKNOWSFASC: "hitlerKnowsFasc",
   SIMPLEBLIND: "simpleBlind",
   COOPERATIVEBLIND: "cooperativeBlind",
-  COMPLETEBLIND: "completeBlind",
   TEAMLIBSPY: "teamLibSpy",
 };
 

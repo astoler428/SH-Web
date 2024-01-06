@@ -7,5 +7,6 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "prettier.printWidth": 150,
-  "editor.lineNumbers": "relative"
+  "editor.lineNumbers": "relative",
+  "vim.cursorStylePerMode.insert": "block"
 }

@@ -47,16 +47,7 @@ export default function HostGameSettings({ game, handleSettingsChange }) {
           control={<Checkbox checked={game.settings?.simpleBlind} onChange={() => handleSettingsChange(GameSettings.SIMPLEBLIND)} />}
           label="Simple blind"
         />
-        {/* <FormControlLabel
-      disabled={game.settings?.type !== GameType.BLIND}
-      control={<Checkbox checked={game.settings?.cooperativeBlind} onChange={() => handleSettingsChange(GameSettings.COOPERATIVEBLIND)} />}
-      label="Cooperative blind"
-    />
-    <FormControlLabel
-      disabled={game.settings?.type !== GameType.BLIND}
-      control={<Checkbox checked={game.settings?.completeBlind} onChange={() => handleSettingsChange(GameSettings.COMPLETEBLIND)} />}
-      label="Complete blind"
-    /> */}
+
         {/* <FormControlLabel
 disabled={game.settings?.type !== GameType.LIB_SPY}
 control={<Checkbox

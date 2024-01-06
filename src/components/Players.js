@@ -44,6 +44,7 @@ import chanPng from "../img/Chancellor.png";
 import voteBackPng from "../img/VoteBack.png";
 import errorPng from "../img/Error.png";
 import partyBack from "../img/PartyBack.png";
+import hiddenRoleBackPng from "../img/HiddenRoleBack.png";
 import { wait } from "@testing-library/user-event/dist/utils";
 //card height to width ratio = 1.36
 
@@ -109,8 +110,8 @@ export default function Players({
     }
   };
   const getVote = player => (player.vote === Vote.JA ? jaPng : player.vote === Vote.NEIN ? neinPng : errorPng);
-  const getTotallyBlindTintBackgroundColor = player =>
-    player.identity === Identity.HITLER ? colors.hitler : player.identity === Identity.FASC ? colors.fasc : colors.lib;
+  // const getTotallyBlindTintBackgroundColor = player =>
+  //   player.identity === Identity.HITLER ? colors.hitler : player.identity === Identity.FASC ? colors.fasc : colors.lib;
   const setNewState = (prevState, idx, val) => {
     const newState = [...prevState];
     newState[idx] = val;
@@ -199,11 +200,11 @@ export default function Players({
 
     //your own role
     if (player.name === name) {
-      [roleContent, nameColor] = showOwnRole(player) ? getRoleImg(player) : [roleBackPng, colors.hidden];
-      if (game.settings.type === GameType.TOTALLY_BLIND) {
-        totallyBlindTintBackgroundColor = getTotallyBlindTintBackgroundColor(player);
-        totallyBlindTintBackgroundColorTransition = `background-color 1s 2s`;
-      }
+      [roleContent, nameColor] = showOwnRole(player) ? getRoleImg(player) : [hiddenRoleBackPng, colors.hidden]; //roleBackPng
+      // if (game.settings.type === GameType.TOTALLY_BLIND) {
+      //   totallyBlindTintBackgroundColor = getTotallyBlindTintBackgroundColor(player);
+      //   totallyBlindTintBackgroundColorTransition = `background-color 1s 2s`;
+      // }
       showTooltip = true;
       tooltipTitle = "You";
     }
@@ -236,10 +237,10 @@ export default function Players({
       [roleContent, nameColor] = getRoleImg(player);
     }
 
-    //show for complete blind
-    if (player.team === Team.FASC && showFascistInTotallyBlind(player)) {
-      [, nameColor] = getRoleImg(player);
-    }
+    //show for totally blind
+    // if (player.team === Team.FASC && showFascistInTotallyBlind(player)) {
+    //   [, nameColor] = getRoleImg(player);
+    // }
 
     //animations
 
@@ -256,12 +257,13 @@ export default function Players({
           roleAnimation = "flipAndUnflip 5s forwards 4s"; //matches backend of 9s
           nameColorTransition = "color 1s 4s";
         }
-      } else if (game.settings.type === GameType.TOTALLY_BLIND && player.team === Team.FASC && showFascistInTotallyBlind(player)) {
-        roleContent = roleBackPng;
-        roleContentFlip = getRoleImg(player)[0];
-        roleAnimation = "flipAndUnflip 5s forwards 4s";
-        nameColorTransition = "color 1s 4s";
       }
+      // else if (game.settings.type === GameType.TOTALLY_BLIND && player.team === Team.FASC && showFascistInTotallyBlind(player)) {
+      //   roleContent = roleBackPng;
+      //   roleContentFlip = getRoleImg(player)[0];
+      //   roleAnimation = "flipAndUnflip 5s forwards 4s";
+      //   nameColorTransition = "color 1s 4s";
+      // }
     } else if (status === Status.VOTE) {
       if (player.alive) {
         overlayContent = voteBackPng;
@@ -304,17 +306,17 @@ export default function Players({
       }
     } else if (gameOver(status)) {
       [, nameColor] = getRoleImg(player);
-      if (game.settings.type === GameType.TOTALLY_BLIND) {
-        totallyBlindTintBackgroundColor = getTotallyBlindTintBackgroundColor(player);
-        totallyBlindTintBackgroundColorTransition = `background-color 1s ${gameOverDelay + 6}s`; // + 3s is when flip finishes (see below), give time to look
-      }
+      // if (game.settings.type === GameType.TOTALLY_BLIND) {
+      //   totallyBlindTintBackgroundColor = getTotallyBlindTintBackgroundColor(player);
+      //   totallyBlindTintBackgroundColorTransition = `background-color 1s ${gameOverDelay + 6}s`; // + 3s is when flip finishes (see below), give time to look
+      // }
       // totallyBlindBoxShadowColor = getTotallyBlindBoxShadowColor(player);
       // totallyBlindBoxShadowColorTransition = `box-shadow 1s ${gameOverDelay + 3}s`; //wait for flip to finish
 
       //flip over everyone elses role, unless blind in which case your needs flipping too if not confirmed, or libSpy and hitler already flipped
       //maybe set this based on whether the roleContent is already a role
-      if (roleContent === roleBackPng) {
-        roleContent = roleBackPng;
+      if (roleContent === roleBackPng || roleContent === hiddenRoleBackPng) {
+        // roleContent = roleBackPng;
         roleContentFlip = getRoleImg(player)[0];
         // const delay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess) ? (game.topDecked ? 7 : 6) : 2
         roleAnimation = `flip 3s forwards ${gameOverDelay}s`; //'flip 3s forwards 2.5s'
@@ -589,7 +591,7 @@ export default function Players({
                     color: "red",
                   }}
                 />
-                {player.name === name && !showOwnRole(player) && game.settings.type !== GameType.TOTALLY_BLIND && (
+                {/* {player.name === name && !showOwnRole(player) && game.settings.type !== GameType.TOTALLY_BLIND && (
                   <QuestionMarkIcon
                     sx={{
                       width: "100%",
@@ -602,7 +604,7 @@ export default function Players({
                       color: "black",
                     }}
                   />
-                )}
+                )} */}
               </>
             )}
           </Card>
@@ -678,8 +680,6 @@ export default function Players({
     return !isBlindSetting(game.settings.type) || (player.confirmedFasc && !waitToShowOwnRoleAfterConfirmFasc);
   }
 
-  console.log(waitToShowOwnRoleAfterConfirmFasc);
-
   function showOtherFasc(fascPlayer, otherFasc) {
     //FYI on backend, I set hitlerknowsFasc false for a lib spy game
     if (!isBlindSetting(game.settings.type)) {
@@ -698,14 +698,14 @@ export default function Players({
     return false;
   }
 
-  function showFascistInTotallyBlind(player) {
-    if (thisPlayer.identity === Identity.FASC) {
-      return true;
-    } else if (thisPlayer.identity === Identity.HITLER && (player.role === Role.HITLER || game.settings.hitlerKnowsFasc)) {
-      return true;
-    }
-    return false;
-  }
+  // function showFascistInTotallyBlind(player) {
+  //   if (thisPlayer.identity === Identity.FASC) {
+  //     return true;
+  //   } else if (thisPlayer.identity === Identity.HITLER && (player.role === Role.HITLER || game.settings.hitlerKnowsFasc)) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
   //xs: `min(100vw, calc(70px * ${n}))`,
   return (
@@ -722,7 +722,7 @@ export default function Players({
         margin: "0 5px",
       }}
     >
-      <Grid container spacing={{ xs: 1, sm: 1 }}>
+      <Grid container spacing={{ xs: 0.5, sm: 1 }}>
         {" "}
         {/**used to be xs: .5 */}
         {renderPlayers}

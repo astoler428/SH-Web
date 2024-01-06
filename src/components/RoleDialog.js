@@ -8,6 +8,7 @@ import fascistPng from "../img/Fascist.png";
 import roleBackPng from "../img/RoleBack.png";
 import libParty from "../img/LibParty.png";
 import fascParty from "../img/FascParty.png";
+import hiddenRoleBackPng from "../img/HiddenRoleBack.png";
 import { Role, GameType, Team, Status, colors, CONFIRM_FASC_DIALOG_DURATION } from "../consts";
 import { inGov, claiming, gameOver, isBlindSetting } from "../helperFunctions";
 import Fade from "@mui/material/Fade";
@@ -88,7 +89,11 @@ export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, se
               transition: `opacity ${CONFIRM_FASC_DIALOG_DURATION}s cubic-bezier(.96,.01,.54,.72)`, //cubic-bezier(.84,-0.03,.58,.88)",
             }}
           />
-          <img src={roleBackPng} draggable="false" style={{ position: "absolute", top: 0, left: 0, width: "100%", opacity: showRoleImg ? 0 : 1 }} />
+          <img
+            src={hiddenRoleBackPng}
+            draggable="false"
+            style={{ position: "absolute", top: 0, left: 0, width: "100%", opacity: showRoleImg ? 0 : 1 }}
+          />
         </Box>
       </DialogContent>
       {game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver(game.status) && (

@@ -121,7 +121,7 @@ export default function Lobby({ name, game, setGame, isConnected }) {
             gap: { xs: 1.5, sm: 4 },
           }}
         >
-          {game.host === name ? <HostGameSettings game={game} handleSettingsChange={handleSettingsChange} /> : <NonHostGameSettings game={game} />}
+          {game?.host === name ? <HostGameSettings game={game} handleSettingsChange={handleSettingsChange} /> : <NonHostGameSettings game={game} />}
           {/* <GameSettingsComponent game={game} name={name} handleSettingsChange={handleSettingsChange} /> */}
           <Box>
             <Typography

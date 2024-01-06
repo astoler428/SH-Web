@@ -194,7 +194,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
         setCenterContent(true);
       };
 
-      //alternate complete blind interaction player doesn't have to click
+      //alternate cooperative blind interaction player doesn't have to click
       // if (disabled && (showDefaultOption || status === Status.INSPECT_TOP3)) {
       // handleDefaultAction();
       // }
