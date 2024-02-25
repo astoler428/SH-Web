@@ -181,7 +181,7 @@ export default function Game({ name, game, setGame, isConnected }) {
     } else if (game?.status === Status.PRES_DISCARD) {
       pauseActions(1700); //.3 is initial delay before policy pile animation, .4 is when 3rd policy is drawn, 1s animation gives 1700
     } else if (game?.status === Status.VOTE) {
-      pauseActions(1000 * (VOTE_DELAY + VOTE_DURATION)); //800
+      pauseActions(1000 * (VOTE_DELAY + VOTE_DURATION - 0.4)); //the .4 seconds is because the animation starts off screen so it can begin before the vote cards have finished animating up
     } else if (game?.status === Status.CHAN_CLAIM) {
       pauseActions((1000 * ENACT_POLICY_DURATION * 2) / 3); //4000
     } else if (game?.status === Status.INV_CLAIM) {
