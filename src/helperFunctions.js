@@ -16,4 +16,4 @@ export const gameOver = status => status === Status.END_FASC || status === Statu
 export const gameEndedWithPolicyEnactment = (game, hitlerFlippedForLibSpyGuess) =>
   (game.LibPoliciesEnacted === 5 && !hitlerFlippedForLibSpyGuess) || game.FascPoliciesEnacted === 6;
 
-export const isBlindSetting = gameType => gameType.slice(-5) === "Blind";
+export const isBlindSetting = gameType => gameType?.slice(-5) === "Blind";
