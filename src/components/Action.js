@@ -449,7 +449,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   // const top3 = game.top3.map(card => <img key={Math.random()} draggable='false' src={getPolicyImg(card)} style={{width: boardDimensions.x/6}}/>)
   // console.log(top3)
   function showInspect3PoliciesAndClaims() {
-    const top3 = game.top3.map(card => (
+    const top3 = game.deck.inspectTop3.map(card => (
       <img key={Math.random()} draggable="false" src={disabled ? policyBackPng : getPolicyImg(card)} style={{ width: boardDimensions.x / 6 }} />
     ));
     return showTop3PoliciesNotClaim ? (

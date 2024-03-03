@@ -24,7 +24,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import RoleDialog from "../components/RoleDialog";
 import ConfirmFascDialog from "../components/ConfirmFascDialog";
 import GameSettingsDialog from "../components/GameSettingsDialog";
-import DefaultLogsDialog from "../components/DefaultLogsDialog";
+import GameOverLogsDialog from "../components/GameOverLogsDialog";
 import LogChat from "../components/LogChat";
 import Confetti from "react-confetti";
 
@@ -37,9 +37,9 @@ export default function Game({ name, game, setGame, isConnected }) {
   const thisPlayer = game?.players.find(player => player.name === name);
   const [roleOpen, setRoleOpen] = useState(false);
   const [gameSettingsOpen, setGameSettingsOpen] = useState(false);
-  const [defaultLogsOpen, setDefaultLogsOpen] = useState(false);
+  const [gameOverLogsOpen, setGameOverLogsOpen] = useState(false);
   const [confirmFascOpen, setConfirmFascOpen] = useState(false);
-  const [showDefaultLogsButton, setShowDefaultLogsButton] = useState(false);
+  const [showGameOverLogsButton, setShowGameOverLogsButton] = useState(false);
   const [error, setError] = useState(null);
   const [boardDimensions, setBoardDimensions] = useState({ x: 0, y: 0 });
   const [playersDimensions, setPlayersDimensions] = useState({ x: 0, y: 0 });
@@ -241,8 +241,8 @@ export default function Game({ name, game, setGame, isConnected }) {
   }, [game?.status]);
 
   useEffect(() => {
-    if (isBlindSetting(game?.settings.type) && gameOver(game?.status)) {
-      setTimeout(() => setShowDefaultLogsButton(true), 6000);
+    if (gameOver(game?.status)) {
+      setTimeout(() => setShowGameOverLogsButton(true), 6000);
     }
   }, [game?.status]);
 
@@ -277,7 +277,7 @@ export default function Game({ name, game, setGame, isConnected }) {
                 Game ID: {id}
               </Typography>
               <Button color="inherit" onClick={() => setGameSettingsOpen(true)} sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}>
-                Game Settings
+                Settings
               </Button>
               <Button color="inherit" onClick={() => setRoleOpen(true)} sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}>
                 Role
@@ -289,9 +289,9 @@ export default function Game({ name, game, setGame, isConnected }) {
               >
                 Remake
               </Button>
-              {showDefaultLogsButton && (
-                <Button color="inherit" onClick={() => setDefaultLogsOpen(true)} sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}>
-                  Default Logs
+              {showGameOverLogsButton && (
+                <Button color="inherit" onClick={() => setGameOverLogsOpen(true)} sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}>
+                  Log
                 </Button>
               )}
             </Toolbar>
@@ -299,7 +299,7 @@ export default function Game({ name, game, setGame, isConnected }) {
           <Box sx={{ marginTop: { xs: "30px", sm: "56px" } }} />
           <RoleDialog thisPlayer={thisPlayer} game={game} roleOpen={roleOpen} setRoleOpen={setRoleOpen} setConfirmFascOpen={setConfirmFascOpen} />
           <GameSettingsDialog game={game} gameSettingsOpen={gameSettingsOpen} setGameSettingsOpen={setGameSettingsOpen} />
-          <DefaultLogsDialog game={game} defaultLogsOpen={defaultLogsOpen} setDefaultLogsOpen={setDefaultLogsOpen} />
+          <GameOverLogsDialog game={game} gameOverLogsOpen={gameOverLogsOpen} setGameOverLogsOpen={setGameOverLogsOpen} />
           <Box
             sx={{
               display: "flex",

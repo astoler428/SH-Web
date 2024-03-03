@@ -1,4 +1,4 @@
-import { Status } from "./consts";
+import { Status, Policy, draws3, draws2 } from "./consts";
 
 export const inGov = (game, name) =>
   (game.currentPres === name || game.currentChan === name) &&
@@ -17,3 +17,13 @@ export const gameEndedWithPolicyEnactment = (game, hitlerFlippedForLibSpyGuess) 
   (game.LibPoliciesEnacted === 5 && !hitlerFlippedForLibSpyGuess) || game.FascPoliciesEnacted === 6;
 
 export const isBlindSetting = gameType => gameType?.slice(-5) === "Blind";
+
+export const determine3Cards = cards3 => {
+  const blues = cards3.reduce((acc, card) => (card.policy === Policy.LIB ? acc + 1 : acc), 0);
+  return draws3[blues];
+};
+
+export const determine2Cards = cards2 => {
+  const blues = cards2.reduce((acc, card) => (card.policy === Policy.LIB ? acc + 1 : acc), 0);
+  return draws2[blues];
+};

@@ -35,11 +35,8 @@ export default function DefaulDiscardDialog({ game, name, showDiscardDialog, set
             alignItems: "center",
           }}
         >
-          <img src={getPolicyImg(presDiscard)} draggable="false" style={{ width: "50%" }} />
+          <img src={getPolicyImg(presDiscard)} draggable="false" style={{ width: "50%", marginBottom: "10px" }} />
         </DialogContent>
-        {/* <DialogActions>
-          <Button onClick={() => setShowDiscardDialog(false)}>Close</Button>
-        </DialogActions> */}
       </Dialog>
     </div>
   );

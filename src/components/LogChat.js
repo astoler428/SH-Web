@@ -185,7 +185,8 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
       case LogType.INTRO_DECK:
         logEntry = (
           <span>
-            Deck shuffled: {renderRole(Role.LIB, false, `6 `)} and {renderRole(Role.FASC, false, `11 `)} policies.
+            The deck is shuffled: {renderRole(Role.LIB, false, `6 `)} and {renderRole(Role.FASC, false, `${game.settings.redDown ? 10 : 11} `)}{" "}
+            policies.
           </span>
         );
         break;
