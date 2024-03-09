@@ -37,7 +37,18 @@ export default function Home({ name, setName, isConnected, setIsLoading }) {
         left: 12,
         top: 12
       }}> */}
-      <Typography
+      <Box
+        sx={{
+          position: "absolute",
+          left: 12,
+          top: 16,
+          borderRadius: 100,
+          backgroundColor: isConnected ? "#3BDC3B" : "#F22615",
+          width: 16,
+          height: 16,
+        }}
+      ></Box>
+      {/* <Typography
         sx={{
           position: "absolute",
           left: 12,
@@ -45,7 +56,7 @@ export default function Home({ name, setName, isConnected, setIsLoading }) {
         }}
       >
         {isConnected ? "🟢" : "🔴"}
-      </Typography>
+      </Typography> */}
       <Typography
         sx={{
           position: "absolute",

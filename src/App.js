@@ -42,45 +42,12 @@ function App() {
       <Route
         path="/"
         element={
-          isLoading ? (
-            <Loading />
-          ) : (
-            <Home
-              name={name}
-              setName={setName}
-              setGame={setGame}
-              isConnected={isConnected}
-              setIsLoading={setIsLoading}
-            />
-          )
+          isLoading ? <Loading /> : <Home name={name} setName={setName} setGame={setGame} isConnected={isConnected} setIsLoading={setIsLoading} />
         }
       />
-      <Route
-        path="/join"
-        element={<Join name={name} setIsLoading={setIsLoading} />}
-      />
-      <Route
-        path="/lobby/:id"
-        element={
-          <Lobby
-            name={name}
-            game={game}
-            setGame={setGame}
-            isConnected={isConnected}
-          />
-        }
-      />
-      <Route
-        path="/game/:id"
-        element={
-          <Game
-            name={name}
-            game={game}
-            setGame={setGame}
-            isConnected={isConnected}
-          />
-        }
-      />
+      <Route path="/join" element={<Join name={name} setIsLoading={setIsLoading} isConnected={isConnected} />} />
+      <Route path="/lobby/:id" element={<Lobby name={name} game={game} setGame={setGame} isConnected={isConnected} />} />
+      <Route path="/game/:id" element={<Game name={name} game={game} setGame={setGame} isConnected={isConnected} />} />
     </Routes>
   );
 }
