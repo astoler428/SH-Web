@@ -61,7 +61,7 @@ export default function Game({ name, game, setGame, isConnected }) {
       try {
         await client.post(`/game/join/${id}`, { name, socketId: socket.id });
       } catch (err) {
-        console.log(err?.response?.data?.message);
+        console.error(err?.response?.data?.message);
         navigate("/");
       }
     }
@@ -282,13 +282,13 @@ export default function Game({ name, game, setGame, isConnected }) {
               <Button color="inherit" onClick={() => setRoleOpen(true)} sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}>
                 Role
               </Button>
-              <Button
+              {/* <Button
                 color="inherit"
                 onClick={async () => await post(`/game/remake/${id}`, { name })}
                 sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}
               >
                 Remake
-              </Button>
+              </Button> */}
               {showGameOverLogsButton && (
                 <Button color="inherit" onClick={() => setGameOverLogsOpen(true)} sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}>
                   Log

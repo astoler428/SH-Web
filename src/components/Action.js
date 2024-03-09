@@ -244,7 +244,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
           src={neinPng}
           style={{
             width: boardDimensions.x / 4.5,
-            V: thisPlayer.vote === Vote.NEIN ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
+            boxShadow: thisPlayer.vote === Vote.NEIN ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
             cursor: status === Status.SHOW_VOTE_RESULT ? "auto" : "pointer",
             transition: "box-shadow .3s",
           }}
@@ -446,8 +446,6 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     );
   }
 
-  // const top3 = game.top3.map(card => <img key={Math.random()} draggable='false' src={getPolicyImg(card)} style={{width: boardDimensions.x/6}}/>)
-  // console.log(top3)
   function showInspect3PoliciesAndClaims() {
     const top3 = game.deck.inspectTop3.map(card => (
       <img key={Math.random()} draggable="false" src={disabled ? policyBackPng : getPolicyImg(card)} style={{ width: boardDimensions.x / 6 }} />

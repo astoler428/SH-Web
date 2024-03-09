@@ -12,8 +12,8 @@ export async function post(path, payload) {
   try {
     return await client.post(path, payload);
   } catch (err) {
-    console.log(err);
-    console.log(err?.response?.data?.message);
+    console.error(err);
+    console.error(err?.response?.data?.message);
   }
 }
 

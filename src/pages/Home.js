@@ -17,7 +17,7 @@ export default function Home({ name, setName, isConnected, setIsLoading }) {
       navigate(`/lobby/${id}`);
     } catch (err) {
       setIsLoading(false);
-      console.log(err.response?.data.message);
+      console.error(err.response?.data.message);
     }
   }
 
@@ -75,30 +75,11 @@ export default function Home({ name, setName, isConnected, setIsLoading }) {
           }}
         >
           <form onSubmit={e => e.preventDefault()}>
-            <TextField
-              required
-              inputRef={nameInputRef}
-              label="Name"
-              fullWidth
-              value={name}
-              onChange={handleInputChange}
-            />
-            <Button
-              type="submit"
-              disabled={!name}
-              onClick={createGame}
-              fullWidth
-              variant="contained"
-              sx={{ margin: "8px 0 4px 0" }}
-            >
+            <TextField required inputRef={nameInputRef} label="Name" fullWidth value={name} onChange={handleInputChange} />
+            <Button type="submit" disabled={!name} onClick={createGame} fullWidth variant="contained" sx={{ margin: "8px 0 4px 0" }}>
               Create Game
             </Button>
-            <Button
-              disabled={!name}
-              onClick={() => navigate("/join")}
-              variant="outlined"
-              fullWidth
-            >
+            <Button disabled={!name} onClick={() => navigate("/join")} variant="outlined" fullWidth>
               Join Game
             </Button>
           </form>

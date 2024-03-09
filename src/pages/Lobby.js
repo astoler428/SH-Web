@@ -24,7 +24,7 @@ export default function Lobby({ name, game, setGame, isConnected }) {
       try {
         await client.post(`/game/join/${id}`, { name, socketId: socket.id });
       } catch (err) {
-        console.log(err?.response?.data?.message);
+        console.error(err?.response?.data?.message);
         navigate("/");
       }
     }
