@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { socket } from "../socket";
 import client from "../api/api";
@@ -7,6 +7,7 @@ import { Typography, CssBaseline, Box, TextField, Button } from "@mui/material";
 export default function Home({ name, setName, isConnected, setIsLoading }) {
   const navigate = useNavigate();
   const nameInputRef = useRef();
+  const [showConnectStatus, setShowConnectionStatus] = useState(false);
 
   async function createGame() {
     try {
@@ -28,45 +29,36 @@ export default function Home({ name, setName, isConnected, setIsLoading }) {
   useEffect(() => {
     nameInputRef.current.focus();
     nameInputRef.current.select();
+    setTimeout(() => setShowConnectionStatus(true), 500);
   }, []);
 
   return (
     <>
-      {/* <Box sx={{
-        position: 'absolute',
-        left: 12,
-        top: 12
-      }}> */}
-      <Box
-        sx={{
-          position: "absolute",
-          left: 12,
-          top: 16,
-          borderRadius: 100,
-          backgroundColor: isConnected ? "#3BDC3B" : "#F22615",
-          width: 16,
-          height: 16,
-        }}
-      ></Box>
-      {/* <Typography
-        sx={{
-          position: "absolute",
-          left: 12,
-          top: 12,
-        }}
-      >
-        {isConnected ? "🟢" : "🔴"}
-      </Typography> */}
-      <Typography
-        sx={{
-          position: "absolute",
-          left: 30,
-          top: 11,
-        }}
-      >
-        {isConnected ? "online" : "offline"}
-      </Typography>
-      {/* </Box> */}
+      {showConnectStatus && (
+        <>
+          <Box
+            sx={{
+              position: "absolute",
+              left: 12,
+              top: 16,
+              borderRadius: 100,
+              backgroundColor: isConnected ? "#3BDC3B" : "#F22615",
+              width: 16,
+              height: 16,
+            }}
+          ></Box>
+
+          <Typography
+            sx={{
+              position: "absolute",
+              left: 30,
+              top: 11,
+            }}
+          >
+            {isConnected ? "online" : "offline"}
+          </Typography>
+        </>
+      )}
       <CssBaseline />
       <Box
         sx={{
