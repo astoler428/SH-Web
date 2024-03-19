@@ -71,11 +71,11 @@ export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, se
     >
       <DialogContent sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
         {game.settings.type === GameType.MIXED_ROLES && (
-          <Box sx={{ width: { xs: 140, sm: 200 }, marginRight: { xs: 2, sm: 4 } }}>
+          <Box sx={{ width: { xs: 140, sm: 200 }, maxWidth: { xs: `calc(100vh/3)`, sm: "100%" }, marginRight: { xs: 2, sm: 4 } }}>
             <img src={teamImg} draggable="false" style={{ width: "100%" }} />
           </Box>
         )}
-        <Box sx={{ width: { xs: 140, sm: 200 }, position: "relative" }}>
+        <Box sx={{ width: { xs: 140, sm: 200 }, maxWidth: { xs: `calc(100vh/3)`, sm: "100%" }, position: "relative" }}>
           <img src={roleImg} draggable="false" style={{ width: "100%", visibility: "hidden" }} /> {/* just a placeholder to for the sizing */}
           <img
             src={roleImg}
@@ -105,6 +105,8 @@ export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, se
             sx={{
               "&:hover": { backgroundColor: colors.fascBackground },
               backgroundColor: colors.fasc,
+              maxWidth: `100%`,
+              fontSize: `min(calc(100vh / 30), 14px)`,
             }}
           >
             {confirmFascText}

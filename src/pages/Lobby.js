@@ -102,48 +102,50 @@ export default function Lobby({ name, game, setGame, isConnected }) {
   const disabled = !game || game?.players?.length < 5 || game?.host !== name;
 
   return (
-    <>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Game ID: {id}
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
-        <Box
-          sx={{
-            marginTop: { xs: "30px", sm: "10vh" },
-            display: "flex",
-            flexDirection: "column",
-            width: "100%",
-            maxWidth: "320px",
-            gap: { xs: 1.5, sm: 4 },
-          }}
-        >
-          {game?.host === name ? <HostGameSettings game={game} handleSettingsChange={handleSettingsChange} /> : <NonHostGameSettings game={game} />}
-          {/* <GameSettingsComponent game={game} name={name} handleSettingsChange={handleSettingsChange} /> */}
-          <Box>
-            <Typography
-              variant="h5"
-              sx={{
-                fontSize: "27px",
-                marginBottom: "5px",
-                display: "block",
-                fontWeight: 500,
-                fontFamily: "inter",
-                letterSpacing: "-.5px",
-              }}
-            >
-              Players
+    game && (
+      <>
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              Game ID: {id}
             </Typography>
-            {players}
+          </Toolbar>
+        </AppBar>
+        <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
+          <Box
+            sx={{
+              marginTop: { xs: "30px", sm: "10vh" },
+              display: "flex",
+              flexDirection: "column",
+              width: "100%",
+              maxWidth: "320px",
+              gap: { xs: 1.5, sm: 4 },
+            }}
+          >
+            {game?.host === name ? <HostGameSettings game={game} handleSettingsChange={handleSettingsChange} /> : <NonHostGameSettings game={game} />}
+            {/* <GameSettingsComponent game={game} name={name} handleSettingsChange={handleSettingsChange} /> */}
+            <Box>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontSize: "27px",
+                  marginBottom: "5px",
+                  display: "block",
+                  fontWeight: 500,
+                  fontFamily: "inter",
+                  letterSpacing: "-.5px",
+                }}
+              >
+                Players
+              </Typography>
+              {players}
+            </Box>
+            <Button variant="contained" disabled={disabled} onClick={startGame}>
+              {startGameButtonText}
+            </Button>
           </Box>
-          <Button variant="contained" disabled={disabled} onClick={startGame}>
-            {startGameButtonText}
-          </Button>
         </Box>
-      </Box>
-    </>
+      </>
+    )
   );
 }

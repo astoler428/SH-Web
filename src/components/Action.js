@@ -18,6 +18,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   const [otherContent, setOtherContent] = useState(null);
   const [showTop3PoliciesNotClaim, setShowTop3PoliciesNotClaim] = useState(true); //first show policies
   const [keepShowingVoteSelection, setKeepShowingVoteSelection] = useState(true); //when show vote starts - keep showing the players selected vote
+  const [currentVote, setCurrentVote] = useState(null);
   const isCurrentPres = game.currentPres === name;
   const isCurrentChan = game.currentChan === name;
   const thisPlayer = game.players.find(player => player.name === name);
@@ -222,7 +223,17 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
       setActionTitle(title);
       setOtherContent(fixedOtherContent);
     }
+    // console.log(thisPlayer.vote);
+    setCurrentVote(thisPlayer.vote);
   }, [thisPlayer.vote]); //Otherwise actionContent does not update with the new vote info
+
+  useEffect(() => {
+    if (game.status === Status.VOTE) {
+      setActionContent(content);
+      setActionTitle(title);
+      setOtherContent(fixedOtherContent);
+    }
+  }, [currentVote]);
 
   function showVoteCards() {
     return (
@@ -233,7 +244,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
           src={jaPng}
           style={{
             width: boardDimensions.x / 4.5,
-            boxShadow: thisPlayer.vote === Vote.JA ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
+            boxShadow: currentVote === Vote.JA ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
             cursor: status === Status.SHOW_VOTE_RESULT ? "auto" : "pointer",
             transition: "box-shadow .3s",
           }}
@@ -244,7 +255,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
           src={neinPng}
           style={{
             width: boardDimensions.x / 4.5,
-            boxShadow: thisPlayer.vote === Vote.NEIN ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
+            boxShadow: currentVote === Vote.NEIN ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
             cursor: status === Status.SHOW_VOTE_RESULT ? "auto" : "pointer",
             transition: "box-shadow .3s",
           }}
@@ -563,7 +574,14 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   }
 
   async function handleVote(vote) {
-    await post(`/game/vote/${id}`, { name, vote });
+    if (currentVote === thisPlayer.vote) {
+      if (vote === currentVote) {
+        setCurrentVote(null);
+      } else {
+        setCurrentVote(vote);
+      }
+      await post(`/game/vote/${id}`, { name, vote });
+    }
   }
 
   async function handlePresDiscard(e) {
