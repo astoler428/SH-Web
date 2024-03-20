@@ -714,7 +714,8 @@ export default function Players({
       sx={{
         width: {
           xs: "calc(100vw-10px)",
-          sm: `calc((100vh - (56px + ${boardDimensions.y}px)) / 1.8 * ${n} )`,
+          sm: `calc((100vh - (30px + ${boardDimensions.y}px)) / 1.8 * ${n} )`,
+          md: `calc((100vh - (56px + ${boardDimensions.y}px)) / 1.8 * ${n} )`,
         },
         minWidth: { sm: `calc(60px * ${n})`, md: `calc(90px * ${n})` },
         maxWidth: { sm: `min(calc(100vw - 10px), calc(140px * ${n}))` },

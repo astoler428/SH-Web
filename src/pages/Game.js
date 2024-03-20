@@ -262,7 +262,7 @@ export default function Game({ name, game, setGame, isConnected }) {
               display: "flex",
               position: "absolute",
               justifyContent: "center",
-              height: { xs: "30px", sm: "56px" },
+              height: { xs: "30px", md: "56px" },
             }}
           >
             <Toolbar sx={{ maxWidth: "95vw" }}>
@@ -271,7 +271,7 @@ export default function Game({ name, game, setGame, isConnected }) {
                 sx={{
                   flexGrow: 1,
                   fontFamily: "inter",
-                  fontSize: { xs: "14px", sm: "20px" },
+                  fontSize: { xs: "14px", md: "20px" },
                 }}
               >
                 Game ID: {id}
@@ -296,7 +296,7 @@ export default function Game({ name, game, setGame, isConnected }) {
               )}
             </Toolbar>
           </AppBar>
-          <Box sx={{ marginTop: { xs: "30px", sm: "56px" } }} />
+          <Box sx={{ marginTop: { xs: "30px", md: "56px" } }} />
           <RoleDialog thisPlayer={thisPlayer} game={game} roleOpen={roleOpen} setRoleOpen={setRoleOpen} setConfirmFascOpen={setConfirmFascOpen} />
           <GameSettingsDialog game={game} gameSettingsOpen={gameSettingsOpen} setGameSettingsOpen={setGameSettingsOpen} />
           <GameOverLogsDialog game={game} gameOverLogsOpen={gameOverLogsOpen} setGameOverLogsOpen={setGameOverLogsOpen} />
