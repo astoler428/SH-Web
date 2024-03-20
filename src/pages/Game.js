@@ -178,6 +178,13 @@ export default function Game({ name, game, setGame, isConnected }) {
   }, []);
 
   useEffect(() => {
+    window.addEventListener("orientationchange", () => window.dispatchEvent(new Event("resize")));
+    return () => {
+      window.removeEventListener("orientationchange", () => window.dispatchEvent(new Event("resize")));
+    };
+  }, []);
+
+  useEffect(() => {
     if (game?.status === Status.LIB_SPY_GUESS) {
       const delay = game.topDecked ? TOP_DECK_DELAY + ENACT_POLICY_DURATION : ENACT_POLICY_DURATION;
       pauseActions(1000 * (delay + HITLER_FLIP_FOR_LIB_SPY_GUESS_DURATION)); //7500
