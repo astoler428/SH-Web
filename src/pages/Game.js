@@ -39,7 +39,7 @@ export default function Game({ name, game, setGame, isConnected }) {
   const [gameSettingsOpen, setGameSettingsOpen] = useState(false);
   const [gameOverLogsOpen, setGameOverLogsOpen] = useState(false);
   const [confirmFascOpen, setConfirmFascOpen] = useState(false);
-  const [showGameOverLogsButton, setShowGameOverLogsButton] = useState(false);
+  const [showGameOverButtons, setShowGameOverButtons] = useState(false);
   const [error, setError] = useState(null);
   const [boardDimensions, setBoardDimensions] = useState({ x: 0, y: 0 });
   const [playersDimensions, setPlayersDimensions] = useState({ x: 0, y: 0 });
@@ -249,7 +249,7 @@ export default function Game({ name, game, setGame, isConnected }) {
 
   useEffect(() => {
     if (gameOver(game?.status)) {
-      setTimeout(() => setShowGameOverLogsButton(true), 6000);
+      setTimeout(() => setShowGameOverButtons(true), 6000);
     }
   }, [game?.status]);
 
@@ -272,7 +272,7 @@ export default function Game({ name, game, setGame, isConnected }) {
               height: { xs: "30px", md: "56px" },
             }}
           >
-            <Toolbar sx={{ maxWidth: "95vw" }}>
+            <Toolbar sx={{ maxWidth: "100vw" }}>
               <Typography
                 component="div"
                 sx={{
@@ -296,10 +296,15 @@ export default function Game({ name, game, setGame, isConnected }) {
               >
                 Remake
               </Button> */}
-              {showGameOverLogsButton && (
-                <Button color="inherit" onClick={() => setGameOverLogsOpen(true)} sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}>
-                  Log
-                </Button>
+              {showGameOverButtons && (
+                <>
+                  <Button color="inherit" onClick={() => setGameOverLogsOpen(true)} sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}>
+                    Log
+                  </Button>
+                  <Button color="inherit" onClick={() => navigate("/")} sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}>
+                    Leave
+                  </Button>
+                </>
               )}
             </Toolbar>
           </AppBar>
