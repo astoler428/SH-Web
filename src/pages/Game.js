@@ -177,12 +177,12 @@ export default function Game({ name, game, setGame, isConnected }) {
     setTimeout(() => setOpacity(1), 300);
   }, []);
 
-  useEffect(() => {
-    window.addEventListener("orientationchange", () => window.dispatchEvent(new Event("resize")));
-    return () => {
-      window.removeEventListener("orientationchange", () => window.dispatchEvent(new Event("resize")));
-    };
-  }, []);
+  // useEffect(() => {
+  //   window.addEventListener("orientationchange", () => window.dispatchEvent(new Event("resize")));
+  //   return () => {
+  //     window.removeEventListener("orientationchange", () => window.dispatchEvent(new Event("resize")));
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (game?.status === Status.LIB_SPY_GUESS) {
