@@ -100,16 +100,6 @@ function GameOverLogsTabs({ game }) {
     { id: "playerName", label: "Name", minWidth: 50 },
     { id: "role", label: "Role", minWidth: 50 },
     {
-      id: "threshold",
-      label: "Threshold / Probability",
-      minWidth: 150,
-    },
-    {
-      id: "randomProb",
-      label: "Random Prob",
-      minWidth: 100,
-    },
-    {
       id: "actionName",
       label: "Action",
       minWidth: 70,
@@ -119,34 +109,44 @@ function GameOverLogsTabs({ game }) {
       label: "Type",
       minWidth: 100,
     },
+    {
+      id: "threshold",
+      label: "Threshold",
+      minWidth: 50,
+    },
+    {
+      id: "randomProb",
+      label: "Random Prob",
+      minWidth: 100,
+    },
   ];
 
   defaultActionsColumns.forEach(col => (col.align = "center"));
   const defaultActionRows = game.defaultProbabilityLog;
 
   const govsColumns = [
-    { id: "govNum", label: "Gov", minWidth: 50 },
-    { id: "pres", label: "Pres", minWidth: 50 },
-    { id: "chan", label: "Chan", minWidth: 50 },
+    { id: "govNum", label: "Gov", minWidth: 30 },
+    { id: "pres", label: "Pres", minWidth: 30 },
+    { id: "chan", label: "Chan", minWidth: 30 },
     {
       id: "deckNum",
       label: "Deck",
-      minWidth: 50,
+      minWidth: 30,
     },
     {
       id: "presCards",
       label: "Pres Policies",
-      minWidth: 100,
+      minWidth: 90,
     },
     {
       id: "chanCards",
       label: "Chan Policies",
-      minWidth: 100,
+      minWidth: 90,
     },
     {
       id: "policyPlayed",
       label: "Enacted",
-      minWidth: 50,
+      minWidth: 30,
     },
     {
       id: "presClaim",
