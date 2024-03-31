@@ -217,7 +217,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
         logEntry = (
           <span>
             You control the vote and player selection for this role. However, regardless of this player's role, your objective is to cooperative with
-            the other players so that the liberals win.
+            the other players to make the liberals win.
           </span>
         );
         break;
