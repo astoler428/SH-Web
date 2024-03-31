@@ -67,7 +67,8 @@ export default function StatusMessage({ game }) {
         height: { xs: 30, sm: 30, md: 40 },
         width: "100%",
         backgroundColor: "#171717",
-        borderBottom: "2px outset gray",
+        // borderBottom: "2px outset gray",
+        // marginTop: "2px",
         display: "flex",
         alignItems: "center",
       }}
