@@ -213,6 +213,14 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
           </span>
         );
         break;
+      case LogType.COOPERATIVE_BLIND:
+        logEntry = (
+          <span>
+            You control the vote and player selection for this role. However, regardless of this player's role, your objective is to cooperative with
+            the other players so that the liberals win.
+          </span>
+        );
+        break;
       case LogType.INTRO_HITLER_KNOWS_FASC:
         logEntry = (
           <span>
