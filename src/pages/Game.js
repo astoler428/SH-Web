@@ -283,25 +283,67 @@ export default function Game({ name, game, setGame, isConnected }) {
               >
                 Game ID: {id}
               </Typography>
-              <Button color="inherit" onClick={() => setGameSettingsOpen(true)} sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}>
+              <Button
+                color="inherit"
+                onClick={() => setGameSettingsOpen(true)}
+                sx={{
+                  paddingLeft: { xs: "6px", sm: "12px" },
+                  paddingRight: { xs: "6px", sm: "12px" },
+                  fontFamily: "inter",
+                  fontSize: { xs: "12px", sm: "14px" },
+                  minWidth: "0",
+                }}
+              >
                 Settings
               </Button>
-              <Button color="inherit" onClick={() => setRoleOpen(true)} sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}>
+              <Button
+                color="inherit"
+                onClick={() => setRoleOpen(true)}
+                sx={{
+                  paddingLeft: { xs: "6px", sm: "12px" },
+                  paddingRight: { xs: "6px", sm: "12px" },
+                  margin: 0,
+                  fontFamily: "inter",
+                  fontSize: { xs: "12px", sm: "14px" },
+                  minWidth: "0",
+                }}
+              >
                 Role
               </Button>
+
               {/* <Button
                 color="inherit"
                 onClick={async () => await post(`/game/remake/${id}`, { name })}
-                sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}
+                sx={{ fontFamily: "inter", fontSize: { xs: "12px" } }}
               >
                 Remake
               </Button> */}
               {showGameOverButtons && (
                 <>
-                  <Button color="inherit" onClick={() => setGameOverLogsOpen(true)} sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}>
+                  <Button
+                    color="inherit"
+                    onClick={() => setGameOverLogsOpen(true)}
+                    sx={{
+                      paddingLeft: { xs: "6px", sm: "12px" },
+                      paddingRight: { xs: "6px", sm: "12px" },
+                      fontFamily: "inter",
+                      fontSize: { xs: "12px", sm: "14px" },
+                      minWidth: "0",
+                    }}
+                  >
                     Log
                   </Button>
-                  <Button color="inherit" onClick={() => navigate("/")} sx={{ fontFamily: "inter", fontSize: { xs: "14px" } }}>
+                  <Button
+                    color="inherit"
+                    onClick={() => navigate("/")}
+                    sx={{
+                      paddingLeft: { xs: "6px", sm: "12px" },
+                      paddingRight: { xs: "6px", sm: "12px" },
+                      fontFamily: "inter",
+                      fontSize: { xs: "12px", sm: "14px" },
+                      minWidth: "0",
+                    }}
+                  >
                     Leave
                   </Button>
                 </>
