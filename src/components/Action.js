@@ -214,6 +214,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
       setActionContent(content);
       setActionTitle(title);
       setOtherContent(fixedOtherContent);
+      console.log("here");
     }
   }, [boardDimensions, playersDimensions]);
 
