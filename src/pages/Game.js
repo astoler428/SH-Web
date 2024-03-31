@@ -262,8 +262,24 @@ export default function Game({ name, game, setGame, isConnected }) {
             transition: "opacity 1.5s cubic-bezier(0.16, 0.62, 1, 1)",
           }}
         >
-          {game.status === Status.END_LIB && <Confetti colors={[colors.lib, colors.libDark]} run={runConfetti} recycle={recycleConfetti} />}
-          {game.status === Status.END_FASC && <Confetti colors={[colors.fasc, colors.hitler]} run={runConfetti} recycle={recycleConfetti} />}
+          {game.status === Status.END_LIB && (
+            <Confetti
+              width={window.innerWidth}
+              height={window.innerHeight}
+              colors={[colors.lib, colors.libDark]}
+              run={runConfetti}
+              recycle={recycleConfetti}
+            />
+          )}
+          {game.status === Status.END_FASC && (
+            <Confetti
+              width={window.innerWidth}
+              height={window.innerHeight}
+              colors={[colors.fasc, colors.hitler]}
+              run={runConfetti}
+              recycle={recycleConfetti}
+            />
+          )}
           <AppBar
             sx={{
               display: "flex",
