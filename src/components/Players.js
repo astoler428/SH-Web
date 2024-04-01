@@ -728,6 +728,9 @@ export default function Players({
         {/**used to be xs: .5 */}
         {renderPlayers}
       </Grid>
+      {/* Preloading for when it appears in role dialog in mixed setting */}
+      <img src={libPartyPng} draggable="false" style={{ visibility: "hidden", width: 0, height: 0 }} />
+      <img src={fascPartyPng} draggable="false" style={{ visibility: "hidden", width: 0, height: 0 }} />
     </Box>
   );
 }

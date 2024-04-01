@@ -34,7 +34,6 @@ export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, se
       roleImg = roleBackPng;
   }
   if (isBlindSetting(game.settings.type) && !thisPlayer.confirmedFasc && !gameOver(game.status)) {
-    // roleImg = roleBackPng;
     showRoleImg = false;
   }
 
@@ -76,7 +75,12 @@ export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, se
           </Box>
         )}
         <Box sx={{ width: { xs: 140, sm: 200 }, maxWidth: { xs: `calc(100vh/3)` }, position: "relative" }}>
-          <img src={roleImg} draggable="false" style={{ width: "100%", visibility: "hidden" }} /> {/* just a placeholder to for the sizing */}
+          <img
+            src={isBlindSetting(game.settings.type) ? hiddenRoleBackPng : roleImg}
+            draggable="false"
+            style={{ width: "100%", visibility: "hidden" }}
+          />{" "}
+          {/* just a placeholder to for the sizing */}
           <img
             src={roleImg}
             draggable="false"
@@ -85,14 +89,14 @@ export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, se
               top: 0,
               left: 0,
               width: "100%",
-              opacity: showRoleImg ? 0 : 1,
+              opacity: showRoleImg ? 1 : 0,
               transition: `opacity ${CONFIRM_FASC_DIALOG_DURATION}s cubic-bezier(.96,.01,.54,.72)`, //cubic-bezier(.84,-0.03,.58,.88)",
             }}
           />
           <img
             src={hiddenRoleBackPng}
             draggable="false"
-            style={{ position: "absolute", top: 0, left: 0, width: "100%", opacity: showRoleImg ? 1 : 0 }}
+            style={{ position: "absolute", top: 0, left: 0, width: "100%", opacity: showRoleImg ? 0 : 1 }}
           />
         </Box>
       </DialogContent>
