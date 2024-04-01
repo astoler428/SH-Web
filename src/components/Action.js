@@ -715,7 +715,6 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     return true;
   }
 
-  console.log(content, actionContent);
   return (
     <Box sx={{}}>
       <Box

@@ -43,9 +43,8 @@ import presPng from "../img/President.png";
 import chanPng from "../img/Chancellor.png";
 import voteBackPng from "../img/VoteBack.png";
 import errorPng from "../img/Error.png";
-import partyBack from "../img/PartyBack.png";
+import partyBackPng from "../img/PartyBack.png";
 import hiddenRoleBackPng from "../img/HiddenRoleBack.png";
-import { wait } from "@testing-library/user-event/dist/utils";
 //card height to width ratio = 1.36
 
 // const colors.hitler = '#A72323'
@@ -286,7 +285,7 @@ export default function Players({
         nameColorTransition = "color 1s 1s"; //timed relative to inv_duration and it's animation keyframes
         overlayContent = getTeamImg(player)[0];
       } else {
-        overlayContent = partyBack;
+        overlayContent = partyBackPng;
       }
       animation = `upAndDown ${INV_DURATION}s forwards`;
     } else if (status === Status.LIB_SPY_GUESS && player.role === Role.HITLER && player.name !== name) {
@@ -626,7 +625,7 @@ export default function Players({
 
   useEffect(() => {
     setFirstRender(false);
-    // game.players.forEach(player => (player.team === Team.FASC ? console.log(player.name + player.role) : ""));
+    game.players.forEach(player => (player.team === Team.FASC ? console.log(player.name + player.role) : ""));
   }, []);
 
   useEffect(() => {
@@ -728,9 +727,21 @@ export default function Players({
         {/**used to be xs: .5 */}
         {renderPlayers}
       </Grid>
-      {/* Preloading for when it appears in role dialog in mixed setting */}
+      {/* preloading images */}
+      <img src={hitlerPng} draggable="false" style={{ visibility: "hidden", width: 0, height: 0 }} />
+      <img src={liberalSpyPng} draggable="false" style={{ visibility: "hidden", width: 0, height: 0 }} />
+      <img src={liberalPng} draggable="false" style={{ visibility: "hidden", width: 0, height: 0 }} />
+      <img src={fascistPng} draggable="false" style={{ visibility: "hidden", width: 0, height: 0 }} />
+      <img src={roleBackPng} draggable="false" style={{ visibility: "hidden", width: 0, height: 0 }} />
       <img src={libPartyPng} draggable="false" style={{ visibility: "hidden", width: 0, height: 0 }} />
       <img src={fascPartyPng} draggable="false" style={{ visibility: "hidden", width: 0, height: 0 }} />
+      <img src={fascistLiberalPng} draggable="false" style={{ visibility: "hidden", width: 0, height: 0 }} />
+      <img src={liberalFascistPng} draggable="false" style={{ visibility: "hidden", width: 0, height: 0 }} />
+      <img src={neinPng} draggable="false" style={{ visibility: "hidden", width: 0, height: 0 }} />
+      <img src={jaPng} draggable="false" style={{ visibility: "hidden", width: 0, height: 0 }} />
+      <img src={voteBackPng} draggable="false" style={{ visibility: "hidden", width: 0, height: 0 }} />
+      <img src={partyBackPng} draggable="false" style={{ visibility: "hidden", width: 0, height: 0 }} />
+      <img src={hiddenRoleBackPng} draggable="false" style={{ visibility: "hidden", width: 0, height: 0 }} />
     </Box>
   );
 }
