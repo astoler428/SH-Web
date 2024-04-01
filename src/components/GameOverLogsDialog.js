@@ -58,9 +58,9 @@ function CustomTable({ rows, columns }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, i) => {
               return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={Math.random()}>
+                <TableRow hover role="checkbox" tabIndex={-1} key={i}>
                   {columns.map(column => {
                     const value = column.id === "randomProb" ? row[column.id].toFixed(3) : row[column.id];
                     return (

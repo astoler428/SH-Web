@@ -265,11 +265,11 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   }
 
   function showPresPolicies() {
-    const presPolicies = game.presCards.map(card => {
+    const presPolicies = game.presCards.map((card, i) => {
       const policyImg = disabled ? policyBackPng : getPolicyImg(card);
       return (
         <img
-          key={Math.random()}
+          key={i}
           className="choosable-policy"
           draggable="false"
           data-key={card.color}
@@ -288,12 +288,11 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
       return (
         <img
           key={i}
-          // className="choosable-policy"
+          className="choosable-policy"
           draggable="false"
           data-key={card.color}
           onClick={handleChanPlay}
-          // src={policyImg}
-          src={jaPng}
+          src={policyImg}
           style={{ width: boardDimensions.x / 6, cursor: "pointer", ...disabledStyles }}
         />
       );
@@ -459,8 +458,8 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   }
 
   function showInspect3PoliciesAndClaims() {
-    const top3 = game.deck.inspectTop3.map(card => (
-      <img key={Math.random()} draggable="false" src={disabled ? policyBackPng : getPolicyImg(card)} style={{ width: boardDimensions.x / 6 }} />
+    const top3 = game.deck.inspectTop3.map((card, i) => (
+      <img key={i} draggable="false" src={disabled ? policyBackPng : getPolicyImg(card)} style={{ width: boardDimensions.x / 6 }} />
     ));
     return showTop3PoliciesNotClaim ? (
       top3
