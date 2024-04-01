@@ -209,14 +209,13 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     }
   }, [centerContent, pauseActions]);
 
-  useEffect(() => {
-    if (centerContent && !pauseActions) {
-      setActionContent(content);
-      setActionTitle(title);
-      setOtherContent(fixedOtherContent);
-      console.log("here");
-    }
-  }, [boardDimensions, playersDimensions]);
+  // useEffect(() => {
+  //   if (centerContent && !pauseActions) {
+  //     setActionContent(content);
+  //     setActionTitle(title);
+  //     setOtherContent(fixedOtherContent);
+  //   }
+  // }, [boardDimensions, playersDimensions]);
 
   useEffect(() => {
     if (game.status === Status.VOTE) {
@@ -716,6 +715,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     return true;
   }
 
+  console.log(content, actionContent);
   return (
     <Box sx={{}}>
       <Box
