@@ -85,14 +85,14 @@ export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, se
               top: 0,
               left: 0,
               width: "100%",
-              opacity: showRoleImg ? 1 : 0,
+              opacity: showRoleImg ? 0 : 1,
               transition: `opacity ${CONFIRM_FASC_DIALOG_DURATION}s cubic-bezier(.96,.01,.54,.72)`, //cubic-bezier(.84,-0.03,.58,.88)",
             }}
           />
           <img
             src={hiddenRoleBackPng}
             draggable="false"
-            style={{ position: "absolute", top: 0, left: 0, width: "100%", opacity: showRoleImg ? 0 : 1 }}
+            style={{ position: "absolute", top: 0, left: 0, width: "100%", opacity: showRoleImg ? 1 : 0 }}
           />
         </Box>
       </DialogContent>

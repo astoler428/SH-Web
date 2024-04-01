@@ -209,13 +209,13 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     }
   }, [centerContent, pauseActions]);
 
-  // useEffect(() => {
-  //   if (centerContent && !pauseActions) {
-  //     setActionContent(content);
-  //     setActionTitle(title);
-  //     setOtherContent(fixedOtherContent);
-  //   }
-  // }, [boardDimensions, playersDimensions]);
+  useEffect(() => {
+    if (centerContent && !pauseActions) {
+      setActionContent(content);
+      setActionTitle(title);
+      setOtherContent(fixedOtherContent);
+    }
+  }, [boardDimensions, playersDimensions]);
 
   useEffect(() => {
     if (game.status === Status.VOTE) {
@@ -283,16 +283,17 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   }
 
   function showChanPolicies() {
-    const chanCards = game.chanCards.map(card => {
+    const chanCards = game.chanCards.map((card, i) => {
       const policyImg = disabled ? policyBackPng : getPolicyImg(card);
       return (
         <img
-          key={Math.random()}
-          className="choosable-policy"
+          key={i}
+          // className="choosable-policy"
           draggable="false"
           data-key={card.color}
           onClick={handleChanPlay}
-          src={policyImg}
+          // src={policyImg}
+          src={jaPng}
           style={{ width: boardDimensions.x / 6, cursor: "pointer", ...disabledStyles }}
         />
       );
