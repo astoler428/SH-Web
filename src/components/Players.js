@@ -214,12 +214,12 @@ export default function Players({
 
       if (game.settings.type === GameType.BLIND) {
         if (player.role === Role.FASC) {
-          tooltipTitle = player.confirmedFasc ? `Confirmed fascist` : `fascist`;
+          tooltipTitle = player.confirmedFasc ? `confirmed fascist` : `fascist`;
         } else if (player.role === Role.HITLER) {
-          tooltipTitle = !revealWhenHitlerConfirmedFlag ? `Hitler` : player.confirmedFasc ? `Confirmed Hitler` : `Blind Hitler`;
+          tooltipTitle = !revealWhenHitlerConfirmedFlag ? `Hitler` : player.confirmedFasc ? `confirmed Hitler` : `blind Hitler`;
         }
       } else if (game.settings.type === GameType.MIXED_ROLES) {
-        tooltipTitle = `${player.team} ${player.role}`;
+        tooltipTitle = player.role === Role.HITLER ? `Hitler` : `${player.team} ${player.role}`;
       } else {
         tooltipTitle = player.role;
       }
@@ -625,7 +625,7 @@ export default function Players({
 
   useEffect(() => {
     setFirstRender(false);
-    game.players.forEach(player => (player.team === Team.FASC ? console.log(player.name + player.role) : ""));
+    // game.players.forEach(player => (player.team === Team.FASC ? console.log(player.name + player.role) : ""));
   }, []);
 
   useEffect(() => {
