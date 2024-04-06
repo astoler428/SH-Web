@@ -3,7 +3,7 @@ import { useParams } from "react-router";
 import { UPDATE, Status, GameSettings } from "../consts";
 import { socket } from "../socket";
 import { useNavigate } from "react-router-dom";
-import client, { post } from "../api/api";
+import { post } from "../api/api";
 import { Typography, Box, Toolbar, Button, AppBar } from "@mui/material";
 import GameSettingsComponent from "../components/GameSettingsComponent";
 import HostGameSettings from "../components/HostGameSettings";
@@ -23,7 +23,7 @@ export default function Lobby({ name, game, setGame, isConnected }) {
     }
     async function joinGame() {
       try {
-        await client.post(`/game/join/${id}`, { name, socketId: socket.id });
+        await post(`/game/join/${id}`, { name, socketId: socket.id });
       } catch (err) {
         console.error(err?.response?.data?.message);
         navigate("/");

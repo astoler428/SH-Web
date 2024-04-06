@@ -223,7 +223,6 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
       setActionTitle(title);
       setOtherContent(fixedOtherContent);
     }
-    // console.log(thisPlayer.vote);
     setCurrentVote(thisPlayer.vote);
   }, [thisPlayer.vote]); //Otherwise actionContent does not update with the new vote info
 

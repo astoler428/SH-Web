@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router";
-import client, { post } from "../api/api";
+import { post } from "../api/api";
 import { socket } from "../socket";
 import {
   Status,
@@ -59,7 +59,7 @@ export default function Game({ name, game, setGame, isConnected }) {
     }
     async function joinGame() {
       try {
-        await client.post(`/game/join/${id}`, { name, socketId: socket.id });
+        await post(`/game/join/${id}`, { name, socketId: socket.id });
       } catch (err) {
         console.error(err?.response?.data?.message);
         navigate("/");
@@ -327,13 +327,13 @@ export default function Game({ name, game, setGame, isConnected }) {
                 Role
               </Button>
 
-              {/* <Button
+              <Button
                 color="inherit"
                 onClick={async () => await post(`/game/remake/${id}`, { name })}
                 sx={{ fontFamily: "inter", fontSize: { xs: "12px" } }}
               >
                 Remake
-              </Button> */}
+              </Button>
               {showGameOverButtons && (
                 <>
                   <Button

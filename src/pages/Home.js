@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { socket } from "../socket";
-import client from "../api/api";
+import { post } from "../api/api";
 import { Typography, CssBaseline, Box, TextField, Button } from "@mui/material";
 
 export default function Home({ name, setName, isConnected, setIsLoading }) {
@@ -12,7 +12,7 @@ export default function Home({ name, setName, isConnected, setIsLoading }) {
   async function createGame() {
     try {
       setIsLoading(true);
-      const res = await client.post("/game", { name, socketId: socket.id });
+      const res = await post("/game", { name, socketId: socket.id });
       setIsLoading(false);
       const id = res.data;
       navigate(`/lobby/${id}`);

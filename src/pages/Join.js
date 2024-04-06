@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import client from "../api/api";
+import { post } from "../api/api";
 import { socket } from "../socket";
 import { Status } from "../consts";
 import { IconButton, Snackbar, Box, TextField, Button } from "@mui/material";
@@ -14,7 +14,7 @@ export default function Join({ name, setIsLoading, isConnected }) {
   async function handleJoin() {
     try {
       setIsLoading(true);
-      const res = await client.post(`/game/join/${id}`, {
+      const res = await post(`/game/join/${id}`, {
         name,
         socketId: socket.id,
       });
