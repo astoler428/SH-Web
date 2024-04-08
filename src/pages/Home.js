@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { socket } from "../socket";
 import { post } from "../api/api";
-import { Typography, CssBaseline, Box, TextField, Button } from "@mui/material";
+import { Typography, CssBaseline, Box, TextField, Button, Snackbar } from "@mui/material";
+import SnackBarError from "../components/SnackBarError";
 
-export default function Home({ name, setName, isConnected, setIsLoading }) {
+export default function Home({ name, setName, isConnected, setIsLoading, error, setError }) {
   const navigate = useNavigate();
   const nameInputRef = useRef();
   const [showConnectStatus, setShowConnectionStatus] = useState(false);
@@ -18,7 +19,7 @@ export default function Home({ name, setName, isConnected, setIsLoading }) {
       navigate(`/lobby/${id}`);
     } catch (err) {
       setIsLoading(false);
-      console.error(err.response?.data.message);
+      setError(err?.response?.data?.message || `Cannot join a game ${!isConnected ? `while offline.` : `at this time.`}`);
     }
   }
 
@@ -78,7 +79,7 @@ export default function Home({ name, setName, isConnected, setIsLoading }) {
           }}
         >
           <form onSubmit={e => e.preventDefault()}>
-            <TextField required inputRef={nameInputRef} label="Name" fullWidth value={name} onChange={handleInputChange} />
+            <TextField inputRef={nameInputRef} label="Name" fullWidth value={name} onChange={handleInputChange} />
             <Button type="submit" disabled={!name} onClick={createGame} fullWidth variant="contained" sx={{ margin: "8px 0 4px 0" }}>
               Create Game
             </Button>
@@ -87,6 +88,7 @@ export default function Home({ name, setName, isConnected, setIsLoading }) {
             </Button>
           </form>
         </Box>
+        <SnackBarError error={error} setError={setError} />
       </Box>
     </>
   );
