@@ -3,13 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { post } from "../api/api";
 import { socket } from "../socket";
 import { Status } from "../consts";
-import { IconButton, Snackbar, Box, TextField, Button } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { Box, TextField, Button } from "@mui/material";
+import SnackBarError from "../components/SnackBarError";
 
-export default function Join({ name, setIsLoading, isConnected }) {
+export default function Join({ name, setIsLoading, isConnected, error, setError }) {
   const navigate = useNavigate();
   const [id, setId] = useState("");
-  const [error, setError] = useState(null);
 
   async function handleJoin() {
     try {
@@ -30,16 +29,6 @@ export default function Join({ name, setIsLoading, isConnected }) {
       setError(err?.response?.data?.message || `Cannot join a game ${!isConnected ? `while offline.` : `at this time.`}`);
     }
   }
-
-  const handleClose = () => setError(null);
-
-  const action = (
-    <React.Fragment>
-      <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
-        <CloseIcon fontSize="small" />
-      </IconButton>
-    </React.Fragment>
-  );
 
   return (
     <Box
@@ -66,7 +55,7 @@ export default function Join({ name, setIsLoading, isConnected }) {
           </Button>
         </form>
       </Box>
-      <Snackbar open={error !== null} onClose={handleClose} message={error} autoHideDuration={5000} action={action} />
+      <SnackBarError error={error} setError={setError} />{" "}
     </Box>
   );
 }

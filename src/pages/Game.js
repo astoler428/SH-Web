@@ -19,8 +19,8 @@ import { gameOver, gameEndedWithPolicyEnactment, isBlindSetting } from "../helpe
 import Players from "../components/Players";
 import Board from "../components/Board";
 import Loading from "../components/Loading";
-import { Typography, IconButton, Snackbar, AppBar, Toolbar, Button, Box } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import SnackBarError from "../components/SnackBarError";
+import { Typography, AppBar, Toolbar, Button, Box } from "@mui/material";
 import RoleDialog from "../components/RoleDialog";
 import ConfirmFascDialog from "../components/ConfirmFascDialog";
 import GameSettingsDialog from "../components/GameSettingsDialog";
@@ -28,7 +28,7 @@ import GameOverLogsDialog from "../components/GameOverLogsDialog";
 import LogChat from "../components/LogChat";
 import Confetti from "react-confetti";
 
-export default function Game({ name, game, setGame, isConnected }) {
+export default function Game({ name, game, setGame, isConnected, error, setError }) {
   // game.status = Status.CHOOSE_CHAN
   // game.status = Status.STARTED
   const navigate = useNavigate();
@@ -40,7 +40,6 @@ export default function Game({ name, game, setGame, isConnected }) {
   const [gameOverLogsOpen, setGameOverLogsOpen] = useState(false);
   const [confirmFascOpen, setConfirmFascOpen] = useState(false);
   const [showGameOverButtons, setShowGameOverButtons] = useState(false);
-  const [error, setError] = useState(null);
   const [boardDimensions, setBoardDimensions] = useState({ x: 0, y: 0 });
   const [playersDimensions, setPlayersDimensions] = useState({ x: 0, y: 0 });
   const [hitlerFlippedForLibSpyGuess, setHitlerFlippedForLibSpyGuess] = useState(false);
@@ -143,14 +142,6 @@ export default function Game({ name, game, setGame, isConnected }) {
     setConfirmFascOpen(false);
     await post(`/game/confirmFasc/${id}`, { name: thisPlayer.name });
   }
-
-  const action = (
-    <React.Fragment>
-      <IconButton size="small" aria-label="close" color="inherit" onClick={() => setError(null)}>
-        <CloseIcon fontSize="small" />
-      </IconButton>
-    </React.Fragment>
-  );
 
   //used to get the height of the board so the logChat can match it, also the playes area depends on it
   //need to check that all images are done loading first
@@ -411,7 +402,7 @@ export default function Game({ name, game, setGame, isConnected }) {
             <LogChat game={game} name={name} boardDimensions={boardDimensions} playersDimensions={playersDimensions} />
           </Box>
           {/* Snackbar is used in mixed role to let know if you can't discard */}
-          <Snackbar open={error !== null} onClose={() => setError(null)} message={error} autoHideDuration={5000} action={action} />
+          <SnackBarError error={error} setError={setError} />{" "}
           <ConfirmFascDialog confirmFascOpen={confirmFascOpen} setConfirmFascOpen={setConfirmFascOpen} handleConfirmFasc={handleConfirmFasc} />
         </Box>
       ) : (
