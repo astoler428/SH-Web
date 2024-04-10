@@ -70,13 +70,15 @@ export default function Players({
   const [openTooltip, setOpenTooltip] = useState(game.players.map(() => false));
   const [forceOpenTooltip, setForceOpenTooltip] = useState(game.players.map(() => false));
   const [shownFascState, setShownFascState] = useState(game.players.map(() => false));
-  const [hitlerConfirmed, setHitlerConfirmed] = useState(false);
+  const [shownConfirmedFascState, setShownConfirmedFascState] = useState(game.players.map(() => false));
   const [timeoutIds, setTimeoutIds] = useState(game.players.map(() => null));
   const [waitToShowOwnRoleAfterConfirmFasc, setWaitToShowOwnRoleAfterConfirmFasc] = useState(true);
   const thisPlayer = game.players.find(player => player.name === name);
   const n = game.players.length;
   const status = game.status;
-  const revealWhenHitlerConfirmedFlag = false; //can turn it on or off
+  //can turn it on or off
+  const revealWhenHitlerConfirmedFlag = true;
+  const fascSeeAllOtherFascUponConfirmingFlag = false;
 
   const choosing =
     !pauseActions &&
@@ -642,15 +644,26 @@ export default function Players({
     }
     game.players.forEach((player, idx) => {
       //never do this for yourself
-      if (player.name !== name && ((player.confirmedFasc && !shownFascState[idx]) || (player.role === Role.HITLER && !hitlerConfirmed))) {
+      if (
+        player.name !== name &&
+        ((fascSeeAllOtherFascUponConfirmingFlag && !shownFascState[idx]) ||
+          (player.confirmedFasc && !shownConfirmedFascState[idx]) ||
+          (player.role === Role.HITLER && !shownConfirmedFascState[idx]))
+      ) {
         //timeout because showing right after roleDialog has a chance to fully close causes a glitch in tooltip position
-        if (player.role === Role.HITLER && player.confirmedFasc) {
-          setHitlerConfirmed(true);
+        if (player.confirmedFasc) {
+          setShownConfirmedFascState(prevState => setNewState(prevState, idx, true));
         }
-        if (shownFascState[idx] && !revealWhenHitlerConfirmedFlag) {
+
+        if (shownFascState[idx] && player.role === Role.HITLER && !revealWhenHitlerConfirmedFlag) {
           //if already shown, then here because hitler just confirmed
           return;
         }
+
+        if (shownFascState[idx] && player.role === Role.HITLER && !player.confirmedFasc) {
+          return;
+        }
+        console.log("here");
         let timeoutId;
         clearTimeout(timeoutIds[idx]);
         setTimeout(() => {
@@ -692,7 +705,7 @@ export default function Players({
     // }
     if (!waitToShowOwnRoleAfterConfirmFasc && (fascPlayer.role !== Role.HITLER || game.settings.hitlerKnowsFasc)) {
       //just return true if fasc see all other fasc
-      return otherFasc.confirmedFasc || otherFasc.role === Role.HITLER;
+      return fascSeeAllOtherFascUponConfirmingFlag ? true : otherFasc.confirmedFasc || otherFasc.role === Role.HITLER;
     }
     return false;
   }
