@@ -19,7 +19,7 @@ export default function Home({ name, setName, isConnected, setIsLoading, error, 
       navigate(`/lobby/${id}`);
     } catch (err) {
       setIsLoading(false);
-      setError(err?.response?.data?.message || `Cannot join a game ${!isConnected ? `while offline.` : `at this time.`}`);
+      setError(err?.response?.data?.message || `Cannot create a game ${!isConnected ? `while offline.` : `at this time.`}`);
     }
   }
 
