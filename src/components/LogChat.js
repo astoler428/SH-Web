@@ -524,7 +524,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
             <TextField
               inputRef={messageInputRef}
               disabled={disabled}
-              value={message}
+              value={disabled ? "" : message}
               onBlur={() => window.dispatchEvent(new Event("resize"))}
               size="small"
               autoComplete="off"
