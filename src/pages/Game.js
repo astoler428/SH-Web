@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router";
-import { post } from "../api/api";
+import client, { post } from "../api/api";
 import { socket } from "../socket";
 import {
   Status,
@@ -58,8 +58,9 @@ export default function Game({ name, game, setGame, isConnected, error, setError
     }
     async function joinGame() {
       try {
-        await post(`/game/join/${id}`, { name, socketId: socket.id });
+        await client.post(`/game/join/${id}`, { name, socketId: socket.id });
       } catch (err) {
+        console.error(err);
         console.error(err?.response?.data?.message);
         navigate("/");
       }

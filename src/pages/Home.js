@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { socket } from "../socket";
-import { post } from "../api/api";
+import client, { post } from "../api/api";
 import { Typography, CssBaseline, Box, TextField, Button, Snackbar } from "@mui/material";
 import SnackBarError from "../components/SnackBarError";
 
@@ -13,12 +13,14 @@ export default function Home({ name, setName, isConnected, setIsLoading, error, 
   async function createGame() {
     try {
       setIsLoading(true);
-      const res = await post("/game", { name, socketId: socket.id });
+      const res = await client.post("/game", { name, socketId: socket.id });
       setIsLoading(false);
       const id = res.data;
       navigate(`/lobby/${id}`);
     } catch (err) {
       setIsLoading(false);
+      console.error(err);
+      console.error(err?.response?.data?.message);
       setError(err?.response?.data?.message || `Cannot create a game ${!isConnected ? `while offline.` : `at this time.`}`);
     }
   }

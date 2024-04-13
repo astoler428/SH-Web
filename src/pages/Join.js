@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { post } from "../api/api";
+import client, { post } from "../api/api";
 import { socket } from "../socket";
 import { Status } from "../consts";
 import { Box, TextField, Button } from "@mui/material";
@@ -13,7 +13,7 @@ export default function Join({ name, setIsLoading, isConnected, error, setError 
   async function handleJoin() {
     try {
       setIsLoading(true);
-      const res = await post(`/game/join/${id}`, {
+      const res = await client.post(`/game/join/${id}`, {
         name,
         socketId: socket.id,
       });
@@ -26,6 +26,8 @@ export default function Join({ name, setIsLoading, isConnected, error, setError 
       }
     } catch (err) {
       setIsLoading(false);
+      console.error(err);
+      console.error(err?.response?.data?.message);
       setError(err?.response?.data?.message || `Cannot join a game ${!isConnected ? `while offline.` : `at this time.`}`);
     }
   }
