@@ -319,13 +319,13 @@ export default function Game({ name, game, setGame, isConnected, error, setError
                 Role
               </Button>
 
-              <Button
+              {/* <Button
                 color="inherit"
                 onClick={async () => await post(`/game/remake/${id}`, { name })}
                 sx={{ fontFamily: "inter", fontSize: { xs: "12px" } }}
               >
                 Remake
-              </Button>
+              </Button> */}
               {showGameOverButtons && (
                 <>
                   <Button
