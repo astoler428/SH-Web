@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button, Typography, Box } from "@mui/material";
 import libPolicyPng from "../img/LibPolicy.png";
 import fascPolicyPng from "../img/FascPolicy.png";
@@ -233,6 +233,13 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
       setOtherContent(fixedOtherContent);
     }
   }, [currentVote]);
+
+  useEffect(() => {
+    //hack for certain reloads when images and stuff aren't showing properly
+    setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+    }, 2000);
+  }, []);
 
   function showVoteCards() {
     return (

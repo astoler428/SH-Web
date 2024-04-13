@@ -111,8 +111,6 @@ export default function Players({
     }
   };
   const getVote = player => (player.vote === Vote.JA ? jaPng : player.vote === Vote.NEIN ? neinPng : errorPng);
-  // const getTotallyBlindTintBackgroundColor = player =>
-  //   player.identity === Identity.HITLER ? colors.hitler : player.identity === Identity.FASC ? colors.fasc : colors.lib;
   const setNewState = (prevState, idx, val) => {
     const newState = [...prevState];
     newState[idx] = val;
@@ -132,14 +130,10 @@ export default function Players({
     let roleContentFlip = roleBackPng;
     let overlayContent = null;
     let overlayContentFlip = null;
-    // let totallyBlindBoxShadowColor = null;
-    let totallyBlindTintBackgroundColor = "transparent";
     let animation = "";
     let roleAnimation = "";
     let chooseAnimation = "";
     let nameColorTransition = "color 1.5s";
-    // let totallyBlindBoxShadowColorTransition = "box-shadow 1s 2s";
-    let totallyBlindTintBackgroundColorTransition = "backgroundColor 1s 2s";
     let flipAndDownDuration = 4; //varies based on vote split
     let showTooltip = false;
     let tooltipTitle = ``;
@@ -202,10 +196,7 @@ export default function Players({
     //your own role
     if (player.name === name) {
       [roleContent, nameColor] = showOwnRole(player) ? getRoleImg(player) : [hiddenRoleBackPng, colors.hidden]; //roleBackPng
-      // if (game.settings.type === GameType.TOTALLY_BLIND) {
-      //   totallyBlindTintBackgroundColor = getTotallyBlindTintBackgroundColor(player);
-      //   totallyBlindTintBackgroundColorTransition = `background-color 1s 2s`;
-      // }
+
       showTooltip = true;
       tooltipTitle = "You";
     }
@@ -225,10 +216,7 @@ export default function Players({
       } else {
         tooltipTitle = player.role;
       }
-    } else if (
-      thisPlayerInvestigatedPlayer &&
-      !(game.settings.type === GameType.COOPERATIVE_BLIND || game.settings.type === GameType.TOTALLY_BLIND)
-    ) {
+    } else if (thisPlayerInvestigatedPlayer && !(game.settings.type === GameType.COOPERATIVE_BLIND)) {
       [, nameColor] = getTeamImg(player);
       showTooltip = true;
       tooltipTitle = `${player.team}`;
@@ -237,11 +225,6 @@ export default function Players({
     if (player.role === Role.HITLER && hitlerFlippedForLibSpyGuess) {
       [roleContent, nameColor] = getRoleImg(player);
     }
-
-    //show for totally blind
-    // if (player.team === Team.FASC && showFascistInTotallyBlind(player)) {
-    //   [, nameColor] = getRoleImg(player);
-    // }
 
     //animations
 
@@ -259,12 +242,6 @@ export default function Players({
           nameColorTransition = "color 1s 4s";
         }
       }
-      // else if (game.settings.type === GameType.TOTALLY_BLIND && player.team === Team.FASC && showFascistInTotallyBlind(player)) {
-      //   roleContent = roleBackPng;
-      //   roleContentFlip = getRoleImg(player)[0];
-      //   roleAnimation = "flipAndUnflip 5s forwards 4s";
-      //   nameColorTransition = "color 1s 4s";
-      // }
     } else if (status === Status.VOTE) {
       if (player.alive) {
         overlayContent = voteBackPng;
@@ -282,7 +259,7 @@ export default function Players({
         animation = `flipAndDown ${flipAndDownDuration}s forwards`;
       }
     } else if (status === Status.INV_CLAIM && player.name === currentPres.investigations.slice(-1)[0]) {
-      if (currentPres.name === name && !(game.settings.type === GameType.COOPERATIVE_BLIND || game.settings.type === GameType.TOTALLY_BLIND)) {
+      if (currentPres.name === name && !(game.settings.type === GameType.COOPERATIVE_BLIND)) {
         nameColor = nameColor === colors.hitler ? nameColor : getTeamImg(player)[1]; //if you were already seeing them as hitler, don't switch to fasc color
         nameColorTransition = "color 1s 1s"; //timed relative to inv_duration and it's animation keyframes
         overlayContent = getTeamImg(player)[0];
@@ -307,12 +284,6 @@ export default function Players({
       }
     } else if (gameOver(status)) {
       [, nameColor] = getRoleImg(player);
-      // if (game.settings.type === GameType.TOTALLY_BLIND) {
-      //   totallyBlindTintBackgroundColor = getTotallyBlindTintBackgroundColor(player);
-      //   totallyBlindTintBackgroundColorTransition = `background-color 1s ${gameOverDelay + 6}s`; // + 3s is when flip finishes (see below), give time to look
-      // }
-      // totallyBlindBoxShadowColor = getTotallyBlindBoxShadowColor(player);
-      // totallyBlindBoxShadowColorTransition = `box-shadow 1s ${gameOverDelay + 3}s`; //wait for flip to finish
 
       //flip over everyone elses role, unless blind in which case your needs flipping too if not confirmed, or libSpy and hitler already flipped
       //maybe set this based on whether the roleContent is already a role
@@ -327,8 +298,6 @@ export default function Players({
 
     if (firstRender) {
       nameColor = colors.hidden;
-      // totallyBlindBoxShadowColor = null;
-      totallyBlindTintBackgroundColor = "transparent";
       nameColorTransition = "color .1s";
     }
 
@@ -407,8 +376,6 @@ export default function Players({
             sx={{
               cursor: choosable ? "pointer" : "auto",
               animation: chooseAnimation,
-              // boxShadow: `0 0 0 4px ${totallyBlindBoxShadowColor}`,
-              // transition: totallyBlindBoxShadowColorTransition,
               display: "flex",
               flexDirection: "column",
               position: "relative",
@@ -439,20 +406,6 @@ export default function Players({
                 animation: roleAnimation,
               }}
             >
-              <Box
-                sx={{
-                  position: "absolute",
-                  width: "104%",
-                  height: "104%",
-                  transform: "translate(-.3%, -.3%)",
-                  backgroundColor: totallyBlindTintBackgroundColor,
-                  transition: totallyBlindTintBackgroundColorTransition,
-                  // backgroundColor:
-                  //   player.name === name && player.role !== Role.HITLER && player.role !== player.team ? getTeamImg(player)[1] : "transparent",
-                  zIndex: 1,
-                  opacity: 0.7,
-                }}
-              ></Box>
               <img
                 ref={el => (playerImageRefs.current[idx] = el)}
                 src={roleContent}
@@ -592,20 +545,6 @@ export default function Players({
                     color: "red",
                   }}
                 />
-                {/* {player.name === name && !showOwnRole(player) && game.settings.type !== GameType.TOTALLY_BLIND && (
-                  <QuestionMarkIcon
-                    sx={{
-                      width: "100%",
-                      height: "100%",
-                      position: "absolute",
-                      zIndex: 25,
-                      left: "50%",
-                      top: "50%",
-                      transform: "translate(-50%, -50%)",
-                      color: "black",
-                    }}
-                  />
-                )} */}
               </>
             )}
           </Card>
@@ -709,15 +648,6 @@ export default function Players({
     }
     return false;
   }
-
-  // function showFascistInTotallyBlind(player) {
-  //   if (thisPlayer.identity === Identity.FASC) {
-  //     return true;
-  //   } else if (thisPlayer.identity === Identity.HITLER && (player.role === Role.HITLER || game.settings.hitlerKnowsFasc)) {
-  //     return true;
-  //   }
-  //   return false;
-  // }
 
   //xs: `min(100vw, calc(70px * ${n}))`,
   return (
