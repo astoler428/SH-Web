@@ -319,13 +319,13 @@ export default function Game({ name, game, setGame, isConnected, error, setError
                 Role
               </Button>
 
-              {/* <Button
+              <Button
                 color="inherit"
                 onClick={async () => await post(`/game/remake/${id}`, { name })}
                 sx={{ fontFamily: "inter", fontSize: { xs: "12px" } }}
               >
                 Remake
-              </Button> */}
+              </Button>
               {showGameOverButtons && (
                 <>
                   <Button
@@ -383,7 +383,13 @@ export default function Game({ name, game, setGame, isConnected, error, setError
             />
             {/* hacky, but logChat gets hidden on xs and rendered a few lines down to be below the players */}
             <Box sx={{ display: { xs: "none", sm: "flex", flex: 1 } }}>
-              <LogChat game={game} name={name} boardDimensions={boardDimensions} playersDimensions={playersDimensions} />
+              <LogChat
+                game={game}
+                name={name}
+                boardDimensions={boardDimensions}
+                playersDimensions={playersDimensions}
+                hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess}
+              />
             </Box>
           </Box>
           <Players

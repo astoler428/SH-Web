@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
-import { GameType, Status, colors } from "../consts";
-import { isBlindSetting } from "../helperFunctions";
+import { ENACT_POLICY_DURATION, GAMEOVER_NOT_FROM_POLICY_DELAY, GameType, Status, TOP_DECK_DELAY, colors } from "../consts";
+import { gameEndedWithPolicyEnactment, gameOver, isBlindSetting } from "../helperFunctions";
 
-export default function StatusMessage({ game }) {
+export default function StatusMessage({ game, hitlerFlippedForLibSpyGuess }) {
+  const [showGameOverMessage, setShowGameOverMessage] = useState(false);
   let message;
   const status = game.status;
 
@@ -57,9 +58,20 @@ export default function StatusMessage({ game }) {
     case Status.END_FASC:
     case Status.END_LIB:
       const winners = game.status === Status.END_FASC ? "Fascists" : "Liberals";
-      message = `Game over. ${winners} win!`;
+      message = showGameOverMessage ? `Game over. ${winners} win!` : ``;
       break;
   }
+
+  useEffect(() => {
+    if (gameOver(status)) {
+      const gameOverDelay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess)
+        ? game.topDecked
+          ? ENACT_POLICY_DURATION + TOP_DECK_DELAY
+          : ENACT_POLICY_DURATION
+        : GAMEOVER_NOT_FROM_POLICY_DELAY;
+      setTimeout(() => setShowGameOverMessage(true), 3000);
+    }
+  }, [status]);
 
   return (
     <Box
