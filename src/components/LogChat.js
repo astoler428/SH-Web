@@ -112,6 +112,12 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
   }
 
   function renderDate(date) {
+    const localDate = new Date(date);
+    const addLeadingZero = val => (val < 10 ? `0${val}` : `${val}`);
+    const hours = addLeadingZero(localDate.getHours());
+    const minutes = addLeadingZero(localDate.getMinutes());
+    const seconds = addLeadingZero(localDate.getSeconds());
+
     return (
       <span
         style={{
@@ -123,7 +129,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
           marginRight: "3px",
         }}
       >
-        {date}
+        {`${hours}:${minutes}:${seconds}`}
       </span>
     );
   }
