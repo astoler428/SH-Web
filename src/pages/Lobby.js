@@ -15,7 +15,6 @@ export default function Lobby({ name, game, setGame, isConnected }) {
   const params = useParams();
   const id = params.id;
   const enteringGameRef = useRef(false);
-
   //join game (redundant but just in case someone navigates directly to the url)
   useEffect(() => {
     if (isConnected) {

@@ -11,7 +11,7 @@ export default function Loading() {
         transform: "translate(-50%, -50%)",
       }}
     >
-      <CircularProgress size={100} sx={{ color: "white" }} />
+      <CircularProgress size={100} sx={{ color: "gray" }} />
     </Box>
   );
 }
