@@ -11,6 +11,7 @@ export default function Join({ name, setIsLoading, isConnected, error, setError 
   const [id, setId] = useState("");
 
   async function handleJoin() {
+    //currently removed loading conditional from App.js
     try {
       setIsLoading(true);
       const res = await client.post(`/game/join/${id}`, {
