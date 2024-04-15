@@ -53,15 +53,15 @@ export default function Game({ name, game, setGame, isConnected, error, setError
   const [pauseActions, setPauseActions] = useState(false);
   //redundant join by just in case someone navigates directly or refreshes page
   useEffect(() => {
-    if (isConnected) {
-      joinGame();
-    }
+    joinGame();
+
     async function joinGame() {
       try {
         await client.post(`/game/join/${id}`, { name, socketId: socket.id });
       } catch (err) {
         console.error(err);
         console.error(err?.response?.data?.message);
+        setError(err?.response?.data?.message || `Cannot enter a game ${!isConnected ? `while offline.` : `at this time.`}`);
         navigate("/");
       }
     }

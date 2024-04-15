@@ -17,9 +17,7 @@ export default function Lobby({ name, game, setGame, isConnected, setError }) {
   const enteringGameRef = useRef(false);
   //join game (redundant but just in case someone navigates directly to the url)
   useEffect(() => {
-    if (isConnected) {
-      joinGame();
-    }
+    joinGame();
     async function joinGame() {
       try {
         await client.post(`/game/join/${id}`, { name, socketId: socket.id });
