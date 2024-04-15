@@ -55,7 +55,7 @@ function App() {
         }
       />
       <Route path="/join" element={<Join name={name} setIsLoading={setIsLoading} isConnected={isConnected} error={error} setError={setError} />} />
-      <Route path="/lobby/:id" element={<Lobby name={name} game={game} setGame={setGame} isConnected={isConnected} />} />
+      <Route path="/lobby/:id" element={<Lobby name={name} game={game} setGame={setGame} isConnected={isConnected} setError={setError} />} />
       <Route
         path="/game/:id"
         element={<Game name={name} game={game} setGame={setGame} isConnected={isConnected} error={error} setError={setError} />}

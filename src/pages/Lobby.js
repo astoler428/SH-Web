@@ -10,7 +10,7 @@ import HostGameSettings from "../components/HostGameSettings";
 import NonHostGameSettings from "../components/NonHostGameSettings";
 import Loading from "../components/Loading";
 
-export default function Lobby({ name, game, setGame, isConnected }) {
+export default function Lobby({ name, game, setGame, isConnected, setError }) {
   const navigate = useNavigate();
   const params = useParams();
   const id = params.id;
@@ -26,6 +26,7 @@ export default function Lobby({ name, game, setGame, isConnected }) {
       } catch (err) {
         console.error(err);
         console.error(err?.response?.data?.message);
+        setError(err?.response?.data?.message || `Cannot join a game ${!isConnected ? `while offline.` : `at this time.`}`);
         navigate("/");
       }
     }
