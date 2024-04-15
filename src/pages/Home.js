@@ -11,6 +11,7 @@ export default function Home({ name, setName, isConnected, setIsLoading, error, 
   const [showConnectStatus, setShowConnectionStatus] = useState(false);
 
   async function createGame() {
+    //currently removed loading conditional from App.js
     try {
       setIsLoading(true);
       const res = await client.post("/game", { name, socketId: socket.id });
