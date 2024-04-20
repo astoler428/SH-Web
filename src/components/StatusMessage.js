@@ -58,7 +58,7 @@ export default function StatusMessage({ game, hitlerFlippedForLibSpyGuess }) {
     case Status.END_FASC:
     case Status.END_LIB:
       const winners = game.status === Status.END_FASC ? "Fascists" : "Liberals";
-      message = showGameOverMessage ? `Game over. ${winners} win!` : ``;
+      message = showGameOverMessage ? `Game over. ${winners} win!` : `Game over`;
       break;
   }
 
@@ -69,7 +69,7 @@ export default function StatusMessage({ game, hitlerFlippedForLibSpyGuess }) {
           ? ENACT_POLICY_DURATION + TOP_DECK_DELAY
           : ENACT_POLICY_DURATION
         : GAMEOVER_NOT_FROM_POLICY_DELAY;
-      setTimeout(() => setShowGameOverMessage(true), 3000);
+      setTimeout(() => setShowGameOverMessage(true), gameOverDelay * 1000);
     }
   }, [status]);
 
