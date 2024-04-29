@@ -19,6 +19,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   const [showTop3PoliciesNotClaim, setShowTop3PoliciesNotClaim] = useState(true); //first show policies
   const [keepShowingVoteSelection, setKeepShowingVoteSelection] = useState(true); //when show vote starts - keep showing the players selected vote
   const [currentVote, setCurrentVote] = useState(null);
+  const [awaitingResponse, setAwaitingResponse] = useState(false);
   const isCurrentPres = game.currentPres === name;
   const isCurrentChan = game.currentChan === name;
   const thisPlayer = game.players.find(player => player.name === name);
@@ -218,13 +219,16 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   }, [boardDimensions, playersDimensions]);
 
   useEffect(() => {
+    if (awaitingResponse) {
+      return;
+    }
     if (game.status === Status.VOTE) {
       setActionContent(content);
       setActionTitle(title);
       setOtherContent(fixedOtherContent);
     }
     setCurrentVote(thisPlayer.vote);
-  }, [thisPlayer.vote]); //Otherwise actionContent does not update with the new vote info
+  }, [thisPlayer.vote, awaitingResponse]); //Otherwise actionContent does not update with the new vote info
 
   useEffect(() => {
     if (game.status === Status.VOTE) {
@@ -580,17 +584,25 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   }
 
   async function handleVote(vote) {
-    // if (currentVote === thisPlayer.vote) {
-    //I wonder if this situation can occur - click Ja -> currentVote set to Ja -> backend call -> somehow does
-    //not get processed (still null), but now vote cannot be switched because currentVote !== thisPlayer.vote
-    //need to refresh
-    if (vote === currentVote) {
-      setCurrentVote(null);
-    } else {
-      setCurrentVote(vote);
+    if (currentVote === thisPlayer.vote) {
+      //I wonder if this situation can occur - click Ja -> currentVote set to Ja -> backend call -> somehow does
+      //not get processed (still null), but now vote cannot be switched because currentVote !== thisPlayer.vote
+      //need to refresh
+      if (vote === currentVote) {
+        setCurrentVote(null);
+      } else {
+        setCurrentVote(vote);
+      }
+      try {
+        setAwaitingResponse(true);
+        await post(`/game/vote/${id}`, { name, vote });
+        setAwaitingResponse(false);
+      } catch (err) {
+        setAwaitingResponse(false);
+        console.error(err);
+        console.error(err?.response?.data?.message);
+      }
     }
-    await post(`/game/vote/${id}`, { name, vote });
-    // }
   }
 
   async function handlePresDiscard(e) {
