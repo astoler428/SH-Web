@@ -580,17 +580,17 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   }
 
   async function handleVote(vote) {
-    if (currentVote === thisPlayer.vote) {
-      //I wonder if this situation can occur - click Ja -> currentVote set to Ja -> backend call -> somehow does
-      //not get processed (still null), but now vote cannot be switched because currentVote !== thisPlayer.vote
-      //need to refresh
-      if (vote === currentVote) {
-        setCurrentVote(null);
-      } else {
-        setCurrentVote(vote);
-      }
-      await post(`/game/vote/${id}`, { name, vote });
+    // if (currentVote === thisPlayer.vote) {
+    //I wonder if this situation can occur - click Ja -> currentVote set to Ja -> backend call -> somehow does
+    //not get processed (still null), but now vote cannot be switched because currentVote !== thisPlayer.vote
+    //need to refresh
+    if (vote === currentVote) {
+      setCurrentVote(null);
+    } else {
+      setCurrentVote(vote);
     }
+    await post(`/game/vote/${id}`, { name, vote });
+    // }
   }
 
   async function handlePresDiscard(e) {
