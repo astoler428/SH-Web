@@ -379,37 +379,45 @@ export default function Game({ name, game, setGame, isConnected, error, setError
               display: "flex",
               flexDirection: { xs: "column", sm: "row" },
               maxHeight: { sm: `${boardDimensions.y}px` },
+              flexWrap: "wrap",
             }}
           >
-            <Board
-              boardRef={boardRef}
-              boardImageRefs={boardImageRefs}
-              game={game}
-              name={name}
-              id={id}
-              setError={setError}
-              boardDimensions={boardDimensions}
-              playersDimensions={playersDimensions}
-              pauseActions={pauseActions}
-              setPauseActions={setPauseActions}
-            />
-            {/* hacky, but logChat gets hidden on xs and rendered a few lines down to be below the players */}
-            <Box sx={{ display: { xs: "none", sm: "flex", flex: 1 } }}>{logChatComponentRef}</Box>
+            {/*  */}
+            <Box sx={{ order: { xs: 1 } }}>
+              <Board
+                boardRef={boardRef}
+                boardImageRefs={boardImageRefs}
+                game={game}
+                name={name}
+                id={id}
+                setError={setError}
+                boardDimensions={boardDimensions}
+                playersDimensions={playersDimensions}
+                pauseActions={pauseActions}
+                setPauseActions={setPauseActions}
+              />
+            </Box>
+            <Box sx={{ width: { xs: "100%", sm: "max(calc(100vw - 700px), 50vw)" }, order: { xs: 3, sm: 2 }, marginTop: { xs: "15px", sm: 0 } }}>
+              {logChatComponentRef}
+            </Box>
+            {/* display: { xs: "none", sm: "flex" },  */}
+            <Box sx={{ order: { xs: 2, sm: 3 } }}>
+              <Players
+                name={name}
+                game={game}
+                handleChoosePlayer={handleChoosePlayer}
+                playerImageRefs={playerImageRefs}
+                playersRef={playersRef}
+                playersDimensions={playersDimensions}
+                boardDimensions={boardDimensions}
+                pauseActions={pauseActions}
+                hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess}
+                setHitlerFlippedForLibSpyGuess={setHitlerFlippedForLibSpyGuess}
+                roleOpen={roleOpen}
+              />
+            </Box>
           </Box>
-          <Players
-            name={name}
-            game={game}
-            handleChoosePlayer={handleChoosePlayer}
-            playerImageRefs={playerImageRefs}
-            playersRef={playersRef}
-            playersDimensions={playersDimensions}
-            boardDimensions={boardDimensions}
-            pauseActions={pauseActions}
-            hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess}
-            setHitlerFlippedForLibSpyGuess={setHitlerFlippedForLibSpyGuess}
-            roleOpen={roleOpen}
-          />
-          <Box sx={{ display: { xs: "flex", sm: "none" }, marginTop: "15px" }}>{logChatComponentRef}</Box>
+          {/* <Box sx={{ display: { xs: "flex", sm: "none" }, marginTop: "15px" }}>{logChatComponentRef}</Box> */}
           {/* Snackbar is used in mixed role to let know if you can't discard */}
           <SnackBarError error={error} setError={setError} />{" "}
           <ConfirmFascDialog confirmFascOpen={confirmFascOpen} setConfirmFascOpen={setConfirmFascOpen} handleConfirmFasc={handleConfirmFasc} />

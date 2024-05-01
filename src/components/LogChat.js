@@ -487,7 +487,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
           display: "flex",
           flex: { sm: 1 },
           justifyContent: "center",
-          width: { xs: "100vw", sm: "50vw" },
+          // width: { xs: "100vw", sm: "50vw" },
           height: {
             xs: `calc(100vh - 30px - ${boardDimensions.y}px - ${playersDimensions.y}px - 15px - 5px)`,
             sm: `${boardDimensions.y}px`,
