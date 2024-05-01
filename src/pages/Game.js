@@ -245,6 +245,16 @@ export default function Game({ name, game, setGame, isConnected, error, setError
     }
   }, [game?.status]);
 
+  const logChatComponent = (
+    <LogChat
+      game={game}
+      name={name}
+      boardDimensions={boardDimensions}
+      playersDimensions={playersDimensions}
+      hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess}
+    />
+  );
+
   return (
     <>
       {game && game.status !== Status.CREATED ? (
@@ -277,6 +287,8 @@ export default function Game({ name, game, setGame, isConnected, error, setError
               display: "flex",
               position: "absolute",
               justifyContent: "center",
+              color: colors.hidden,
+              bgcolor: "#404040",
               height: { xs: "30px", md: "56px" },
             }}
           >
@@ -382,15 +394,7 @@ export default function Game({ name, game, setGame, isConnected, error, setError
               setPauseActions={setPauseActions}
             />
             {/* hacky, but logChat gets hidden on xs and rendered a few lines down to be below the players */}
-            <Box sx={{ display: { xs: "none", sm: "flex", flex: 1 } }}>
-              <LogChat
-                game={game}
-                name={name}
-                boardDimensions={boardDimensions}
-                playersDimensions={playersDimensions}
-                hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess}
-              />
-            </Box>
+            <Box sx={{ display: { xs: "none", sm: "flex", flex: 1 } }}>{logChatComponent}</Box>
           </Box>
           <Players
             name={name}
@@ -405,9 +409,7 @@ export default function Game({ name, game, setGame, isConnected, error, setError
             setHitlerFlippedForLibSpyGuess={setHitlerFlippedForLibSpyGuess}
             roleOpen={roleOpen}
           />
-          <Box sx={{ display: { xs: "flex", sm: "none" }, marginTop: "15px" }}>
-            <LogChat game={game} name={name} boardDimensions={boardDimensions} playersDimensions={playersDimensions} />
-          </Box>
+          <Box sx={{ display: { xs: "flex", sm: "none" }, marginTop: "15px" }}>{logChatComponent}</Box>
           {/* Snackbar is used in mixed role to let know if you can't discard */}
           <SnackBarError error={error} setError={setError} />{" "}
           <ConfirmFascDialog confirmFascOpen={confirmFascOpen} setConfirmFascOpen={setConfirmFascOpen} handleConfirmFasc={handleConfirmFasc} />

@@ -83,6 +83,7 @@ export default function StatusMessage({ game, hitlerFlippedForLibSpyGuess }) {
         // marginTop: "2px",
         display: "flex",
         alignItems: "center",
+        boxSizing: "border-box",
       }}
     >
       <Typography
