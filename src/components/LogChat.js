@@ -540,9 +540,9 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
                 alignItems: "center",
               }}
             >
-              <TextField
+              <input
                 className="chat-input"
-                inputRef={messageInputRef}
+                ref={messageInputRef}
                 disabled={disabled}
                 value={disabled ? "" : message}
                 onBlur={() => window.dispatchEvent(new Event("resize"))}
