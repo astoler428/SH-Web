@@ -288,7 +288,7 @@ export default function Game({ name, game, setGame, isConnected, error, setError
               position: "absolute",
               justifyContent: "center",
               color: colors.hidden,
-              bgcolor: "#404040",
+              bgcolor: "#525252",
               height: { xs: "30px", md: "56px" },
             }}
           >
