@@ -12,9 +12,26 @@ img {
 .chat-input::placeholder {
   color: #e5e5e5;
 }
-.chat-input {
-  outline: 2px solid #737373;
+
+@media (width >= 600px) {
+  .chat-input {
+    padding-left: 12px;
+  }
+  .chat-input {
+    outline: 2px solid #737373;
+  }
+  .chat-input:focus {
+    outline: 2px solid #2563eb;
+  }
 }
-.chat-input:focus {
-  outline: 2px solid #1d4ed8;
+@media (width < 600px) {
+  .chat-input {
+    padding-left: 8px;
+  }
+  .chat-input {
+    outline: 1px solid #737373;
+  }
+  .chat-input:focus {
+    outline: 1px solid #2563eb;
+  }
 }

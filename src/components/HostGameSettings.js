@@ -38,7 +38,7 @@ export default function HostGameSettings({ game, handleSettingsChange }) {
           label="Start with red down"
         />
         <FormControlLabel
-          disabled={isBlindSetting(game.settings.type)}
+          // disabled={isBlindSetting(game.settings.type)}
           control={<Checkbox checked={game.settings?.hitlerKnowsFasc} onChange={() => handleSettingsChange(GameSettings.HITLERKNOWSFASC)} />}
           label="Hitler knows fascists in 7+"
         />

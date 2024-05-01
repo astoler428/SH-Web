@@ -380,6 +380,7 @@ export default function Players({
               flexDirection: "column",
               position: "relative",
               backgroundColor: "#404040",
+              boxShadow: "none",
             }}
           >
             <style>{flipAndDownkeyFrameStyles}</style>

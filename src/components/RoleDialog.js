@@ -68,7 +68,7 @@ export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, se
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogContent sx={{ display: "flex", justifyContent: "center", alignItems: "center", bgcolor: "#d4d4d4" }}>
+      <DialogContent sx={{ display: "flex", justifyContent: "center", alignItems: "center", bgcolor: "#a3a3a3" }}>
         {game.settings.type === GameType.MIXED_ROLES && (
           <Box sx={{ width: { xs: 140, sm: 200 }, maxWidth: { xs: `calc(100vh/3)` }, marginRight: { xs: 2, sm: 4 } }}>
             <img src={teamImg} draggable="false" style={{ width: "100%" }} />
@@ -101,7 +101,7 @@ export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, se
         </Box>
       </DialogContent>
       {game.settings.type === GameType.BLIND && !thisPlayer.confirmedFasc && !gameOver(game.status) && (
-        <DialogActions sx={{ display: "flex", justifyContent: "center", bgcolor: "#d4d4d4" }}>
+        <DialogActions sx={{ display: "flex", justifyContent: "center", bgcolor: "#a3a3a3" }}>
           <Button
             disabled={disableConfirmFasc}
             onClick={() => setConfirmFascOpen(true)}

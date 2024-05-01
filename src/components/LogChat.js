@@ -507,7 +507,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
           sx={{
             width: "100%",
             border: "1px solid black",
-            fontSize: { xs: "12px", md: "16px" },
+            fontSize: { xs: "12px", sm: "14px", md: "16px" },
             flex: 1,
             borderRadius: "0",
             overflow: "auto",
@@ -536,7 +536,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
                 bottom: 3,
                 display: "flex",
                 width: "100%",
-                height: "40px",
+                height: { xs: "26px", sm: "32px", md: "40px" },
                 alignItems: "center",
               }}
             >
@@ -565,13 +565,13 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
                   boxSizing: "content-box",
                   height: "100%",
                   borderRadius: "4px",
-                  paddingLeft: "12px",
+                  // paddingLeft: "12px",
                   // margin: "0 0 0 1px",
                   marginRight: "3px",
                   marginLeft: "1px",
                   border: "none",
                   fontFamily: "inter",
-                  fontSize: "15px",
+                  fontSize: ".94em", //"15px",
                   backgroundColor: "#0a0a0a",
                   color: "#e5e5e5",
                   boxSizing: "border-box",

@@ -245,7 +245,7 @@ export default function Game({ name, game, setGame, isConnected, error, setError
     }
   }, [game?.status]);
 
-  const logChatComponent = (
+  const logChatComponentRef = (
     <LogChat
       game={game}
       name={name}
@@ -394,7 +394,7 @@ export default function Game({ name, game, setGame, isConnected, error, setError
               setPauseActions={setPauseActions}
             />
             {/* hacky, but logChat gets hidden on xs and rendered a few lines down to be below the players */}
-            <Box sx={{ display: { xs: "none", sm: "flex", flex: 1 } }}>{logChatComponent}</Box>
+            <Box sx={{ display: { xs: "none", sm: "flex", flex: 1 } }}>{logChatComponentRef}</Box>
           </Box>
           <Players
             name={name}
@@ -409,7 +409,7 @@ export default function Game({ name, game, setGame, isConnected, error, setError
             setHitlerFlippedForLibSpyGuess={setHitlerFlippedForLibSpyGuess}
             roleOpen={roleOpen}
           />
-          <Box sx={{ display: { xs: "flex", sm: "none" }, marginTop: "15px" }}>{logChatComponent}</Box>
+          <Box sx={{ display: { xs: "flex", sm: "none" }, marginTop: "15px" }}>{logChatComponentRef}</Box>
           {/* Snackbar is used in mixed role to let know if you can't discard */}
           <SnackBarError error={error} setError={setError} />{" "}
           <ConfirmFascDialog confirmFascOpen={confirmFascOpen} setConfirmFascOpen={setConfirmFascOpen} handleConfirmFasc={handleConfirmFasc} />

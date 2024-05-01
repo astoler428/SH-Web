@@ -2,7 +2,7 @@ import React from "react";
 import { Typography, Card, List, ListItem } from "@mui/material";
 import Loading from "./Loading";
 
-export default function NonHostGameSettings({ game }) {
+export default function NonHostGameSettings({ game, inGameSettingsDialog = false }) {
   const styles = { fontSize: 16, fontWeight: "normal", fontFamily: "inter" };
 
   return game ? (
@@ -20,7 +20,7 @@ export default function NonHostGameSettings({ game }) {
         </ListItem>
         <ListItem>
           <Typography variant="h7">
-            Hitler knows Fascists in 7+: <span style={styles}>{game.settings.hitlerKnowsFasc ? "Yes" : "No"}</span>
+            Hitler knows Fascists {inGameSettingsDialog ? `` : `in 7+`}: <span style={styles}>{game.settings.hitlerKnowsFasc ? "Yes" : "No"}</span>
           </Typography>
         </ListItem>
         <ListItem>
