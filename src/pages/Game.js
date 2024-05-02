@@ -255,6 +255,8 @@ export default function Game({ name, game, setGame, isConnected, error, setError
     />
   );
 
+  console.log(boardDimensions.y + playersDimensions.y + 30 + 6);
+
   return (
     <>
       {game && game.status !== Status.CREATED ? (
@@ -397,7 +399,15 @@ export default function Game({ name, game, setGame, isConnected, error, setError
                 setPauseActions={setPauseActions}
               />
             </Box>
-            <Box sx={{ width: { xs: "100%", sm: "max(calc(100vw - 700px), 50vw)" }, order: { xs: 3, sm: 2 }, marginTop: { xs: "15px", sm: 0 } }}>
+            <Box
+              sx={{
+                width: { xs: "100%", sm: "max(calc(100vw - 700px), 50vw)" },
+                order: { xs: 3, sm: 2 },
+                // marginTop: { xs: "5px", sm: 0 },
+                // height: `calc(100vh - 30px - ${boardDimensions.y}px - ${playersDimensions.y}px )`,
+                // border: "2px solid green",
+              }}
+            >
               {logChatComponentRef}
             </Box>
             {/* display: { xs: "none", sm: "flex" },  */}

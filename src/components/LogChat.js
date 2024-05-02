@@ -488,8 +488,10 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
           flex: { sm: 1 },
           justifyContent: "center",
           // width: { xs: "100vw", sm: "50vw" },
+          // border: "2px solid red",
+
           height: {
-            xs: `calc(100vh - 30px - ${boardDimensions.y}px - ${playersDimensions.y}px - 15px - 5px)`,
+            xs: `calc(100vh - 30px - ${boardDimensions.y}px - ${playersDimensions.y}px )`,
             sm: `${boardDimensions.y}px`,
           },
           minHeight: { xs: "210px" },
@@ -505,9 +507,10 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
           ref={paperRef}
           elevation={0}
           sx={{
-            width: "100%",
+            // width: "100%",
             border: "1px solid black",
             fontSize: { xs: "12px", sm: "14px", md: "16px" },
+            marginBottom: { xs: "36px", sm: "36px", md: "40px" },
             flex: 1,
             borderRadius: "0",
             overflow: "auto",
@@ -522,7 +525,8 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
           <ListItem sx={{ height: "0", padding: "0", margin: "0", boxSizing: "border-box" }} ref={scrollRef}></ListItem>
         </Paper>
 
-        <form sx={{ height: 0, position: "absolute", bottom: -1, boxSizing: "border-box" }}>
+        <form style={{}}>
+          {/* height: 0, position: "absolute", bottom: -1, boxSizing: "border-box" */}
           {/* <button
               style={{
                 visibility: "hidden",
@@ -536,9 +540,10 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
             ></button> */}
           <Box
             sx={{
-              // position: "absolute",
-              // bottom: 3,
+              position: "absolute",
+              bottom: "10px",
               display: "flex",
+              marginLeft: "1px",
               width: "100%",
               height: { xs: "32px", sm: "32px", md: "36px" },
               alignItems: "center",
@@ -562,18 +567,15 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
               }
               onChange={e => setMessage(e.target.value)}
               style={{
-                // width: "100%",
-                // position: "absolute",
-                // bottom: 0,
+                width: "100%",
                 flex: 1,
-                boxSizing: "content-box",
                 height: "100%",
                 borderRadius: "4px",
                 // paddingLeft: "12px",
                 // margin: "0 0 0 1px",
-                marginRight: "3px",
+                marginRight: "2.5px",
                 marginLeft: "1px",
-                marginTop: "2px",
+                marginTop: "15px",
                 border: "none",
                 fontFamily: "inter",
                 fontSize: ".9em", //"15px",
