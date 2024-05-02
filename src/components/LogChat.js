@@ -570,7 +570,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
                 width: "100%",
                 flex: 1,
                 height: "100%",
-                borderRadius: "4px",
+                borderRadius: "3px 3px 4px 4px",
                 // paddingLeft: "12px",
                 // margin: "0 0 0 1px",
                 marginRight: "2.5px",
