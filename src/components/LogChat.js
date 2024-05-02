@@ -512,14 +512,18 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
             borderRadius: "0",
             overflow: "auto",
             bgcolor: "#0a0a0a", //</Box>colors.hidden,
-            paddingBottom: "46px",
+            paddingBottom: "4px",
             boxSizing: "border-box",
+            scrollbarColor: "#525252 #a3a3a3",
+            scrollbarWidth: { xs: "thin", sm: "thin", md: "auto" },
           }}
         >
           {log}
           <ListItem sx={{ height: "0", padding: "0", margin: "0", boxSizing: "border-box" }} ref={scrollRef}></ListItem>
-          <form sx={{ height: 0, position: "absolute", bottom: -1, boxSizing: "border-box" }}>
-            {/* <button
+        </Paper>
+
+        <form sx={{ height: 0, position: "absolute", bottom: -1, boxSizing: "border-box" }}>
+          {/* <button
               style={{
                 visibility: "hidden",
                 width: "0px",
@@ -530,82 +534,83 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
               type="submit"
               onClick={sendMessage}
             ></button> */}
-            <Box
+          <Box
+            sx={{
+              // position: "absolute",
+              // bottom: 3,
+              display: "flex",
+              width: "100%",
+              height: { xs: "32px", sm: "32px", md: "36px" },
+              alignItems: "center",
+            }}
+          >
+            <input
+              className="chat-input"
+              ref={messageInputRef}
+              disabled={disabled}
+              value={disabled ? "" : message}
+              onBlur={() => window.dispatchEvent(new Event("resize"))}
+              autoComplete="off"
+              placeholder={
+                !disabled
+                  ? "Send a message"
+                  : !thisPlayer.alive
+                  ? "Dead cannnot speak"
+                  : game.status === Status.LIB_SPY_GUESS
+                  ? "Chat disabled during guess"
+                  : "Chat disabled during government"
+              }
+              onChange={e => setMessage(e.target.value)}
+              style={{
+                // width: "100%",
+                // position: "absolute",
+                // bottom: 0,
+                flex: 1,
+                boxSizing: "content-box",
+                height: "100%",
+                borderRadius: "4px",
+                // paddingLeft: "12px",
+                // margin: "0 0 0 1px",
+                marginRight: "3px",
+                marginLeft: "1px",
+                marginTop: "2px",
+                border: "none",
+                fontFamily: "inter",
+                fontSize: ".9em", //"15px",
+                backgroundColor: "#0a0a0a",
+                color: "#e5e5e5",
+                boxSizing: "border-box",
+              }}
+            />
+            <Button
               sx={{
+                margin: "0 5px 0 6px",
+                height: "100%",
+                backgroundColor: disabled ? "#737373" : "#1d4ed8",
+                outline: `2px solid ${disabled ? "#737373" : "#1d4ed8"}`,
+                color: colors.hidden,
+                padding: "0px",
+                borderRadius: "4px",
+                //comment out styles below to use the button
+                visibility: "hidden",
+                width: "0px",
+                height: "0px",
                 position: "absolute",
-                bottom: 3,
-                display: "flex",
-                width: "100%",
-                height: { xs: "26px", sm: "32px", md: "40px" },
-                alignItems: "center",
+                bottom: 0,
+              }}
+              variant="contained"
+              disabled={disabled}
+              type="submit"
+              onClick={e => {
+                sendMessage(e);
+                messageInputRef.current.focus();
               }}
             >
-              <input
-                className="chat-input"
-                ref={messageInputRef}
-                disabled={disabled}
-                value={disabled ? "" : message}
-                onBlur={() => window.dispatchEvent(new Event("resize"))}
-                autoComplete="off"
-                placeholder={
-                  !disabled
-                    ? "Send a message"
-                    : !thisPlayer.alive
-                    ? "Dead cannnot speak"
-                    : game.status === Status.LIB_SPY_GUESS
-                    ? "Chat disabled during guess"
-                    : "Chat disabled during government"
-                }
-                onChange={e => setMessage(e.target.value)}
-                style={{
-                  // width: "100%",
-                  // position: "absolute",
-                  // bottom: 0,
-                  flex: 1,
-                  boxSizing: "content-box",
-                  height: "100%",
-                  borderRadius: "4px",
-                  // paddingLeft: "12px",
-                  // margin: "0 0 0 1px",
-                  marginRight: "3px",
-                  marginLeft: "1px",
-                  border: "none",
-                  fontFamily: "inter",
-                  fontSize: ".94em", //"15px",
-                  backgroundColor: "#0a0a0a",
-                  color: "#e5e5e5",
-                  boxSizing: "border-box",
-                }}
-              />
-              <Button
-                sx={{
-                  margin: "0 5px 0 6px",
-                  height: "100%",
-                  backgroundColor: disabled ? "#737373" : "#1d4ed8",
-                  outline: `2px solid ${disabled ? "#737373" : "#1d4ed8"}`,
-                  color: colors.hidden,
-                  padding: "0px",
-                  borderRadius: "4px",
-                  //comment out styles below to use the button
-                  visibility: "hidden",
-                  width: "0px",
-                  height: "0px",
-                  position: "absolute",
-                  bottom: 0,
-                }}
-                variant="contained"
-                disabled={disabled}
-                type="submit"
-                onClick={e => {
-                  sendMessage(e);
-                  messageInputRef.current.focus();
-                }}
-              >
-                Chat
-              </Button>
-            </Box>
+              Chat
+            </Button>
+          </Box>
 
-            {/* <TextField
+          {/* <TextField
               inputRef={messageInputRef}
               disabled={disabled}
               value={disabled ? "" : message}
@@ -638,8 +643,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
               }}
               onChange={e => setMessage(e.target.value)}
             /> */}
-          </form>
-        </Paper>
+        </form>
       </Box>
     </>
   );
