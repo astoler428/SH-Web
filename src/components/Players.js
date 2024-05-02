@@ -663,7 +663,8 @@ export default function Players({
         minWidth: { sm: `calc(60px * ${n})`, md: `calc(90px * ${n})` },
         maxWidth: { sm: `min(calc(100vw - 10px), calc(140px * ${n}))` },
         display: "flex",
-        padding: { xs: "1px 5px 7px 5px", sm: "1px 0 0 0" },
+        padding: { xs: "1px 5px 7px 5px", sm: "1px 5px 0 5px" },
+        // border: "2px solid red",
       }}
     >
       <Grid container spacing={{ xs: 0.5, sm: 1 }}>

@@ -411,7 +411,13 @@ export default function Game({ name, game, setGame, isConnected, error, setError
               {logChatComponentRef}
             </Box>
             {/* display: { xs: "none", sm: "flex" },  */}
-            <Box sx={{ position: { xs: "static", sm: "absolute" }, top: boardDimensions.y + 56, order: { xs: 2, sm: 3 } }}>
+            <Box
+              sx={{
+                position: { xs: "static", sm: "absolute" },
+                top: { sm: boardDimensions.y + 30, md: boardDimensions.y + 56 },
+                order: { xs: 2, sm: 3 },
+              }}
+            >
               <Players
                 name={name}
                 game={game}
