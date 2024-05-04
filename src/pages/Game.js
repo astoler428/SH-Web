@@ -245,18 +245,6 @@ export default function Game({ name, game, setGame, isConnected, error, setError
     }
   }, [game?.status]);
 
-  const logChatComponentRef = (
-    <LogChat
-      game={game}
-      name={name}
-      boardDimensions={boardDimensions}
-      playersDimensions={playersDimensions}
-      hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess}
-    />
-  );
-
-  console.log(boardDimensions.y + playersDimensions.y + 30 + 6);
-
   return (
     <>
       {game && game.status !== Status.CREATED ? (
@@ -291,6 +279,7 @@ export default function Game({ name, game, setGame, isConnected, error, setError
               justifyContent: "center",
               color: colors.hidden,
               bgcolor: "#525252",
+              width: "100%",
               height: { xs: "30px", md: "56px" },
             }}
           >
@@ -408,7 +397,13 @@ export default function Game({ name, game, setGame, isConnected, error, setError
                 // border: "2px solid green",
               }}
             >
-              {logChatComponentRef}
+              <LogChat
+                game={game}
+                name={name}
+                boardDimensions={boardDimensions}
+                playersDimensions={playersDimensions}
+                hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess}
+              />
             </Box>
             {/* display: { xs: "none", sm: "flex" },  */}
             <Box

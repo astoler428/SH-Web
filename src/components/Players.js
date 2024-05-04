@@ -603,7 +603,6 @@ export default function Players({
         if (shownFascState[idx] && player.role === Role.HITLER && !player.confirmedFasc) {
           return;
         }
-        console.log("here");
         let timeoutId;
         clearTimeout(timeoutIds[idx]);
         setTimeout(() => {
