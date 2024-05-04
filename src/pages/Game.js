@@ -189,7 +189,7 @@ export default function Game({ name, game, setGame, isConnected, error, setError
     } else if (game?.status === Status.INV_CLAIM) {
       pauseActions(1000 * INV_DURATION + 500); //3500
     } else if (game?.status === Status.CHOOSE_CHAN && game.topDecked) {
-      pauseActions((1000 * ENACT_POLICY_DURATION * 2) / 3); //4000
+      pauseActions((1000 * (ENACT_POLICY_DURATION + TOP_DECK_DELAY) * 2) / 3); //4000
     } else {
       pauseActions(700); // time for fade out content and uncenter
     }

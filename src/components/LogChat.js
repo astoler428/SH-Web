@@ -582,6 +582,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
                 backgroundColor: "#0a0a0a",
                 color: "#e5e5e5",
                 boxSizing: "border-box",
+                opacity: disabled ? 0.4 : 1,
               }}
             />
             <Button
