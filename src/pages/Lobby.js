@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
-import { UPDATE, Status, GameSettings } from "../consts";
+import { UPDATE, Status, GameSettings, GameType } from "../consts";
 import { socket } from "../socket";
 import { useNavigate } from "react-router-dom";
 import client, { post } from "../api/api";
@@ -15,6 +15,8 @@ export default function Lobby({ name, game, setGame, isConnected, setError }) {
   const params = useParams();
   const id = params.id;
   const enteringGameRef = useRef(false);
+  const initialSettings = game?.settings || { type: GameType.BLIND, redDown: false, hitlerKnowsFasc: false, simpleBlind: false };
+  const [currentSettings, setCurrentSettings] = useState(initialSettings);
   //join game (redundant but just in case someone navigates directly to the url)
   useEffect(() => {
     joinGame();
@@ -73,11 +75,18 @@ export default function Lobby({ name, game, setGame, isConnected, setError }) {
   async function handleSettingsChange(propName, propValue) {
     if (game.host === name) {
       propValue = propName === GameSettings.TYPE ? propValue : !game.settings[propName];
+      setCurrentSettings(prevSettings => ({ ...prevSettings, [propName]: propValue }));
       await post(`/game/settings/${id}`, {
         gameSettings: { ...game.settings, [propName]: propValue },
       });
     }
   }
+
+  useEffect(() => {
+    if (game?.settings) {
+      setCurrentSettings(game?.settings);
+    }
+  }, [game?.settings]);
 
   const players = game?.players?.map((player, idx) => (
     <Typography
@@ -121,7 +130,11 @@ export default function Lobby({ name, game, setGame, isConnected, setError }) {
             gap: { xs: 1.5, sm: 4 },
           }}
         >
-          {game?.host === name ? <HostGameSettings game={game} handleSettingsChange={handleSettingsChange} /> : <NonHostGameSettings game={game} />}
+          {game?.host === name ? (
+            <HostGameSettings game={game} handleSettingsChange={handleSettingsChange} currentSettings={currentSettings} />
+          ) : (
+            <NonHostGameSettings game={game} />
+          )}
           {/* <GameSettingsComponent game={game} name={name} handleSettingsChange={handleSettingsChange} /> */}
           <Box>
             <Typography

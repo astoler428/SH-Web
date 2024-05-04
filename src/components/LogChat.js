@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Box, Paper, TextField, Typography, ListItem } from "@mui/material";
+import { Box, Paper, TextField, Typography, ListItem, Button } from "@mui/material";
 import { Team, Status, LogType, Role, Policy, GameType, colors } from "../consts";
 import { inGov, gameOver, isBlindSetting } from "../helperFunctions";
 import { socket } from "../socket";
@@ -111,7 +111,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
     );
   }
 
-  function renderDate(date) {
+  function renderDate(date, fontSize) {
     const localDate = new Date(date);
     const addLeadingZero = val => (val < 10 ? `0${val}` : `${val}`);
     const hours = addLeadingZero(localDate.getHours());
@@ -122,7 +122,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
       <span
         style={{
           display: "inline-block",
-          fontSize: ".65em",
+          fontSize, //: ".65em", but parent is 1em vs .93em so now passing in em to account for difference
           fontFamily: "roboto",
           color: "#a7a7a8",
           fontWeight: 700,
@@ -167,11 +167,11 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
               marginLeft: "0px",
               fontFamily: "inter",
               fontWeight: 800,
-              color: "black",
+              color: "#e5e5e5",
               fontSize: "1em",
             }}
           >
-            {dateStr}
+            {renderDate(entry.date, ".65em")}
             {renderName(entry.name)}
             <span style={{ fontWeight: 500, fontSize: "1em" }}>:</span> {entry.message}
           </Typography>
@@ -258,7 +258,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
         const seatNum = game.players.indexOf(thisPlayer) + 1;
         logEntry = (
           <span>
-            You receive {rolePhrase} role and take seat <span style={{ color: "black", fontWeight: 700 }}>#{seatNum}</span>.
+            You receive {rolePhrase} role and take seat <span style={{ color: "#e5e5e5", fontWeight: 700 }}>#{seatNum}</span>.
           </span>
         );
         break;
@@ -454,6 +454,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
         break;
     }
 
+    //.6989em = 1/.93 * .65em
     return (
       <ListItem key={i} sx={{ margin: "0", padding: "0", paddingLeft: "5px" }}>
         <Typography
@@ -465,7 +466,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
             fontSize: ".93em",
           }}
         >
-          {dateStr}
+          {renderDate(entry.date, ".6989em")}
           {logEntry}
         </Typography>
       </ListItem>
@@ -486,9 +487,11 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
           display: "flex",
           flex: { sm: 1 },
           justifyContent: "center",
-          width: { xs: "100vw", sm: "50vw" },
+          // width: { xs: "100vw", sm: "50vw" },
+          // border: "2px solid red",
+
           height: {
-            xs: `calc(100vh - 30px - ${boardDimensions.y}px - ${playersDimensions.y}px - 15px - 5px)`,
+            xs: `calc(100vh - 30px - ${boardDimensions.y}px - ${playersDimensions.y}px )`,
             sm: `${boardDimensions.y}px`,
           },
           minHeight: { xs: "210px" },
@@ -496,6 +499,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
           flexDirection: "column",
           margin: 0,
           padding: 0,
+          boxSizing: "border-box",
         }}
       >
         <StatusMessage game={game} hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess} />
@@ -503,20 +507,27 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
           ref={paperRef}
           elevation={0}
           sx={{
-            width: "100%",
+            // width: "100%",
             border: "1px solid black",
-            fontSize: { xs: "12px", md: "16px" },
+            fontSize: { xs: "12px", sm: "14px", md: "16px" },
+            marginBottom: { xs: "36px", sm: "36px", md: "40px" },
             flex: 1,
             borderRadius: "0",
             overflow: "auto",
-            bgcolor: colors.hidden,
-            paddingBottom: "45px",
+            bgcolor: "#0a0a0a", //</Box>colors.hidden,
+            paddingBottom: "4px",
+            boxSizing: "border-box",
+            scrollbarColor: "#525252 #a3a3a3",
+            scrollbarWidth: { xs: "thin", sm: "thin", md: "auto" },
           }}
         >
           {log}
-          <ListItem sx={{ height: "0", padding: "0", margin: "0" }} ref={scrollRef}></ListItem>
-          <form sx={{ height: 0, position: "absolute", bottom: -1 }}>
-            <button
+          <ListItem sx={{ height: "0", padding: "0", margin: "0", boxSizing: "border-box" }} ref={scrollRef}></ListItem>
+        </Paper>
+
+        <form style={{}}>
+          {/* height: 0, position: "absolute", bottom: -1, boxSizing: "border-box" */}
+          {/* <button
               style={{
                 visibility: "hidden",
                 width: "0px",
@@ -526,8 +537,82 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
               }}
               type="submit"
               onClick={sendMessage}
-            ></button>
-            <TextField
+            ></button> */}
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: "10px",
+              display: "flex",
+              marginLeft: "1px",
+              width: "100%",
+              height: { xs: "32px", sm: "32px", md: "36px" },
+              alignItems: "center",
+            }}
+          >
+            <input
+              className="chat-input"
+              ref={messageInputRef}
+              disabled={disabled}
+              value={disabled ? "" : message}
+              onBlur={() => window.dispatchEvent(new Event("resize"))}
+              autoComplete="off"
+              placeholder={
+                !disabled
+                  ? "Send a message"
+                  : !thisPlayer.alive
+                  ? "Dead cannnot speak"
+                  : game.status === Status.LIB_SPY_GUESS
+                  ? "Chat disabled during guess"
+                  : "Chat disabled during government"
+              }
+              onChange={e => setMessage(e.target.value)}
+              style={{
+                width: "100%",
+                flex: 1,
+                height: "100%",
+                borderRadius: "3px 3px 4px 4px",
+                // paddingLeft: "12px",
+                // margin: "0 0 0 1px",
+                marginRight: "2.5px",
+                marginLeft: "1px",
+                marginTop: "15px",
+                border: "none",
+                fontFamily: "inter",
+                fontSize: ".9em", //"15px",
+                backgroundColor: "#0a0a0a",
+                color: "#e5e5e5",
+                boxSizing: "border-box",
+              }}
+            />
+            <Button
+              sx={{
+                margin: "0 5px 0 6px",
+                height: "100%",
+                backgroundColor: disabled ? "#737373" : "#1d4ed8",
+                outline: `2px solid ${disabled ? "#737373" : "#1d4ed8"}`,
+                color: colors.hidden,
+                padding: "0px",
+                borderRadius: "4px",
+                //comment out styles below to use the button
+                visibility: "hidden",
+                width: "0px",
+                height: "0px",
+                position: "absolute",
+                bottom: 0,
+              }}
+              variant="contained"
+              disabled={disabled}
+              type="submit"
+              onClick={e => {
+                sendMessage(e);
+                messageInputRef.current.focus();
+              }}
+            >
+              Chat
+            </Button>
+          </Box>
+
+          {/* <TextField
               inputRef={messageInputRef}
               disabled={disabled}
               value={disabled ? "" : message}
@@ -544,6 +629,14 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
                   : "Chat disabled during government"
               }
               sx={{
+                //consider changing to custom textfield - see all styles in dev tools
+                // "& .MuiOutlinedInput-root": {
+                //   "&.Mui-focused fieldset": {
+                //     borderColor: "red",
+                //   },
+                // },
+                //not exactly right - need to also handle without focus and on hover
+                // input: { color: "red" },
                 width: "100%",
                 borderRadius: "3px",
                 bgcolor: "#e5e5e5",
@@ -551,9 +644,8 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
                 bottom: 0,
               }}
               onChange={e => setMessage(e.target.value)}
-            />
-          </form>
-        </Paper>
+            /> */}
+        </form>
       </Box>
     </>
   );

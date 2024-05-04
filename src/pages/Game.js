@@ -277,6 +277,9 @@ export default function Game({ name, game, setGame, isConnected, error, setError
               display: "flex",
               position: "absolute",
               justifyContent: "center",
+              color: colors.hidden,
+              bgcolor: "#525252",
+              width: "100%",
               height: { xs: "30px", md: "56px" },
             }}
           >
@@ -367,22 +370,33 @@ export default function Game({ name, game, setGame, isConnected, error, setError
               display: "flex",
               flexDirection: { xs: "column", sm: "row" },
               maxHeight: { sm: `${boardDimensions.y}px` },
+              // flexWrap: "wrap",
             }}
           >
-            <Board
-              boardRef={boardRef}
-              boardImageRefs={boardImageRefs}
-              game={game}
-              name={name}
-              id={id}
-              setError={setError}
-              boardDimensions={boardDimensions}
-              playersDimensions={playersDimensions}
-              pauseActions={pauseActions}
-              setPauseActions={setPauseActions}
-            />
-            {/* hacky, but logChat gets hidden on xs and rendered a few lines down to be below the players */}
-            <Box sx={{ display: { xs: "none", sm: "flex", flex: 1 } }}>
+            {/*  */}
+            <Box sx={{ order: { xs: 1 } }}>
+              <Board
+                boardRef={boardRef}
+                boardImageRefs={boardImageRefs}
+                game={game}
+                name={name}
+                id={id}
+                setError={setError}
+                boardDimensions={boardDimensions}
+                playersDimensions={playersDimensions}
+                pauseActions={pauseActions}
+                setPauseActions={setPauseActions}
+              />
+            </Box>
+            <Box
+              sx={{
+                width: { xs: "100%", sm: "max(calc(100vw - 700px), 50vw)" },
+                order: { xs: 3, sm: 2 },
+                // marginTop: { xs: "5px", sm: 0 },
+                // height: `calc(100vh - 30px - ${boardDimensions.y}px - ${playersDimensions.y}px )`,
+                // border: "2px solid green",
+              }}
+            >
               <LogChat
                 game={game}
                 name={name}
@@ -391,23 +405,30 @@ export default function Game({ name, game, setGame, isConnected, error, setError
                 hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess}
               />
             </Box>
+            {/* display: { xs: "none", sm: "flex" },  */}
+            <Box
+              sx={{
+                position: { xs: "static", sm: "absolute" },
+                top: { sm: boardDimensions.y + 30, md: boardDimensions.y + 56 },
+                order: { xs: 2, sm: 3 },
+              }}
+            >
+              <Players
+                name={name}
+                game={game}
+                handleChoosePlayer={handleChoosePlayer}
+                playerImageRefs={playerImageRefs}
+                playersRef={playersRef}
+                playersDimensions={playersDimensions}
+                boardDimensions={boardDimensions}
+                pauseActions={pauseActions}
+                hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess}
+                setHitlerFlippedForLibSpyGuess={setHitlerFlippedForLibSpyGuess}
+                roleOpen={roleOpen}
+              />
+            </Box>
           </Box>
-          <Players
-            name={name}
-            game={game}
-            handleChoosePlayer={handleChoosePlayer}
-            playerImageRefs={playerImageRefs}
-            playersRef={playersRef}
-            playersDimensions={playersDimensions}
-            boardDimensions={boardDimensions}
-            pauseActions={pauseActions}
-            hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess}
-            setHitlerFlippedForLibSpyGuess={setHitlerFlippedForLibSpyGuess}
-            roleOpen={roleOpen}
-          />
-          <Box sx={{ display: { xs: "flex", sm: "none" }, marginTop: "15px" }}>
-            <LogChat game={game} name={name} boardDimensions={boardDimensions} playersDimensions={playersDimensions} />
-          </Box>
+          {/* <Box sx={{ display: { xs: "flex", sm: "none" }, marginTop: "15px" }}>{logChatComponentRef}</Box> */}
           {/* Snackbar is used in mixed role to let know if you can't discard */}
           <SnackBarError error={error} setError={setError} />{" "}
           <ConfirmFascDialog confirmFascOpen={confirmFascOpen} setConfirmFascOpen={setConfirmFascOpen} handleConfirmFasc={handleConfirmFasc} />

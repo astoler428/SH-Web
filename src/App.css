@@ -8,3 +8,30 @@ img {
 .choosable-policy:active:hover {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
+
+.chat-input::placeholder {
+  color: #e5e5e5;
+}
+
+@media (width >= 600px) {
+  .chat-input {
+    padding-left: 12px;
+  }
+  .chat-input {
+    outline: 2px solid #737373;
+  }
+  .chat-input:focus {
+    outline: 2px solid #2563eb;
+  }
+}
+@media (width < 600px) {
+  .chat-input {
+    padding-left: 8px;
+  }
+  .chat-input {
+    outline: 1px solid #737373;
+  }
+  .chat-input:focus {
+    outline: 1px solid #2563eb;
+  }
+}

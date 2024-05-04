@@ -380,6 +380,7 @@ export default function Players({
               flexDirection: "column",
               position: "relative",
               backgroundColor: "#404040",
+              boxShadow: "none",
             }}
           >
             <style>{flipAndDownkeyFrameStyles}</style>
@@ -602,7 +603,6 @@ export default function Players({
         if (shownFascState[idx] && player.role === Role.HITLER && !player.confirmedFasc) {
           return;
         }
-        console.log("here");
         let timeoutId;
         clearTimeout(timeoutIds[idx]);
         setTimeout(() => {
@@ -659,10 +659,11 @@ export default function Players({
           sm: `calc((100vh - (30px + ${boardDimensions.y}px)) / 1.8 * ${n} )`,
           md: `calc((100vh - (56px + ${boardDimensions.y}px)) / 1.8 * ${n} )`,
         },
-        minWidth: { sm: `calc(60px * ${n})`, md: `calc(90px * ${n})` },
+        minWidth: { sm: `calc(50px * ${n})`, md: `calc(90px * ${n})` },
         maxWidth: { sm: `min(calc(100vw - 10px), calc(140px * ${n}))` },
         display: "flex",
-        margin: "0 5px",
+        padding: { xs: "1px 5px 7px 5px", sm: "1px 5px 0 5px" },
+        // border: "2px solid red",
       }}
     >
       <Grid container spacing={{ xs: 0.5, sm: 1 }}>

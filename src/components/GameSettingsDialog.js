@@ -12,7 +12,7 @@ export default function GameSettingsDialog({ game, gameSettingsOpen, setGameSett
       aria-describedby="alert-dialog-description"
     >
       <DialogContent sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <NonHostGameSettings game={game} />
+        <NonHostGameSettings game={game} inGameSettingsDialog={true} />
       </DialogContent>
       {/* <DialogActions sx={{ display: "flex", justifyContent: "center" }}>
         <DialogActions>
