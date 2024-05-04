@@ -110,7 +110,6 @@ export default function Lobby({ name, game, setGame, isConnected, setError }) {
 
   const disabled = !game || game?.players?.length < 5 || game?.host !== name;
 
-  console.log(game?.settings);
   return game ? (
     <>
       <AppBar position="static">
