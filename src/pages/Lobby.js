@@ -83,7 +83,9 @@ export default function Lobby({ name, game, setGame, isConnected, setError }) {
   }
 
   useEffect(() => {
-    setCurrentSettings(game?.settings);
+    if (game?.settings) {
+      setCurrentSettings(game?.settings);
+    }
   }, [game?.settings]);
 
   const players = game?.players?.map((player, idx) => (
