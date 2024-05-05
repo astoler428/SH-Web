@@ -9,7 +9,7 @@ import fascPolicyPng from "../img/FascPolicy.png";
 import policyBackPng from "../img/PolicyBack.png";
 import Action from "./Action";
 import PolicyPiles from "./PolicyPiles";
-import { enactPolicyAnimation, Policy, TOP_DECK_DELAY, ENACT_POLICY_DURATION } from "../consts";
+import { enactPolicyAnimation, Policy, TOP_DECK_DELAY, ENACT_POLICY_DURATION, RESHUFFLE_DELAY } from "../consts";
 
 //set policy border radius relative to the policyWidth here and everywhere
 export default function Board({
@@ -61,6 +61,15 @@ export default function Board({
         setAnimate(Policy.FASC);
       }
       setBoardState(prevBoardState => ({ ...prevBoardState, tracker: 3 }));
+
+      setTimeout(() => {
+        setBoardState(prevBoardState => ({
+          ...prevBoardState,
+          tracker: game.tracker,
+        }));
+      }, 1000 * (TOP_DECK_DELAY + RESHUFFLE_DELAY));
+
+      //tracker already set back to 0 right above
       setTimeout(() => {
         setAnimate(null);
         setBoardState({
@@ -69,6 +78,7 @@ export default function Board({
           tracker: game.tracker,
         });
       }, timeout);
+
       return;
     }
     if (boardState.lib < game.LibPoliciesEnacted) {
@@ -94,14 +104,17 @@ export default function Board({
     //could refactor now to check game.topdeck
     if (boardState.tracker !== 3 && boardState.tracker !== game.tracker) {
       //advance tracker - if tracker is 3, that means I put it there and in middle of top deck
-      setBoardState(prevBoardState => ({
-        ...prevBoardState,
-        tracker: game.tracker,
-      }));
+      const timeout = game.tracker > boardState.tracker ? 0 : RESHUFFLE_DELAY * 1000; //reset tracker at same time as reshuffle would happen
+      setTimeout(() => {
+        setBoardState(prevBoardState => ({
+          ...prevBoardState,
+          tracker: game.tracker,
+        }));
+      }, timeout);
     }
   }, [game.FascPoliciesEnacted, game.LibPoliciesEnacted, game.tracker]); //was game.status
 
-  if (boardState.tracker === 3) {
+  if (game.topDecked) {
     policyDelay = TOP_DECK_DELAY;
   }
 

@@ -662,7 +662,7 @@ export default function Players({
         minWidth: { sm: `calc(50px * ${n})`, md: `calc(90px * ${n})` },
         maxWidth: { sm: `min(calc(100vw - 10px), calc(140px * ${n}))` },
         display: "flex",
-        padding: { xs: "1px 5px 7px 5px", sm: "1px 5px 0 5px" },
+        padding: { xs: "1px 5px 7px 5px", sm: "1px 5px 0 10px" },
         // border: "2px solid red",
       }}
     >

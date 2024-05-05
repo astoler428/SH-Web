@@ -509,7 +509,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
           sx={{
             // width: "100%",
             border: "1px solid black",
-            fontSize: { xs: "12px", sm: "14px", md: "16px" },
+            fontSize: { xs: "12px", sm: "14px", md: "18px" },
             marginBottom: { xs: "36px", sm: "36px", md: "40px" },
             flex: 1,
             borderRadius: "0",
@@ -578,10 +578,11 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
                 marginTop: "15px",
                 border: "none",
                 fontFamily: "inter",
-                fontSize: ".9em", //"15px",
+                fontSize: ".93em", //"15px",
                 backgroundColor: "#0a0a0a",
                 color: "#e5e5e5",
                 boxSizing: "border-box",
+                opacity: disabled ? 0.4 : 1,
               }}
             />
             <Button
