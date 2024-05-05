@@ -307,7 +307,7 @@ export default function Players({
     const upAndDownKeyFrameStyles = upAndDownAnimation(playersDimensions.y);
     const flipAndUnflipKeyFrameStyles = flipAndUnflipAnimation(status === Status.SHOW_LIB_SPY_GUESS ? 33 : 20);
     const stillKeyFrameStyles = stillAnimation();
-    const choosableKeyFrameStyles = choosableAnimation(playersDimensions.y < 110 ? 1.5 : 3.5);
+    const choosableKeyFrameStyles = choosableAnimation(Math.max(1.75, playersDimensions.y / 60));
 
     function handleOpenTooltip(idx, val) {
       if (val === false && forceOpenTooltip[idx]) {
@@ -339,7 +339,7 @@ export default function Players({
               <Typography
                 maxWidth="80%"
                 sx={{
-                  fontSize: { xs: `calc(${playersDimensions.x}px / ${7 * n})` },
+                  fontSize: { xs: `calc(${playersDimensions.x}px / ${8 * n})` },
                   margin: `1px 0`,
                   color: nameColor,
                   whiteSpace: "nowrap",
@@ -357,7 +357,7 @@ export default function Players({
             <Typography
               maxWidth="80%"
               sx={{
-                fontSize: { xs: `calc(${playersDimensions.x}px / ${7 * n})` },
+                fontSize: { xs: `calc(${playersDimensions.x}px / ${8 * n})` },
                 margin: `1px 0`,
                 color: nameColor,
                 whiteSpace: "nowrap",
@@ -381,6 +381,7 @@ export default function Players({
               position: "relative",
               backgroundColor: "#404040",
               boxShadow: "none",
+              borderRadius: `${playersDimensions.y / 60}px`,
             }}
           >
             <style>{flipAndDownkeyFrameStyles}</style>
@@ -662,11 +663,11 @@ export default function Players({
         minWidth: { sm: `calc(50px * ${n})`, md: `calc(90px * ${n})` },
         maxWidth: { sm: `min(calc(100vw - 10px), calc(140px * ${n}))` },
         display: "flex",
-        padding: { xs: "1px 5px 7px 5px", sm: "1px 5px 0 10px" },
+        padding: { xs: "1px 5px 7px 5px", sm: "1px 5px 0 5px" },
         // border: "2px solid red",
       }}
     >
-      <Grid container spacing={{ xs: 0.5, sm: 1 }}>
+      <Grid container spacing={{ xs: 0.55, sm: 1 }}>
         {" "}
         {/**used to be xs: .5 */}
         {renderPlayers}
