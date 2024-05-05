@@ -63,6 +63,14 @@ export default function Board({
       setBoardState(prevBoardState => ({ ...prevBoardState, tracker: 3 }));
 
       setTimeout(() => {
+        setBoardState(prevBoardState => ({
+          ...prevBoardState,
+          tracker: game.tracker,
+        }));
+      }, 1000 * (TOP_DECK_DELAY + RESHUFFLE_DELAY));
+
+      //tracker already set back to 0 right above
+      setTimeout(() => {
         setAnimate(null);
         setBoardState({
           lib: game.LibPoliciesEnacted,
@@ -70,6 +78,7 @@ export default function Board({
           tracker: game.tracker,
         });
       }, timeout);
+
       return;
     }
     if (boardState.lib < game.LibPoliciesEnacted) {
@@ -96,7 +105,6 @@ export default function Board({
     if (boardState.tracker !== 3 && boardState.tracker !== game.tracker) {
       //advance tracker - if tracker is 3, that means I put it there and in middle of top deck
       const timeout = game.tracker > boardState.tracker ? 0 : RESHUFFLE_DELAY * 1000; //reset tracker at same time as reshuffle would happen
-      //check why this didn't cause rerender and console logging animation...
       setTimeout(() => {
         setBoardState(prevBoardState => ({
           ...prevBoardState,
@@ -106,7 +114,7 @@ export default function Board({
     }
   }, [game.FascPoliciesEnacted, game.LibPoliciesEnacted, game.tracker]); //was game.status
 
-  if (boardState.tracker === 3) {
+  if (game.topDecked) {
     policyDelay = TOP_DECK_DELAY;
   }
 

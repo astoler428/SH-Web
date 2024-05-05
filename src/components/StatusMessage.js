@@ -84,7 +84,6 @@ export default function StatusMessage({ game, hitlerFlippedForLibSpyGuess }) {
     return message;
   }
 
-  console.log(game.players);
   function getIfGameContinuedMessage() {
     let message;
 
