@@ -125,7 +125,7 @@ export default function StatusMessage({ game, hitlerFlippedForLibSpyGuess }) {
         width: "100%",
         backgroundColor: "#171717",
         // borderBottom: "2px outset gray",
-        // marginTop: "2px",
+        // paddingTop: "1px",
         display: "flex",
         alignItems: "center",
         boxSizing: "border-box",

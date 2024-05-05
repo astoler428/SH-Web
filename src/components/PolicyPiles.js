@@ -71,7 +71,9 @@ export default function PolicyPiles({ game, boardDimensions }) {
     if (policyPilesState.drawPile !== drawPileLength) {
       const timeoutDelay = drawPileLength > policyPilesState.drawPile ? RESHUFFLE_DELAY * 1000 : 0;
       setTimeout(() => {
-        setReadyToReshuffle(true);
+        if (drawPileLength > policyPilesState.drawPile) {
+          setReadyToReshuffle(true);
+        }
         setTimeout(
           () =>
             setPolicyPileCountDisplay(prevState => ({
@@ -93,7 +95,7 @@ export default function PolicyPiles({ game, boardDimensions }) {
     if (policyPilesState.discardPile !== discardPileLength) {
       const timeoutDelay = drawPileLength > policyPilesState.drawPile ? RESHUFFLE_DELAY * 1000 : 0;
       setTimeout(() => {
-        setReadyToReshuffle(true);
+        // setReadyToReshuffle(true); handling this in drawPile case above
         setTimeout(
           () =>
             setPolicyPileCountDisplay(prevState => ({
@@ -177,6 +179,7 @@ export default function PolicyPiles({ game, boardDimensions }) {
   } else if (policyPilesState.drawPile < drawPileLength) {
     //reshuffling
     if (game.topDecked && !readyToReshuffle) {
+      //first animate the top deck card
       for (let i = 0; i < policyPilesState.drawPile; i++) {
         const top = 0;
         const animation =
@@ -199,10 +202,12 @@ export default function PolicyPiles({ game, boardDimensions }) {
       drawPileAnimationTotalLength =
         initialDelay + policyPileAnimationDuration + delayBetweenPolicies * (drawPileLength - policyPilesState.drawPile - 1);
     } else if (!readyToReshuffle) {
+      //wait to animate reshuffle - keep everything the same
       for (let i = 0; i < policyPilesState.drawPile; i++) {
         drawPilePolicies.push(<img src={PolicyBack} key={i} draggable="false" style={{ position: "absolute", top: 0, left: 0, width: "100%" }} />);
       }
     } else {
+      //do reshuffle animation
       for (let i = 0; i < drawPileLength; i++) {
         const top = i >= policyPilesState.drawPile ? policyPilesWidth * 1.45 : 0;
         const animation =

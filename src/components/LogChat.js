@@ -578,7 +578,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
                 marginTop: "15px",
                 border: "none",
                 fontFamily: "inter",
-                fontSize: ".9em", //"15px",
+                fontSize: ".93em", //"15px",
                 backgroundColor: "#0a0a0a",
                 color: "#e5e5e5",
                 boxSizing: "border-box",
