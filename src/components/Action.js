@@ -20,6 +20,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   const [keepShowingVoteSelection, setKeepShowingVoteSelection] = useState(true); //when show vote starts - keep showing the players selected vote
   const [currentVote, setCurrentVote] = useState(null);
   const [awaitingResponse, setAwaitingResponse] = useState(false);
+  const [refreshResizeComplete, setRefreshResizeComplete] = useState(false);
   const isCurrentPres = game.currentPres === name;
   const isCurrentChan = game.currentChan === name;
   const thisPlayer = game.players.find(player => player.name === name);
@@ -240,9 +241,18 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
 
   useEffect(() => {
     //hack for certain reloads when images and stuff aren't showing properly
+    //this causes a resize every half second for 5 seconds
+    if (!refreshResizeComplete) {
+      setTimeout(() => {
+        window.dispatchEvent(new Event("resize"));
+      }, 500);
+    }
+  }, [boardDimensions]);
+
+  useEffect(() => {
     setTimeout(() => {
-      window.dispatchEvent(new Event("resize"));
-    }, 2000);
+      setRefreshResizeComplete(true);
+    }, 5000);
   }, []);
 
   function showVoteCards() {
