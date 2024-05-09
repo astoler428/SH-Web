@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import PolicyBack from "../img/PolicyBack.png";
 import DrawPile from "../img/DrawPile.png";
 import DiscardPile from "../img/DiscardPile.png";
-import { RESHUFFLE_ON_VETO_DELAY, TOP_DECK_DELAY, RESHUFFLE_DELAY, colors, policyPileDownAnimation, policyPileUpAnimation } from "../consts";
+import { TOP_DECK_DELAY, RESHUFFLE_DELAY, colors, policyPileDownAnimation, policyPileUpAnimation } from "../consts";
 
 export default function PolicyPiles({ game, boardDimensions, boardState }) {
   // const horizontal = boardDimensions.x/35
@@ -69,9 +69,7 @@ export default function PolicyPiles({ game, boardDimensions, boardState }) {
     }
     setReadyToReshuffle(false);
     if (policyPilesState.drawPile !== drawPileLength) {
-      const reshuffleFromVeto = boardState.lib === game.LibPoliciesEnacted && boardState.fasc === game.FascPoliciesEnacted;
-      const timeoutDelay =
-        drawPileLength > policyPilesState.drawPile ? (reshuffleFromVeto ? RESHUFFLE_ON_VETO_DELAY * 1000 : RESHUFFLE_DELAY * 1000) : 0;
+      const timeoutDelay = 0;
       setTimeout(() => {
         if (drawPileLength > policyPilesState.drawPile) {
           setReadyToReshuffle(true);
@@ -95,9 +93,7 @@ export default function PolicyPiles({ game, boardDimensions, boardState }) {
       }, timeoutDelay);
     }
     if (policyPilesState.discardPile !== discardPileLength) {
-      const reshuffleFromVeto = boardState.lib === game.LibPoliciesEnacted && boardState.fasc === game.FascPoliciesEnacted;
-      const timeoutDelay =
-        drawPileLength > policyPilesState.drawPile ? (reshuffleFromVeto ? RESHUFFLE_ON_VETO_DELAY * 1000 : RESHUFFLE_DELAY * 1000) : 0;
+      const timeoutDelay = 0;
 
       setTimeout(() => {
         // setReadyToReshuffle(true); handling this in drawPile case above
