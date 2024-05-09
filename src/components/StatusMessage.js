@@ -11,6 +11,9 @@ export default function StatusMessage({ game, hitlerFlippedForLibSpyGuess }) {
 
   function getStatusMessage(status) {
     if (game.LibPoliciesEnacted !== policyState.lib || game.FascPoliciesEnacted !== policyState.fasc) {
+      // if (game.vetoAccepted) {
+      //   return "Reshuffling the deck"
+      // }
       return "Enacting a policy";
     }
     let message;

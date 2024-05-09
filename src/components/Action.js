@@ -715,6 +715,8 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
       ) {
         setShowDiscardDialog(false);
       }
+    } else if (game.vetoAccepted) {
+      setShowDiscardDialog(false);
     }
   }, [game.status]);
 

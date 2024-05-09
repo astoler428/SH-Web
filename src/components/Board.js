@@ -9,7 +9,7 @@ import fascPolicyPng from "../img/FascPolicy.png";
 import policyBackPng from "../img/PolicyBack.png";
 import Action from "./Action";
 import PolicyPiles from "./PolicyPiles";
-import { enactPolicyAnimation, Policy, TOP_DECK_DELAY, ENACT_POLICY_DURATION, RESHUFFLE_DELAY } from "../consts";
+import { enactPolicyAnimation, Policy, TOP_DECK_DELAY, ENACT_POLICY_DURATION, RESHUFFLE_DELAY, VETO_ACCEPTED_RESHUFFLE_DELAY } from "../consts";
 
 //set policy border radius relative to the policyWidth here and everywhere
 export default function Board({
@@ -55,6 +55,9 @@ export default function Board({
     if (game.topDecked && (boardState.lib < game.LibPoliciesEnacted || boardState.fasc < game.FascPoliciesEnacted)) {
       //need additional policy check to ensure a refresh doesn't reanimate
       timeout += TOP_DECK_DELAY * 1000;
+      if (game.vetoAccepted) {
+        timeout += VETO_ACCEPTED_RESHUFFLE_DELAY * 1000;
+      }
       if (boardState.lib < game.LibPoliciesEnacted) {
         setAnimate(Policy.LIB);
       } else {
@@ -62,12 +65,15 @@ export default function Board({
       }
       setBoardState(prevBoardState => ({ ...prevBoardState, tracker: 3 }));
 
+      const trackerResetDelay = game.vetoAccepted
+        ? 1000 * (TOP_DECK_DELAY + VETO_ACCEPTED_RESHUFFLE_DELAY)
+        : 1000 * (TOP_DECK_DELAY + RESHUFFLE_DELAY);
       setTimeout(() => {
         setBoardState(prevBoardState => ({
           ...prevBoardState,
           tracker: game.tracker,
         }));
-      }, 1000 * (TOP_DECK_DELAY + RESHUFFLE_DELAY));
+      }, trackerResetDelay);
 
       //tracker already set back to 0 right above
       setTimeout(() => {
@@ -116,6 +122,9 @@ export default function Board({
 
   if (game.topDecked) {
     policyDelay = TOP_DECK_DELAY;
+    if (game.vetoAccepted) {
+      policyDelay += VETO_ACCEPTED_RESHUFFLE_DELAY;
+    }
   }
 
   if (animate === Policy.LIB) {
@@ -247,7 +256,7 @@ export default function Board({
               transition: "1s left ease-in-out",
             }}
           ></div>
-          <PolicyPiles game={game} boardDimensions={boardDimensions} policyWidth={policyWidth} boardState={boardState} />
+          <PolicyPiles game={game} boardDimensions={boardDimensions} policyWidth={policyWidth} />
         </Box>
       </Box>
     </>

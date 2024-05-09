@@ -5,7 +5,7 @@ import DrawPile from "../img/DrawPile.png";
 import DiscardPile from "../img/DiscardPile.png";
 import { TOP_DECK_DELAY, RESHUFFLE_DELAY, colors, policyPileDownAnimation, policyPileUpAnimation } from "../consts";
 
-export default function PolicyPiles({ game, boardDimensions, boardState }) {
+export default function PolicyPiles({ game, boardDimensions }) {
   // const horizontal = boardDimensions.x/35
   // const vertical = boardDimensions.x/3.3 //2.1
   const drawPileLength = game.deck.drawPile.length;
@@ -28,8 +28,44 @@ export default function PolicyPiles({ game, boardDimensions, boardState }) {
   let discardPileAnimationTotalLength = 0;
 
   useEffect(() => {
+    if (game.topDecked && game.vetoAccepted && drawPileLength > policyPilesState.drawPile) {
+      //veto accepted causes reshuffle into top deck
+      setReadyToReshuffle(true);
+      setTimeout(
+        () =>
+          setPolicyPileCountDisplay(prevState => ({
+            ...prevState,
+            discardPile: 0,
+          })),
+        initialDelay * 1000
+      );
+      setTimeout(() => {
+        setPolicyPileCountDisplay(prevState => ({
+          ...prevState,
+          drawPile: drawPileLength + 1,
+          discardPile: discardPileLength,
+        }));
+        setPolicyPilesState({
+          drawPile: drawPileLength + 1,
+          discardPile: discardPileLength,
+        });
+        setReadyToReshuffle(false);
+      }, drawPileAnimationTotalLength * 1000);
+      setTimeout(() => {
+        setPolicyPileCountDisplay(prevState => ({
+          ...prevState,
+          drawPile: drawPileLength,
+        }));
+        setPolicyPilesState({
+          drawPile: drawPileLength,
+          discardPile: discardPileLength,
+        });
+      }, (drawPileAnimationTotalLength + initialDelay + policyPileAnimationDuration) * 1000);
+      return;
+    }
     if (game.topDecked && drawPileLength > policyPilesState.drawPile) {
       //means reshuffled
+
       setTimeout(
         () =>
           setPolicyPileCountDisplay(prevState => ({
@@ -40,6 +76,8 @@ export default function PolicyPiles({ game, boardDimensions, boardState }) {
       );
       setTimeout(() => {
         setReadyToReshuffle(true);
+
+        //can combine same timeouts into one
         setTimeout(
           () =>
             setPolicyPilesState({
@@ -150,7 +188,6 @@ export default function PolicyPiles({ game, boardDimensions, boardState }) {
 
   //new: cubic-bezier(0.36, 0.7, 0.51, 0.94)
   //old: cubic-bezier(0.13, 0.44, 0.49, 1.05)
-
   const descDelay = (idx, val) => initialDelay + (val - 1 - idx) * delayBetweenPolicies;
   const ascDelay = (idx, val) => initialDelay + (idx - val) * delayBetweenPolicies;
 
@@ -179,7 +216,29 @@ export default function PolicyPiles({ game, boardDimensions, boardState }) {
       initialDelay + policyPileAnimationDuration + delayBetweenPolicies * (policyPilesState.drawPile - drawPileLength - 1);
   } else if (policyPilesState.drawPile < drawPileLength) {
     //reshuffling
-    if (game.topDecked && !readyToReshuffle) {
+    if (game.topDecked && game.vetoAccepted && readyToReshuffle) {
+      for (let i = 0; i < drawPileLength + 1; i++) {
+        const top = i >= policyPilesState.drawPile ? policyPilesWidth * 1.45 : 0;
+        const animation =
+          i >= policyPilesState.drawPile ? `${policyPileAnimationDuration}s policyPileUp ${ascDelay(i, policyPilesState.drawPile)}s forwards` : "";
+        drawPilePolicies.push(
+          <img
+            src={PolicyBack}
+            key={i}
+            draggable="false"
+            style={{
+              position: "absolute",
+              top,
+              left: 0,
+              width: "100%",
+              animation,
+            }}
+          />
+        );
+      }
+      drawPileAnimationTotalLength =
+        initialDelay + policyPileAnimationDuration + delayBetweenPolicies * (drawPileLength - policyPilesState.drawPile - 1);
+    } else if (game.topDecked && !readyToReshuffle) {
       //first animate the top deck card
       for (let i = 0; i < policyPilesState.drawPile; i++) {
         const top = 0;
