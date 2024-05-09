@@ -509,7 +509,12 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
           sx={{
             // width: "100%",
             border: "1px solid black",
-            fontSize: { xs: "12px", sm: "14px", md: "18px" },
+            fontSize: {
+              xs: `calc(100vw / 45)`,
+              sm: `calc((100vw - ${boardDimensions.x}px) / 33)`,
+              md: `min(calc((100vw - ${boardDimensions.x}px) / 34), 14px)`,
+              lg: `min(calc((100vw - ${boardDimensions.x}px) / 34), 15px)`,
+            }, //{ xs: "12px", sm: "14px", md: "16px" },
             marginBottom: { xs: "36px", sm: "36px", md: "40px" },
             flex: 1,
             borderRadius: "0",
