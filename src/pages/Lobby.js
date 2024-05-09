@@ -152,7 +152,7 @@ export default function Lobby({ name, game, setGame, isConnected, setError }) {
             </Typography>
             {players}
           </Box>
-          <Button variant="contained" disabled={disabled} onClick={startGame}>
+          <Button variant="contained" disabled={disabled} sx={{ marginBottom: "12px" }} onClick={startGame}>
             {startGameButtonText}
           </Button>
         </Box>

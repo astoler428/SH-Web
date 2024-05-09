@@ -247,7 +247,7 @@ export default function Board({
               transition: "1s left ease-in-out",
             }}
           ></div>
-          <PolicyPiles game={game} boardDimensions={boardDimensions} policyWidth={policyWidth} />
+          <PolicyPiles game={game} boardDimensions={boardDimensions} policyWidth={policyWidth} boardState={boardState} />
         </Box>
       </Box>
     </>
