@@ -28,22 +28,21 @@ export default function Board({
   const fascBoard = game.players.length < 7 ? fasc5PlayerBoard : game.players.length < 9 ? fasc7PlayerBoard : fasc9PlayerBoard;
   const [blur, setBlur] = useState(false);
   const [animate, setAnimate] = useState(null);
-  const policyWidth = boardDimensions.x / 7.8; //7.68//8.2
-  // const policyBorderRadius = policyWidth / 18
+  const policyWidth = boardDimensions.x / 7.8;
   const [boardState, setBoardState] = useState({
     lib: game.LibPoliciesEnacted,
     fasc: game.FascPoliciesEnacted,
     tracker: game.tracker,
   });
-  const fascBottom = boardDimensions.x / 2.095; //2.12
+  const fascBottom = boardDimensions.x / 2.095;
   const fascLeft = boardDimensions.x / 10;
   const libBottom = boardDimensions.x / 10.3;
   const libLeft = boardDimensions.x / 5.98;
   const policyGap = boardDimensions.x / 162;
-  const trackerWidth = boardDimensions.x / 28.4; //boardDimensions.x / 28.1
+  const trackerWidth = boardDimensions.x / 28.4;
   const trackerGap = "11.12%";
-  const trackerLeft = "23.1%"; //'33.9%'
-  const trackerBottom = "6.5%"; //'7%'
+  const trackerLeft = "23.1%";
+  const trackerBottom = "6.5%";
 
   let policyAnimation = "",
     enactPolicyImg,
@@ -51,7 +50,7 @@ export default function Board({
     policyDelay = 0;
 
   useEffect(() => {
-    let timeout = 5800;
+    let timeout = ENACT_POLICY_DURATION * 1000; //5800;
     if (game.topDecked && (boardState.lib < game.LibPoliciesEnacted || boardState.fasc < game.FascPoliciesEnacted)) {
       //need additional policy check to ensure a refresh doesn't reanimate
       timeout += TOP_DECK_DELAY * 1000;
