@@ -58,10 +58,6 @@ export default function PolicyPiles({ game, boardDimensions, setEnactPolicyDelay
   // const ascDelay = (idx, val) => POLICY_PILES_INITIAL_DELAY + (val - 1 - idx) * POLICY_PILES_DELAY_BETWEEN_POLICIES;
   const ascDelay = (idx, val) => POLICY_PILES_INITIAL_DELAY + (idx - val) * POLICY_PILES_DELAY_BETWEEN_POLICIES;
 
-  //timeouts
-  //set count state
-  //set policyPileState -> at end of total timeout
-
   useEffect(() => {
     if (policyPilesState.drawPile !== drawPileLength || policyPilesState.discardPile !== discardPileLength) {
       let animationLength = 0;
@@ -73,15 +69,14 @@ export default function PolicyPiles({ game, boardDimensions, setEnactPolicyDelay
           () => {
             setPolicyPileCountDisplay({ drawPile: drawPileLength, discardPile: discardPileLength });
           },
-          drawPileLength === 0 ? POLICY_PILES_INITIAL_DELAY * 1000 : animationLength * 1000
+          drawPileLength === 0 ? POLICY_PILES_INITIAL_DELAY * 1000 : POLICY_PILES_INITIAL_DELAY * 1000 // : animationLength * 1000
         );
       } else if (game.status === Status.CHAN_PLAY) {
-        //bug, could be gameOver...
         setAnimatePolicyPile({ draw: null, discard: { initial: policyPilesState.discardPile, move: 1, direction: "up" } });
         animationLength += policyPilesAnimationLength(1);
         setTimeout(() => {
-          setPolicyPileCountDisplay({ drawPile: drawPileLength, discardPile: discardPileLength });
-        }, animationLength * 1000);
+          setPolicyPileCountDisplay({ drawPile: policyPilesState.drawPile, discardPile: policyPilesState.discardPile + 1 });
+        }, POLICY_PILES_INITIAL_DELAY * 1000);
       } else if (!game.vetoAccepted && !game.topDecked) {
         //might work - when else is policyPileCount different from no vetoAccepted, no topDeck?
         //would have to be a status resembling chan_claim -> maybe game over lib or fasc or libspyguess
@@ -89,16 +84,15 @@ export default function PolicyPiles({ game, boardDimensions, setEnactPolicyDelay
         setEnactPolicyDelay(animationLength);
         animationLength += policyPilesAnimationLength(1);
         setTimeout(() => {
-          setPolicyPileCountDisplay({ drawPile: drawPileLength, discardPile: discardPileLength });
-        }, animationLength * 1000);
+          setPolicyPileCountDisplay({ drawPile: policyPilesState.drawPile, discardPile: policyPilesState.discardPile + 1 });
+        }, POLICY_PILES_INITIAL_DELAY * 1000);
       } else if (game.vetoAccepted) {
+        //bug here using actual draw pile stuff...
         setAnimatePolicyPile({ draw: null, discard: { initial: policyPilesState.discardPile, move: 2, direction: "up" } });
-        console.log(animationLength);
         animationLength += policyPilesAnimationLength(2);
-        console.log(animationLength);
         setTimeout(() => {
           setPolicyPileCountDisplay({ drawPile: policyPilesState.drawPile, discardPile: policyPilesState.discardPile + 2 });
-        }, animationLength * 1000);
+        }, POLICY_PILES_INITIAL_DELAY * 1000);
         if (game.deck.justReshuffled) {
           setTimeout(() => {
             setPolicyPileCountDisplay({ drawPile: 0, discardPile: 0 });
@@ -108,7 +102,6 @@ export default function PolicyPiles({ game, boardDimensions, setEnactPolicyDelay
             });
           }, animationLength * 1000);
           animationLength += policyPilesAnimationLength(policyPilesState.discardPile + 3);
-          console.log(animationLength);
           setTimeout(() => {
             setPolicyPileCountDisplay({ drawPile: policyPilesState.drawPile + policyPilesState.discardPile + 2, discardPile: 0 });
             setPolicyPilesState({ drawPile: policyPilesState.drawPile + policyPilesState.discardPile + 2, discardPile: 0 });
@@ -121,12 +114,11 @@ export default function PolicyPiles({ game, boardDimensions, setEnactPolicyDelay
               discard: null,
             });
           }, animationLength * 1000);
-          animationLength += policyPilesAnimationLength(1);
-          console.log(animationLength);
-          setEnactPolicyDelay(animationLength);
           setTimeout(() => {
             setPolicyPileCountDisplay({ drawPile: drawPileLength, discardPile: discardPileLength });
-          }, animationLength * 1000);
+          }, (animationLength + POLICY_PILES_INITIAL_DELAY) * 1000);
+          animationLength += policyPilesAnimationLength(1);
+          setEnactPolicyDelay(animationLength);
         }
       } else if (game.topDecked) {
         setAnimatePolicyPile({
@@ -136,8 +128,8 @@ export default function PolicyPiles({ game, boardDimensions, setEnactPolicyDelay
         animationLength += policyPilesAnimationLength(1);
         setEnactPolicyDelay(animationLength);
         setTimeout(() => {
-          setPolicyPileCountDisplay({ drawPile: drawPileLength, discardPile: discardPileLength });
-        }, animationLength * 1000);
+          setPolicyPileCountDisplay({ drawPile: policyPilesState.drawPile - 1, discardPile: policyPilesState.discardPile });
+        }, POLICY_PILES_INITIAL_DELAY * 1000);
       }
       if (!game.vetoAccepted && game.deck.justReshuffled) {
         if (game.topDecked) {
