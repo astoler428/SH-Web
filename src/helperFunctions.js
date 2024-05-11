@@ -1,4 +1,4 @@
-import { Status, Policy, draws3, draws2 } from "./consts";
+import { Status, Policy, draws3, draws2, POLICY_PILES_DELAY_BETWEEN_POLICIES, POLICY_PILES_DURATION, POLICY_PILES_INITIAL_DELAY } from "./consts";
 
 export const inGov = (game, name) =>
   (game.currentPres === name || game.currentChan === name) &&
@@ -26,4 +26,8 @@ export const determine3Cards = cards3 => {
 export const determine2Cards = cards2 => {
   const blues = cards2.reduce((acc, card) => (card.policy === Policy.LIB ? acc + 1 : acc), 0);
   return draws2[blues];
+};
+
+export const policyPilesAnimationLength = move => {
+  return POLICY_PILES_INITIAL_DELAY + POLICY_PILES_DURATION + POLICY_PILES_DELAY_BETWEEN_POLICIES * (move - 1);
 };

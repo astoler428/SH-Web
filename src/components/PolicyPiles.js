@@ -3,9 +3,20 @@ import { Box } from "@mui/material";
 import PolicyBack from "../img/PolicyBack.png";
 import DrawPile from "../img/DrawPile.png";
 import DiscardPile from "../img/DiscardPile.png";
-import { TOP_DECK_DELAY, RESHUFFLE_DELAY, colors, policyPileDownAnimation, policyPileUpAnimation, Status } from "../consts";
+import {
+  TOP_DECK_DELAY,
+  RESHUFFLE_DELAY,
+  POLICY_PILES_DELAY_BETWEEN_POLICIES,
+  POLICY_PILES_INITIAL_DELAY,
+  POLICY_PILES_DURATION,
+  colors,
+  policyPileDownAnimation,
+  policyPileUpAnimation,
+  Status,
+} from "../consts";
+import { policyPilesAnimationLength } from "../helperFunctions";
 
-export default function PolicyPiles({ game, boardDimensions }) {
+export default function PolicyPiles({ game, boardDimensions, setEnactPolicyDelay }) {
   // const horizontal = boardDimensions.x/35
   // const vertical = boardDimensions.x/3.3 //2.1
   const drawPileLength = game.deck.drawPile.length;
@@ -19,10 +30,6 @@ export default function PolicyPiles({ game, boardDimensions }) {
     discardPile: discardPileLength,
   });
   const [animatePolicyPile, setAnimatePolicyPile] = useState({ draw: null, discard: null });
-
-  const initialDelay = 0.3;
-  const delayBetweenPolicies = 0.2;
-  const policyPileAnimationDuration = 1;
 
   const policyPilesWidth = boardDimensions.x / 12;
   const policyPileDownKeyFrames = policyPileDownAnimation(policyPilesWidth * 1.45);
@@ -47,9 +54,9 @@ export default function PolicyPiles({ game, boardDimensions }) {
   const drawPilePolicies = [];
   const discardPilePolicies = [];
 
-  const descDelay = (idx, val) => initialDelay + (val - 1 - idx) * delayBetweenPolicies;
-  // const ascDelay = (idx, val) => initialDelay + (val - 1 - idx) * delayBetweenPolicies;
-  const ascDelay = (idx, val) => initialDelay + (idx - val) * delayBetweenPolicies;
+  const descDelay = (idx, val) => POLICY_PILES_INITIAL_DELAY + (val - 1 - idx) * POLICY_PILES_DELAY_BETWEEN_POLICIES;
+  // const ascDelay = (idx, val) => POLICY_PILES_INITIAL_DELAY + (val - 1 - idx) * POLICY_PILES_DELAY_BETWEEN_POLICIES;
+  const ascDelay = (idx, val) => POLICY_PILES_INITIAL_DELAY + (idx - val) * POLICY_PILES_DELAY_BETWEEN_POLICIES;
 
   //timeouts
   //set count state
@@ -61,22 +68,34 @@ export default function PolicyPiles({ game, boardDimensions }) {
 
       if (game.status === Status.PRES_DISCARD) {
         setAnimatePolicyPile({ draw: { initial: policyPilesState.drawPile, move: 3, direction: "down" }, discard: null });
-        animationLength += getAnimationLength(3);
+        animationLength += policyPilesAnimationLength(3);
         setTimeout(
           () => {
             setPolicyPileCountDisplay({ drawPile: drawPileLength, discardPile: discardPileLength });
           },
-          drawPileLength === 0 ? initialDelay * 1000 : animationLength * 1000
+          drawPileLength === 0 ? POLICY_PILES_INITIAL_DELAY * 1000 : animationLength * 1000
         );
-      } else if (game.status === Status.CHAN_PLAY || game.status === Status.CHAN_CLAIM) {
+      } else if (game.status === Status.CHAN_PLAY) {
+        //bug, could be gameOver...
         setAnimatePolicyPile({ draw: null, discard: { initial: policyPilesState.discardPile, move: 1, direction: "up" } });
-        animationLength += getAnimationLength(1);
+        animationLength += policyPilesAnimationLength(1);
+        setTimeout(() => {
+          setPolicyPileCountDisplay({ drawPile: drawPileLength, discardPile: discardPileLength });
+        }, animationLength * 1000);
+      } else if (!game.vetoAccepted && !game.topDecked) {
+        //might work - when else is policyPileCount different from no vetoAccepted, no topDeck?
+        //would have to be a status resembling chan_claim -> maybe game over lib or fasc or libspyguess
+        setAnimatePolicyPile({ draw: null, discard: { initial: policyPilesState.discardPile, move: 1, direction: "up" } });
+        setEnactPolicyDelay(animationLength);
+        animationLength += policyPilesAnimationLength(1);
         setTimeout(() => {
           setPolicyPileCountDisplay({ drawPile: drawPileLength, discardPile: discardPileLength });
         }, animationLength * 1000);
       } else if (game.vetoAccepted) {
         setAnimatePolicyPile({ draw: null, discard: { initial: policyPilesState.discardPile, move: 2, direction: "up" } });
-        animationLength += getAnimationLength(2);
+        console.log(animationLength);
+        animationLength += policyPilesAnimationLength(2);
+        console.log(animationLength);
         setTimeout(() => {
           setPolicyPileCountDisplay({ drawPile: policyPilesState.drawPile, discardPile: policyPilesState.discardPile + 2 });
         }, animationLength * 1000);
@@ -88,7 +107,8 @@ export default function PolicyPiles({ game, boardDimensions }) {
               discard: { initial: policyPilesState.discardPile + 2, move: policyPilesState.discardPile + 2, direction: "down" },
             });
           }, animationLength * 1000);
-          animationLength += getAnimationLength(policyPilesState.discardPile + 3);
+          animationLength += policyPilesAnimationLength(policyPilesState.discardPile + 3);
+          console.log(animationLength);
           setTimeout(() => {
             setPolicyPileCountDisplay({ drawPile: policyPilesState.drawPile + policyPilesState.discardPile + 2, discardPile: 0 });
             setPolicyPilesState({ drawPile: policyPilesState.drawPile + policyPilesState.discardPile + 2, discardPile: 0 });
@@ -101,7 +121,9 @@ export default function PolicyPiles({ game, boardDimensions }) {
               discard: null,
             });
           }, animationLength * 1000);
-          animationLength += getAnimationLength(1);
+          animationLength += policyPilesAnimationLength(1);
+          console.log(animationLength);
+          setEnactPolicyDelay(animationLength);
           setTimeout(() => {
             setPolicyPileCountDisplay({ drawPile: drawPileLength, discardPile: discardPileLength });
           }, animationLength * 1000);
@@ -111,7 +133,8 @@ export default function PolicyPiles({ game, boardDimensions }) {
           draw: { initial: policyPilesState.drawPile, move: 1, direction: "down" },
           discard: null,
         });
-        animationLength += getAnimationLength(1);
+        animationLength += policyPilesAnimationLength(1);
+        setEnactPolicyDelay(animationLength);
         setTimeout(() => {
           setPolicyPileCountDisplay({ drawPile: drawPileLength, discardPile: discardPileLength });
         }, animationLength * 1000);
@@ -125,7 +148,7 @@ export default function PolicyPiles({ game, boardDimensions }) {
               discard: { initial: policyPilesState.discardPile, move: policyPilesState.discardPile, direction: "down" },
             });
           }, animationLength * 1000);
-          animationLength += getAnimationLength(policyPilesState.discardPile);
+          animationLength += policyPilesAnimationLength(policyPilesState.discardPile);
         } else {
           setTimeout(() => {
             setPolicyPileCountDisplay({ drawPile: 0, discardPile: 0 });
@@ -134,7 +157,7 @@ export default function PolicyPiles({ game, boardDimensions }) {
               discard: { initial: policyPilesState.discardPile + 1, move: policyPilesState.discardPile + 1, direction: "down" },
             });
           }, animationLength * 1000);
-          animationLength += getAnimationLength(policyPilesState.discardPile + 2);
+          animationLength += policyPilesAnimationLength(policyPilesState.discardPile + 2);
         }
         setTimeout(() => {
           setPolicyPileCountDisplay({ drawPile: drawPileLength, discardPile: discardPileLength });
@@ -182,20 +205,16 @@ export default function PolicyPiles({ game, boardDimensions }) {
     }
   }
 
-  function getAnimationLength(move) {
-    return initialDelay + policyPileAnimationDuration + delayBetweenPolicies * (move - 1);
-  }
-
   function initAnimationPolicyPile(initial, move, direction, pile) {
     const totalPolicies = direction === "up" ? initial + move : initial;
     for (let i = 0; i < totalPolicies; i++) {
       let top, animation;
       if (direction === "down") {
         top = 0;
-        animation = i >= totalPolicies - move ? `${policyPileAnimationDuration}s policyPileDown ${descDelay(i, totalPolicies)}s forwards` : "";
+        animation = i >= totalPolicies - move ? `${POLICY_PILES_DURATION}s policyPileDown ${descDelay(i, totalPolicies)}s forwards` : "";
       } else {
         top = i >= totalPolicies - move ? policyPilesWidth * 1.45 : 0;
-        animation = i >= totalPolicies - move ? `${policyPileAnimationDuration}s policyPileUp ${ascDelay(i, totalPolicies - move)}s forwards` : "";
+        animation = i >= totalPolicies - move ? `${POLICY_PILES_DURATION}s policyPileUp ${ascDelay(i, totalPolicies - move)}s forwards` : "";
       }
       pile.push(
         <img
@@ -296,7 +315,7 @@ export default function PolicyPiles({ game, boardDimensions }) {
             ...prevState,
             discardPile: 0,
           })),
-        initialDelay * 1000
+        POLICY_PILES_INITIAL_DELAY * 1000
       );
       setTimeout(() => {
         setPolicyPileCountDisplay(prevState => ({
@@ -319,7 +338,7 @@ export default function PolicyPiles({ game, boardDimensions }) {
           drawPile: drawPileLength,
           discardPile: discardPileLength,
         });
-      }, (drawPileAnimationTotalLength + initialDelay + policyPileAnimationDuration) * 1000);
+      }, (drawPileAnimationTotalLength + POLICY_PILES_INITIAL_DELAY + POLICY_PILES_DURATION) * 1000);
       return;
     }
     if (game.topDecked && drawPileLength > policyPilesState.drawPile) {
@@ -331,7 +350,7 @@ export default function PolicyPiles({ game, boardDimensions }) {
             ...prevState,
             drawPile: prevState.drawPile - 1,
           })),
-        (initialDelay + policyPileAnimationDuration) * 1000
+        (POLICY_PILES_INITIAL_DELAY + POLICY_PILES_DURATION) * 1000
       );
       setTimeout(() => {
         setReadyToReshuffle(true);
@@ -359,9 +378,9 @@ export default function PolicyPiles({ game, boardDimensions }) {
               ...prevState,
               discardPile: 0,
             })),
-          initialDelay * 1000
+          POLICY_PILES_INITIAL_DELAY * 1000
         );
-      }, (RESHUFFLE_DELAY + TOP_DECK_DELAY) * 1000); //(TOP_DECK_DELAY + policyPileAnimationDuration) * 1000); //was 2500
+      }, (RESHUFFLE_DELAY + TOP_DECK_DELAY) * 1000); //(TOP_DECK_DELAY + POLICY_PILES_DURATION) * 1000); //was 2500
       return;
     }
     setReadyToReshuffle(false);
@@ -377,7 +396,7 @@ export default function PolicyPiles({ game, boardDimensions }) {
               ...prevState,
               drawPile: drawPileLength,
             })),
-          drawPileLength === 0 ? initialDelay * 1000 : drawPileAnimationTotalLength * 1000
+          drawPileLength === 0 ? POLICY_PILES_INITIAL_DELAY * 1000 : drawPileAnimationTotalLength * 1000
         );
         setTimeout(
           () =>
@@ -400,7 +419,7 @@ export default function PolicyPiles({ game, boardDimensions }) {
               ...prevState,
               discardPile: discardPileLength,
             })),
-          discardPileLength === 0 ? initialDelay * 1000 : discardPileAnimationTotalLength * 1000
+          discardPileLength === 0 ? POLICY_PILES_INITIAL_DELAY * 1000 : discardPileAnimationTotalLength * 1000
         );
         setTimeout(
           () =>

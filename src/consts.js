@@ -168,6 +168,9 @@ export const PRES3 = {
   BBB: "BBB",
 };
 
+export const POLICY_PILES_INITIAL_DELAY = 0.3;
+export const POLICY_PILES_DELAY_BETWEEN_POLICIES = 0.2;
+export const POLICY_PILES_DURATION = 1;
 export const TOP_DECK_DELAY = 1.5;
 export const RESHUFFLE_DELAY = 1; //used to be 4
 export const VETO_ACCEPTED_RESHUFFLE_DELAY = 3;
