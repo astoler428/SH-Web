@@ -6,7 +6,7 @@ import policyBackPng from "../img/PolicyBack.png";
 import jaPng from "../img/Ja.png";
 import neinPng from "../img/Nein.png";
 import { Color, draws3, PRES3, CHAN2, Status, Vote, Team, Role, GameType, RRR, RRB, RBB, BBB, colors } from "../consts";
-import { isBlindSetting } from "../helperFunctions";
+import { gameOver, isBlindSetting } from "../helperFunctions";
 import { post } from "../api/api";
 import DefaulDiscardDialog from "./DefaultDiscardDialog";
 
@@ -705,7 +705,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
 
   //does not show default discard if deducable what was dropped
   useEffect(() => {
-    if (status === Status.CHAN_CLAIM) {
+    if (status === Status.CHAN_CLAIM || (gameOver(status) && game.presCards !== null)) {
       const presDraw = draws3[game.presCards.reduce((acc, policy) => acc + (policy.color === Color.BLUE ? 1 : 0), 0)];
       if (
         presDraw === BBB ||

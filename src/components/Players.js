@@ -117,7 +117,6 @@ export default function Players({
     return newState;
   };
   const gameOverDelay = showGameOverDelay(game, hitlerFlippedForLibSpyGuess);
-
   const renderPlayers = game?.players?.map((player, idx) => {
     let choosable = false;
     let makingDecision = false;
@@ -287,8 +286,8 @@ export default function Players({
         // roleContent = roleBackPng;
         roleContentFlip = getRoleImg(player)[0];
         // const delay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess) ? (game.topDecked ? 7 : 6) : 2
-        roleAnimation = `flip 3s forwards ${gameOverDelay}s`; //'flip 3s forwards 2.5s'
-        nameColorTransition = `color 1.5s ${gameOverDelay + 1.5}s`;
+        roleAnimation = game.alreadyEnded ? `flip 0s forwards` : `flip 3s forwards ${gameOverDelay}s`; //'flip 3s forwards 2.5s'
+        nameColorTransition = game.alreadyEnded ? `` : `color 1.5s ${gameOverDelay + 1.5}s`;
       }
     }
 

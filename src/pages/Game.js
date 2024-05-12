@@ -242,8 +242,10 @@ export default function Game({ name, game, setGame, isConnected, error, setError
   useEffect(() => {
     if (gameOver(game?.status)) {
       const delay = 1000 * showGameOverDelay(game, hitlerFlippedForLibSpyGuess);
-      setTimeout(() => setRunConfetti(true), delay);
-      setTimeout(() => setRecycleConfetti(false), delay + 6000);
+      if (!game.alreadyEnded) {
+        setTimeout(() => setRunConfetti(true), delay);
+        setTimeout(() => setRecycleConfetti(false), delay + 6000);
+      }
       setTimeout(() => setShowGameOverButtons(true), delay);
     }
   }, [game?.status]);
@@ -434,7 +436,12 @@ export default function Game({ name, game, setGame, isConnected, error, setError
           {/* <Box sx={{ display: { xs: "flex", sm: "none" }, marginTop: "15px" }}>{logChatComponentRef}</Box> */}
           {/* Snackbar is used in mixed role to let know if you can't discard */}
           <SnackBarError error={error} setError={setError} />{" "}
-          <ConfirmFascDialog confirmFascOpen={confirmFascOpen} setConfirmFascOpen={setConfirmFascOpen} handleConfirmFasc={handleConfirmFasc} />
+          <ConfirmFascDialog
+            game={game}
+            confirmFascOpen={confirmFascOpen}
+            setConfirmFascOpen={setConfirmFascOpen}
+            handleConfirmFasc={handleConfirmFasc}
+          />
         </Box>
       ) : (
         <Loading />

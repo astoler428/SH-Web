@@ -52,8 +52,9 @@ export const policyEnactDelay = game => {
 };
 
 export const showGameOverDelay = (game, hitlerFlippedForLibSpyGuess) => {
-  //add a check later for game state of been done... and due to refresh with 0 delay
-  //turn off animations and confetti...
+  if (game.alreadyEnded) {
+    return 0;
+  }
   return gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess)
     ? policyEnactDelay(game) + ENACT_POLICY_DURATION
     : GAMEOVER_NOT_FROM_POLICY_DELAY;
