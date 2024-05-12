@@ -1,4 +1,15 @@
-import { Status, Policy, draws3, draws2, POLICY_PILES_DELAY_BETWEEN_POLICIES, POLICY_PILES_DURATION, POLICY_PILES_INITIAL_DELAY } from "./consts";
+import {
+  Status,
+  Policy,
+  draws3,
+  draws2,
+  POLICY_PILES_DELAY_BETWEEN_POLICIES,
+  POLICY_PILES_DURATION,
+  POLICY_PILES_INITIAL_DELAY,
+  TOP_DECK_DELAY,
+  ENACT_POLICY_DURATION,
+  GAMEOVER_NOT_FROM_POLICY_DELAY,
+} from "./consts";
 
 export const inGov = (game, name) =>
   (game.currentPres === name || game.currentChan === name) &&
@@ -30,4 +41,20 @@ export const determine2Cards = cards2 => {
 
 export const policyPilesAnimationLength = move => {
   return POLICY_PILES_INITIAL_DELAY + POLICY_PILES_DURATION + POLICY_PILES_DELAY_BETWEEN_POLICIES * (move - 1);
+};
+
+export const policyEnactDelay = game => {
+  return game.vetoAccepted
+    ? TOP_DECK_DELAY + policyPilesAnimationLength(2) + policyPilesAnimationLength(game.deck.drawPile.length + 1)
+    : game.topDecked
+    ? TOP_DECK_DELAY
+    : 0;
+};
+
+export const showGameOverDelay = (game, hitlerFlippedForLibSpyGuess) => {
+  //add a check later for game state of been done... and due to refresh with 0 delay
+  //turn off animations and confetti...
+  return gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess)
+    ? policyEnactDelay(game) + ENACT_POLICY_DURATION
+    : GAMEOVER_NOT_FROM_POLICY_DELAY;
 };

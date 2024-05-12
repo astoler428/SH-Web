@@ -14,8 +14,16 @@ import {
   VOTE_DELAY,
   VOTE_DURATION,
   HITLER_FLIP_FOR_LIB_SPY_GUESS_DURATION,
+  POLICY_PILES_INITIAL_DELAY,
 } from "../consts";
-import { gameOver, gameEndedWithPolicyEnactment, isBlindSetting } from "../helperFunctions";
+import {
+  gameOver,
+  gameEndedWithPolicyEnactment,
+  isBlindSetting,
+  policyPilesAnimationLength,
+  policyEnactDelay,
+  showGameOverDelay,
+} from "../helperFunctions";
 import Players from "../components/Players";
 import Board from "../components/Board";
 import Loading from "../components/Loading";
@@ -178,7 +186,8 @@ export default function Game({ name, game, setGame, isConnected, error, setError
 
   useEffect(() => {
     if (game?.status === Status.LIB_SPY_GUESS) {
-      const delay = game.topDecked ? TOP_DECK_DELAY + ENACT_POLICY_DURATION : ENACT_POLICY_DURATION;
+      // const delay = game.topDecked ? TOP_DECK_DELAY + ENACT_POLICY_DURATION : ENACT_POLICY_DURATION;
+      const delay = (2 / 3) * ENACT_POLICY_DURATION + policyEnactDelay(game);
       pauseActions(1000 * (delay + HITLER_FLIP_FOR_LIB_SPY_GUESS_DURATION)); //7500
     } else if (game?.status === Status.PRES_DISCARD) {
       pauseActions(1700); //.3 is initial delay before policy pile animation, .4 is when 3rd policy is drawn, 1s animation gives 1700
@@ -189,7 +198,10 @@ export default function Game({ name, game, setGame, isConnected, error, setError
     } else if (game?.status === Status.INV_CLAIM) {
       pauseActions(1000 * INV_DURATION + 500); //3500
     } else if (game?.status === Status.CHOOSE_CHAN && game.topDecked) {
-      pauseActions((1000 * (ENACT_POLICY_DURATION + TOP_DECK_DELAY) * 2) / 3);
+      const delay = policyEnactDelay(game);
+      // TOP_DECK_DELAY + (game.vetoAccepted ? policyPilesAnimationLength(2) + policyPilesAnimationLength(game.deck.drawPile.length + 1) : 0);
+      //approximating the reshuffle time, erring on side of more (animate 2 veto policies up, then reshuffle assuming draw was empty it's )
+      pauseActions(1000 * ((2 / 3) * ENACT_POLICY_DURATION + delay));
     } else {
       pauseActions(700); // time for fade out content and uncenter
     }
@@ -229,19 +241,10 @@ export default function Game({ name, game, setGame, isConnected, error, setError
 
   useEffect(() => {
     if (gameOver(game?.status)) {
-      const delay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess)
-        ? game.topDecked
-          ? 1000 * ((ENACT_POLICY_DURATION * 2) / 3 + TOP_DECK_DELAY)
-          : (1000 * ENACT_POLICY_DURATION * 2) / 3
-        : (1000 * GAMEOVER_NOT_FROM_POLICY_DELAY) / 2;
+      const delay = 1000 * showGameOverDelay(game, hitlerFlippedForLibSpyGuess);
       setTimeout(() => setRunConfetti(true), delay);
       setTimeout(() => setRecycleConfetti(false), delay + 6000);
-    }
-  }, [game?.status]);
-
-  useEffect(() => {
-    if (gameOver(game?.status)) {
-      setTimeout(() => setShowGameOverButtons(true), 6000);
+      setTimeout(() => setShowGameOverButtons(true), delay);
     }
   }, [game?.status]);
 
