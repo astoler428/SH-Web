@@ -33,6 +33,7 @@ export default function Board({
   playersDimensions,
   pauseActions,
   setPauseActions,
+  setPoliciesStatusMessage,
 }) {
   const fascBoard = game.players.length < 7 ? fasc5PlayerBoard : game.players.length < 9 ? fasc7PlayerBoard : fasc9PlayerBoard;
   const [blur, setBlur] = useState(false);
@@ -94,11 +95,11 @@ export default function Board({
   if (animate === Policy.LIB) {
     enactPolicyImg = libPolicyPng;
     enactPolicyKeyFrames = enactPolicyAnimation(policyWidth, libLeft, libBottom, policyGap, game.LibPoliciesEnacted);
-    policyAnimation = `enact ${ENACT_POLICY_DURATION}s`;
+    policyAnimation = `enact ${ENACT_POLICY_DURATION}s forwards`;
   } else if (animate === Policy.FASC) {
     enactPolicyImg = fascPolicyPng;
     enactPolicyKeyFrames = enactPolicyAnimation(policyWidth, fascLeft, fascBottom, policyGap, game.FascPoliciesEnacted);
-    policyAnimation = `enact ${ENACT_POLICY_DURATION}s`;
+    policyAnimation = `enact ${ENACT_POLICY_DURATION}s forwards`;
   }
 
   const fascCount = boardState.fasc;
@@ -220,7 +221,13 @@ export default function Board({
               transition: "1s left ease-in-out",
             }}
           ></div>
-          <PolicyPiles game={game} boardDimensions={boardDimensions} policyWidth={policyWidth} setEnactPolicyDelay={setEnactPolicyDelay} />
+          <PolicyPiles
+            game={game}
+            boardDimensions={boardDimensions}
+            policyWidth={policyWidth}
+            setEnactPolicyDelay={setEnactPolicyDelay}
+            setPoliciesStatusMessage={setPoliciesStatusMessage}
+          />
         </Box>
       </Box>
     </>

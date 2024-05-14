@@ -45,16 +45,16 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     : {};
 
   if ((status === Status.VOTE || (status === Status.SHOW_VOTE_RESULT && keepShowingVoteSelection)) && thisPlayer.alive) {
-    title = "SELECT A VOTE.";
+    title = "SELECT A VOTE";
     content = showVoteCards();
     _blur = true;
   } else if (status === Status.LIB_SPY_GUESS && isHitler) {
-    title = "GUESS THE LIBERAL SPY.";
+    title = "GUESS THE LIBERAL SPY";
   } else if (isCurrentPres) {
     showDefaultOption = isBlindSetting(game.settings.type) ? true : false;
     switch (status) {
       case Status.PRES_DISCARD:
-        title = "CHOOSE A POLICY TO DISCARD. ";
+        title = "CHOOSE A POLICY TO DISCARD";
         content = showPresPolicies();
         _blur = true;
         break;
@@ -77,24 +77,24 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
         }
         break;
       case Status.VETO_REPLY:
-        title = `THE CHANCELLOR REQUESTS A VETO. ACCEPT OR DECLINE.`;
+        title = `THE CHANCELLOR REQUESTS A VETO... ACCEPT OR DECLINE`;
         content = showVetoOptions();
         _blur = true;
         break;
       case Status.CHOOSE_CHAN:
-        title = `CHOOSE AN ELIGIBLE CHANCELLOR.`;
+        title = `CHOOSE AN ELIGIBLE CHANCELLOR`;
         showDefaultOption = false;
         break;
       case Status.INV:
-        title = `CHOOSE A PLAYER TO INVESTIGATE.`;
+        title = `CHOOSE A PLAYER TO INVESTIGATE`;
         showDefaultOption = false;
         break;
       case Status.SE:
-        title = `CHOOSE A PLAYER TO BECOME THE NEXT PRESIDENT.`;
+        title = `CHOOSE A PLAYER TO BECOME THE NEXT PRESIDENT`;
         showDefaultOption = false;
         break;
       case Status.GUN:
-        title = `CHOOSE A PLAYER TO SHOOT.`;
+        title = `CHOOSE A PLAYER TO SHOOT`;
         showDefaultOption = false;
         break;
       default:
@@ -105,12 +105,12 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     showDefaultOption = isBlindSetting(game.settings.type) ? true : false;
     switch (status) {
       case Status.CHAN_PLAY:
-        title = `CHOOSE A POLICY TO PLAY${inVetoZone ? ` OR REQUEST A VETO.` : `.`}`;
+        title = `CHOOSE A POLICY TO PLAY${inVetoZone ? ` OR REQUEST A VETO` : ``}`;
         content = showChanPolicies();
         _blur = true;
         break;
       case Status.VETO_DECLINED:
-        title = `VETO WAS DECLINED. CHOOSE A POLICY TO PLAY.`;
+        title = `VETO WAS DECLINED... CHOOSE A POLICY TO PLAY`;
         content = showChanPolicies();
         _blur = true;
         break;
@@ -705,18 +705,18 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
 
   //does not show default discard if deducable what was dropped
   useEffect(() => {
-    if (status === Status.CHAN_CLAIM || (gameOver(status) && game.presCards !== null)) {
+    if (game.vetoAccepted) {
+      setShowDiscardDialog(false);
+    } else if (status === Status.CHAN_CLAIM || (gameOver(status) && game.presCards !== null)) {
       const presDraw = draws3[game.presCards.reduce((acc, policy) => acc + (policy.color === Color.BLUE ? 1 : 0), 0)];
       if (
         presDraw === BBB ||
         presDraw === RRR ||
-        (presDraw === RRB && game.chanPlay.color === Color.BLUE) ||
-        (presDraw === RBB && game.chanPlay.color === Color.RED)
+        (presDraw === RRB && game.chanPlay?.color === Color.BLUE) ||
+        (presDraw === RBB && game.chanPlay?.color === Color.RED)
       ) {
         setShowDiscardDialog(false);
       }
-    } else if (game.vetoAccepted) {
-      setShowDiscardDialog(false);
     }
   }, [game.status]);
 

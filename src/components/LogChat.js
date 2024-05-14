@@ -6,7 +6,15 @@ import { socket } from "../socket";
 import StatusMessage from "./StatusMessage";
 import Game from "../pages/Game";
 
-export default function LogChat({ game, name, boardDimensions, playersDimensions, hitlerFlippedForLibSpyGuess }) {
+export default function LogChat({
+  game,
+  name,
+  boardDimensions,
+  playersDimensions,
+  hitlerFlippedForLibSpyGuess,
+  pauseActions,
+  policiesStatusMessage,
+}) {
   const [message, setMessage] = useState("");
   const scrollRef = useRef(undefined);
   const paperRef = useRef(undefined);
@@ -502,7 +510,12 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
           boxSizing: "border-box",
         }}
       >
-        <StatusMessage game={game} hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess} />
+        <StatusMessage
+          game={game}
+          hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess}
+          pauseActions={pauseActions}
+          policiesStatusMessage={policiesStatusMessage}
+        />
         <Paper
           ref={paperRef}
           elevation={0}

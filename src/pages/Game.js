@@ -59,6 +59,7 @@ export default function Game({ name, game, setGame, isConnected, error, setError
   const [recycleConfetti, setRecycleConfetti] = useState(true);
   const [runConfetti, setRunConfetti] = useState(false);
   const [pauseActions, setPauseActions] = useState(false);
+  const [policiesStatusMessage, setPoliciesStatusMessage] = useState("");
   //redundant join by just in case someone navigates directly or refreshes page
   useEffect(() => {
     joinGame();
@@ -202,6 +203,10 @@ export default function Game({ name, game, setGame, isConnected, error, setError
       // TOP_DECK_DELAY + (game.vetoAccepted ? policyPilesAnimationLength(2) + policyPilesAnimationLength(game.deck.drawPile.length + 1) : 0);
       //approximating the reshuffle time, erring on side of more (animate 2 veto policies up, then reshuffle assuming draw was empty it's )
       pauseActions(1000 * ((2 / 3) * ENACT_POLICY_DURATION + delay));
+    } else if (gameOver(game?.status)) {
+      //this is so that status message will show the proper policy related message (enacting policy...)
+      const delay = 1000 * showGameOverDelay(game, hitlerFlippedForLibSpyGuess);
+      pauseActions(delay);
     } else {
       pauseActions(700); // time for fade out content and uncenter
     }
@@ -391,6 +396,7 @@ export default function Game({ name, game, setGame, isConnected, error, setError
                 playersDimensions={playersDimensions}
                 pauseActions={pauseActions}
                 setPauseActions={setPauseActions}
+                setPoliciesStatusMessage={setPoliciesStatusMessage}
               />
             </Box>
             <Box
@@ -408,6 +414,8 @@ export default function Game({ name, game, setGame, isConnected, error, setError
                 boardDimensions={boardDimensions}
                 playersDimensions={playersDimensions}
                 hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess}
+                pauseActions={pauseActions}
+                policiesStatusMessage={policiesStatusMessage}
               />
             </Box>
             {/* display: { xs: "none", sm: "flex" },  */}

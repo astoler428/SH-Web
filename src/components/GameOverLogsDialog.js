@@ -44,6 +44,10 @@ function CustomTable({ rows, columns }) {
     setPage(0);
   };
 
+  const round = (n, decimals) => {
+    return Math.round(n * Math.pow(10, decimals)) / Math.pow(10, decimals);
+  };
+
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
       <TableContainer sx={{ maxHeight: 440 }}>
@@ -62,7 +66,8 @@ function CustomTable({ rows, columns }) {
               return (
                 <TableRow hover role="checkbox" tabIndex={-1} key={i}>
                   {columns.map(column => {
-                    const value = column.id === "randomProb" ? row[column.id].toFixed(3) : row[column.id];
+                    const value =
+                      column.id === "randomProb" ? row[column.id].toFixed(3) : column.id === "threshold" ? round(row[column.id], 3) : row[column.id];
                     return (
                       <TableCell key={column.id} align={column.align}>
                         {column.format && typeof value === "number" ? column.format(value) : value}

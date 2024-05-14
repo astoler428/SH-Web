@@ -563,7 +563,7 @@ export default function Players({
 
   useEffect(() => {
     setFirstRender(false);
-    // game.players.forEach(player => (player.team === Team.FASC ? console.log(player.name + player.role) : ""));
+    game.players.forEach(player => (player.team === Team.FASC ? console.log(player.name + player.role) : ""));
   }, []);
 
   useEffect(() => {
@@ -576,6 +576,10 @@ export default function Players({
     //if you are not confirmed fasc yet, don't update anything
     //if the roleDialog is open, likely means you just confirmed fasc, don't show yet because it's blocking
     if (!thisPlayer.confirmedFasc || roleOpen) {
+      return;
+    }
+    if (game.alreadyEnded) {
+      //avoids the animations on refresh
       return;
     }
     game.players.forEach((player, idx) => {

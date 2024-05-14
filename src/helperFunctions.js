@@ -45,7 +45,7 @@ export const policyPilesAnimationLength = move => {
 
 export const policyEnactDelay = game => {
   return game.vetoAccepted
-    ? TOP_DECK_DELAY + policyPilesAnimationLength(2) + policyPilesAnimationLength(game.deck.drawPile.length + 1)
+    ? TOP_DECK_DELAY + policyPilesAnimationLength(2) + (game.deck.justReshuffled ? policyPilesAnimationLength(game.deck.drawPile.length + 1) : 0)
     : game.topDecked
     ? TOP_DECK_DELAY
     : 0;
