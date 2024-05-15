@@ -9,16 +9,7 @@ import fascPolicyPng from "../img/FascPolicy.png";
 import policyBackPng from "../img/PolicyBack.png";
 import Action from "./Action";
 import PolicyPiles from "./PolicyPiles";
-import {
-  enactPolicyAnimation,
-  Status,
-  Policy,
-  TOP_DECK_DELAY,
-  ENACT_POLICY_DURATION,
-  RESHUFFLE_DELAY,
-  VETO_ACCEPTED_RESHUFFLE_DELAY,
-} from "../consts";
-import { policyPilesAnimationLength } from "../helperFunctions";
+import { enactPolicyAnimation, Policy, ENACT_POLICY_DURATION } from "../consts";
 
 //set policy border radius relative to the policyWidth here and everywhere
 export default function Board({

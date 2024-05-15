@@ -200,8 +200,6 @@ export default function Game({ name, game, setGame, isConnected, error, setError
       pauseActions(1000 * INV_DURATION + 500); //3500
     } else if (game?.status === Status.CHOOSE_CHAN && game.topDecked) {
       const delay = policyEnactDelay(game);
-      // TOP_DECK_DELAY + (game.vetoAccepted ? policyPilesAnimationLength(2) + policyPilesAnimationLength(game.deck.drawPile.length + 1) : 0);
-      //approximating the reshuffle time, erring on side of more (animate 2 veto policies up, then reshuffle assuming draw was empty it's )
       pauseActions(1000 * ((2 / 3) * ENACT_POLICY_DURATION + delay));
     } else if (gameOver(game?.status)) {
       //this is so that status message will show the proper policy related message (enacting policy...)

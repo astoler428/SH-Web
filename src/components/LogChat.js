@@ -192,6 +192,7 @@ export default function LogChat({
     const investigatee = entry.payload?.investigatee && renderName(entry.payload.investigatee);
     const name = entry.payload?.name && renderName(entry.payload.name);
     const claim = entry.payload?.claim && entry.payload.claim;
+    const fail = entry.payload?.fail && entry.payload.fail;
 
     let logEntry;
 
@@ -382,7 +383,7 @@ export default function LogChat({
         const vetoAccepted = entry.payload.vetoAccepted;
         logEntry = vetoAccepted ? (
           <span>
-            {presidentStr} {pres} accepts veto. The election tracker moves forward.
+            {presidentStr} {pres} accepts veto and the election tracker moves forward {`(${fail}/3)`}.
           </span>
         ) : (
           <span>
@@ -398,7 +399,7 @@ export default function LogChat({
         );
         break;
       case LogType.ELECTION_FAIL:
-        logEntry = <span>The election fails and the election tracker moves forward.</span>;
+        logEntry = <span>The election fails and the election tracker moves forward {`(${fail}/3)`}.</span>;
         break;
       case LogType.TOP_DECK:
         logEntry = <span>Three failed elections. Top decking.</span>;

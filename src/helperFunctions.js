@@ -44,11 +44,16 @@ export const policyPilesAnimationLength = move => {
 };
 
 export const policyEnactDelay = game => {
-  return game.vetoAccepted
-    ? TOP_DECK_DELAY + policyPilesAnimationLength(2) + (game.deck.justReshuffled ? policyPilesAnimationLength(game.deck.drawPile.length + 1) : 0)
-    : game.topDecked
-    ? TOP_DECK_DELAY
-    : 0;
+  if (game.vetoAccepted) {
+    //must be a top deck for policy to enact on vetoAccepted
+    return (
+      TOP_DECK_DELAY +
+      policyPilesAnimationLength(2) +
+      (game.deck.reshuffleIsBeforeATopDeck ? policyPilesAnimationLength(game.deck.drawPile.length + 1) : 0)
+    );
+  } else {
+    return game.topDecked ? TOP_DECK_DELAY : 0;
+  }
 };
 
 export const showGameOverDelay = (game, hitlerFlippedForLibSpyGuess) => {
