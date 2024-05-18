@@ -456,9 +456,9 @@ export default function LogChat({
         const remainingPolicies = renderPolicies(entry.payload.remainingPolicies);
         logEntry =
           remainingPolicies.length === 1 ? (
-            <span>The remaining policy in the draw pile is {remainingPolicies}</span>
+            <span>The remaining policy in the draw pile is {remainingPolicies}.</span>
           ) : (
-            <span>The remaining policies in the draw pile are {remainingPolicies}</span>
+            <span>The remaining policies in the draw pile are {remainingPolicies}.</span>
           );
         break;
     }

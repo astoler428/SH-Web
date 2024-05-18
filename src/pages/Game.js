@@ -7,23 +7,13 @@ import {
   Status,
   UPDATE,
   colors,
-  TOP_DECK_DELAY,
-  GAMEOVER_NOT_FROM_POLICY_DELAY,
   ENACT_POLICY_DURATION,
   INV_DURATION,
   VOTE_DELAY,
   VOTE_DURATION,
   HITLER_FLIP_FOR_LIB_SPY_GUESS_DURATION,
-  POLICY_PILES_INITIAL_DELAY,
 } from "../consts";
-import {
-  gameOver,
-  gameEndedWithPolicyEnactment,
-  isBlindSetting,
-  policyPilesAnimationLength,
-  policyEnactDelay,
-  showGameOverDelay,
-} from "../helperFunctions";
+import { gameOver, policyEnactDelay, showGameOverDelay } from "../helperFunctions";
 import Players from "../components/Players";
 import Board from "../components/Board";
 import Loading from "../components/Loading";
@@ -56,6 +46,7 @@ export default function Game({ name, game, setGame, isConnected, error, setError
   const playersRef = useRef(null);
   const boardImageRefs = useRef([]);
   const playerImageRefs = useRef([]);
+  const getResultTimeoutIds = useRef({ vote: null, libSpy: null });
   const [recycleConfetti, setRecycleConfetti] = useState(true);
   const [runConfetti, setRunConfetti] = useState(false);
   const [pauseActions, setPauseActions] = useState(false);
@@ -175,7 +166,7 @@ export default function Game({ name, game, setGame, isConnected, error, setError
   }, []);
 
   useEffect(() => {
-    setTimeout(() => setOpacity(1), 300);
+    setTimeout(() => setOpacity(1), 500);
   }, []);
 
   // useEffect(() => {
@@ -221,6 +212,28 @@ export default function Game({ name, game, setGame, isConnected, error, setError
       setTimeout(() => navigate(`/lobby/${game.remakeId}`), timeout);
     }
   }, [game]);
+
+  //used for if backend crashes and timeout of setting the status based on vote result never runs
+  useEffect(() => {
+    if (game?.status === Status.SHOW_VOTE_RESULT) {
+      getResultTimeoutIds.current.vote = setTimeout(async () => {
+        if (game.status === Status.SHOW_VOTE_RESULT) {
+          await post(`/game/voteResult/${id}`);
+        }
+      }, 10000); //7000
+    } else if (game?.status === Status.SHOW_LIB_SPY_GUESS) {
+      getResultTimeoutIds.current.libSpy = setTimeout(async () => {
+        const spyGuessedPlayer = game.players.find(player => player.guessedToBeLibSpy);
+        await post(`/game/libSpyResult/${id}`, { spyName: spyGuessedPlayer.name });
+      }, 10000); //4000
+    }
+    if (game?.status !== Status.SHOW_VOTE_RESULT) {
+      clearTimeout(getResultTimeoutIds.current.vote);
+    }
+    if (game?.status !== Status.SHOW_LIB_SPY_GUESS) {
+      clearTimeout(getResultTimeoutIds.current.libSpy);
+    }
+  }, [game?.status]);
 
   // determine dimensions of player area
   useEffect(() => {

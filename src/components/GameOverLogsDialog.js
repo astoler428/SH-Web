@@ -1,30 +1,36 @@
 import { useState } from "react";
-import { Dialog, DialogActions, DialogContent, Paper, Table } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, Paper, Table } from "@mui/material";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-
-import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { determine2Cards, determine3Cards, isBlindSetting } from "../helperFunctions";
+import Draggable from "react-draggable";
 
+function PaperComponent(props) {
+  return (
+    <Draggable handle=".drag">
+      <Paper {...props} />
+    </Draggable>
+  );
+}
 export default function GameOverLogsDialog({ game, gameOverLogsOpen, setGameOverLogsOpen }) {
   return (
     <Dialog
       open={gameOverLogsOpen}
       onClose={() => setGameOverLogsOpen(false)}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
+      // aria-labelledby="draggable-dialog-title"
+      PaperComponent={PaperComponent}
       fullWidth={true}
       maxWidth="md"
     >
-      <DialogContent sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <DialogContent sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} className="drag">
         <GameOverLogsTabs game={game} />
       </DialogContent>
     </Dialog>

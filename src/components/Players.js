@@ -563,7 +563,7 @@ export default function Players({
 
   useEffect(() => {
     setFirstRender(false);
-    game.players.forEach(player => (player.team === Team.FASC ? console.log(player.name + player.role) : ""));
+    // game.players.forEach(player => (player.team === Team.FASC ? console.log(player.name + player.role) : ""));
   }, []);
 
   useEffect(() => {
@@ -620,7 +620,8 @@ export default function Players({
   }, [game, roleOpen]);
 
   useEffect(() => {
-    if (status === Status.LIB_SPY_GUESS) {
+    if (status === Status.LIB_SPY_GUESS || status === Status.SHOW_LIB_SPY_GUESS) {
+      //show_lib_spy_guess is redundant but in case of a refresh, need to set the state again
       setHitlerFlippedForLibSpyGuess(true);
     } else if (gameOver(status)) {
       setTimeout(() => setShowPlayerCardLabels(false), gameOverDelay * 1000);
@@ -662,7 +663,7 @@ export default function Players({
         minWidth: { sm: `calc(50px * ${n})`, md: `calc(90px * ${n})` },
         maxWidth: { sm: `min(calc(100vw - 10px), calc(140px * ${n}))` },
         display: "flex",
-        padding: { xs: "1px 5px 7px 5px", sm: "1px 5px 0 5px" },
+        padding: { xs: "1px 5px 7px 5px", sm: "5px 5px 0 5px" },
         // border: "2px solid red",
       }}
     >
