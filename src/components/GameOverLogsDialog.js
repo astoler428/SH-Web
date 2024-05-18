@@ -30,7 +30,8 @@ export default function GameOverLogsDialog({ game, gameOverLogsOpen, setGameOver
       fullWidth={true}
       maxWidth="md"
     >
-      <DialogContent sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} className="drag">
+      <DialogTitle className="drag" sx={{ cursor: "move" }}></DialogTitle>
+      <DialogContent sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
         <GameOverLogsTabs game={game} />
       </DialogContent>
     </Dialog>
