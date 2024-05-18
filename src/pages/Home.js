@@ -17,7 +17,10 @@ export default function Home({ name, setName, isConnected, setIsLoading, error, 
       const res = await client.post("/game", { name, socketId: socket.id });
       setIsLoading(false);
       const id = res.data;
-      navigate(`/lobby/${id}`);
+      if (id) {
+        //if create too quickly back to back, !acceptingResponses returns null
+        navigate(`/lobby/${id}`);
+      }
     } catch (err) {
       setIsLoading(false);
       console.error(err);
