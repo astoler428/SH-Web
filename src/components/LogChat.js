@@ -6,7 +6,15 @@ import { socket } from "../socket";
 import StatusMessage from "./StatusMessage";
 import Game from "../pages/Game";
 
-export default function LogChat({ game, name, boardDimensions, playersDimensions, hitlerFlippedForLibSpyGuess }) {
+export default function LogChat({
+  game,
+  name,
+  boardDimensions,
+  playersDimensions,
+  hitlerFlippedForLibSpyGuess,
+  pauseActions,
+  policiesStatusMessage,
+}) {
   const [message, setMessage] = useState("");
   const scrollRef = useRef(undefined);
   const paperRef = useRef(undefined);
@@ -184,6 +192,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
     const investigatee = entry.payload?.investigatee && renderName(entry.payload.investigatee);
     const name = entry.payload?.name && renderName(entry.payload.name);
     const claim = entry.payload?.claim && entry.payload.claim;
+    const fail = entry.payload?.fail && entry.payload.fail;
 
     let logEntry;
 
@@ -374,7 +383,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
         const vetoAccepted = entry.payload.vetoAccepted;
         logEntry = vetoAccepted ? (
           <span>
-            {presidentStr} {pres} accepts veto. The election tracker moves forward.
+            {presidentStr} {pres} accepts veto and the election tracker moves forward {`(${fail}/3)`}.
           </span>
         ) : (
           <span>
@@ -390,7 +399,7 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
         );
         break;
       case LogType.ELECTION_FAIL:
-        logEntry = <span>The election fails and the election tracker moves forward.</span>;
+        logEntry = <span>The election fails and the election tracker moves forward {`(${fail}/3)`}.</span>;
         break;
       case LogType.TOP_DECK:
         logEntry = <span>Three failed elections. Top decking.</span>;
@@ -447,9 +456,9 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
         const remainingPolicies = renderPolicies(entry.payload.remainingPolicies);
         logEntry =
           remainingPolicies.length === 1 ? (
-            <span>The remaining policy in the draw pile is {remainingPolicies}</span>
+            <span>The remaining policy in the draw pile is {remainingPolicies}.</span>
           ) : (
-            <span>The remaining policies in the draw pile are {remainingPolicies}</span>
+            <span>The remaining policies in the draw pile are {remainingPolicies}.</span>
           );
         break;
     }
@@ -502,14 +511,24 @@ export default function LogChat({ game, name, boardDimensions, playersDimensions
           boxSizing: "border-box",
         }}
       >
-        <StatusMessage game={game} hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess} />
+        <StatusMessage
+          game={game}
+          hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess}
+          pauseActions={pauseActions}
+          policiesStatusMessage={policiesStatusMessage}
+        />
         <Paper
           ref={paperRef}
           elevation={0}
           sx={{
             // width: "100%",
             border: "1px solid black",
-            fontSize: { xs: "12px", sm: "14px", md: "18px" },
+            fontSize: {
+              xs: `calc(100vw / 45)`,
+              sm: `calc((100vw - ${boardDimensions.x}px) / 33)`,
+              md: `min(calc((100vw - ${boardDimensions.x}px) / 34), 14px)`,
+              lg: `min(calc((100vw - ${boardDimensions.x}px) / 34), 15px)`,
+            }, //{ xs: "12px", sm: "14px", md: "16px" },
             marginBottom: { xs: "36px", sm: "36px", md: "40px" },
             flex: 1,
             borderRadius: "0",

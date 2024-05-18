@@ -7,15 +7,13 @@ import {
   Status,
   UPDATE,
   colors,
-  TOP_DECK_DELAY,
-  GAMEOVER_NOT_FROM_POLICY_DELAY,
   ENACT_POLICY_DURATION,
   INV_DURATION,
   VOTE_DELAY,
   VOTE_DURATION,
   HITLER_FLIP_FOR_LIB_SPY_GUESS_DURATION,
 } from "../consts";
-import { gameOver, gameEndedWithPolicyEnactment, isBlindSetting } from "../helperFunctions";
+import { gameOver, policyEnactDelay, showGameOverDelay } from "../helperFunctions";
 import Players from "../components/Players";
 import Board from "../components/Board";
 import Loading from "../components/Loading";
@@ -48,9 +46,11 @@ export default function Game({ name, game, setGame, isConnected, error, setError
   const playersRef = useRef(null);
   const boardImageRefs = useRef([]);
   const playerImageRefs = useRef([]);
+  const getResultTimeoutIds = useRef({ vote: null, libSpy: null });
   const [recycleConfetti, setRecycleConfetti] = useState(true);
   const [runConfetti, setRunConfetti] = useState(false);
   const [pauseActions, setPauseActions] = useState(false);
+  const [policiesStatusMessage, setPoliciesStatusMessage] = useState("");
   //redundant join by just in case someone navigates directly or refreshes page
   useEffect(() => {
     joinGame();
@@ -166,7 +166,7 @@ export default function Game({ name, game, setGame, isConnected, error, setError
   }, []);
 
   useEffect(() => {
-    setTimeout(() => setOpacity(1), 300);
+    setTimeout(() => setOpacity(1), 500);
   }, []);
 
   // useEffect(() => {
@@ -178,7 +178,8 @@ export default function Game({ name, game, setGame, isConnected, error, setError
 
   useEffect(() => {
     if (game?.status === Status.LIB_SPY_GUESS) {
-      const delay = game.topDecked ? TOP_DECK_DELAY + ENACT_POLICY_DURATION : ENACT_POLICY_DURATION;
+      // const delay = game.topDecked ? TOP_DECK_DELAY + ENACT_POLICY_DURATION : ENACT_POLICY_DURATION;
+      const delay = (2 / 3) * ENACT_POLICY_DURATION + policyEnactDelay(game);
       pauseActions(1000 * (delay + HITLER_FLIP_FOR_LIB_SPY_GUESS_DURATION)); //7500
     } else if (game?.status === Status.PRES_DISCARD) {
       pauseActions(1700); //.3 is initial delay before policy pile animation, .4 is when 3rd policy is drawn, 1s animation gives 1700
@@ -189,7 +190,12 @@ export default function Game({ name, game, setGame, isConnected, error, setError
     } else if (game?.status === Status.INV_CLAIM) {
       pauseActions(1000 * INV_DURATION + 500); //3500
     } else if (game?.status === Status.CHOOSE_CHAN && game.topDecked) {
-      pauseActions((1000 * (ENACT_POLICY_DURATION + TOP_DECK_DELAY) * 2) / 3);
+      const delay = policyEnactDelay(game);
+      pauseActions(1000 * ((2 / 3) * ENACT_POLICY_DURATION + delay));
+    } else if (gameOver(game?.status)) {
+      //this is so that status message will show the proper policy related message (enacting policy...)
+      const delay = 1000 * showGameOverDelay(game, hitlerFlippedForLibSpyGuess);
+      pauseActions(delay);
     } else {
       pauseActions(700); // time for fade out content and uncenter
     }
@@ -206,6 +212,28 @@ export default function Game({ name, game, setGame, isConnected, error, setError
       setTimeout(() => navigate(`/lobby/${game.remakeId}`), timeout);
     }
   }, [game]);
+
+  //used for if backend crashes and timeout of setting the status based on vote result never runs
+  useEffect(() => {
+    if (game?.status === Status.SHOW_VOTE_RESULT) {
+      getResultTimeoutIds.current.vote = setTimeout(async () => {
+        if (game.status === Status.SHOW_VOTE_RESULT) {
+          await post(`/game/voteResult/${id}`);
+        }
+      }, 10000); //7000
+    } else if (game?.status === Status.SHOW_LIB_SPY_GUESS) {
+      getResultTimeoutIds.current.libSpy = setTimeout(async () => {
+        const spyGuessedPlayer = game.players.find(player => player.guessedToBeLibSpy);
+        await post(`/game/libSpyResult/${id}`, { spyName: spyGuessedPlayer.name });
+      }, 10000); //4000
+    }
+    if (game?.status !== Status.SHOW_VOTE_RESULT) {
+      clearTimeout(getResultTimeoutIds.current.vote);
+    }
+    if (game?.status !== Status.SHOW_LIB_SPY_GUESS) {
+      clearTimeout(getResultTimeoutIds.current.libSpy);
+    }
+  }, [game?.status]);
 
   // determine dimensions of player area
   useEffect(() => {
@@ -229,19 +257,12 @@ export default function Game({ name, game, setGame, isConnected, error, setError
 
   useEffect(() => {
     if (gameOver(game?.status)) {
-      const delay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess)
-        ? game.topDecked
-          ? 1000 * ((ENACT_POLICY_DURATION * 2) / 3 + TOP_DECK_DELAY)
-          : (1000 * ENACT_POLICY_DURATION * 2) / 3
-        : (1000 * GAMEOVER_NOT_FROM_POLICY_DELAY) / 2;
-      setTimeout(() => setRunConfetti(true), delay);
-      setTimeout(() => setRecycleConfetti(false), delay + 6000);
-    }
-  }, [game?.status]);
-
-  useEffect(() => {
-    if (gameOver(game?.status)) {
-      setTimeout(() => setShowGameOverButtons(true), 6000);
+      const delay = 1000 * showGameOverDelay(game, hitlerFlippedForLibSpyGuess);
+      if (!game.alreadyEnded) {
+        setTimeout(() => setRunConfetti(true), delay);
+        setTimeout(() => setRecycleConfetti(false), delay + 6000);
+      }
+      setTimeout(() => setShowGameOverButtons(true), delay);
     }
   }, [game?.status]);
 
@@ -386,6 +407,7 @@ export default function Game({ name, game, setGame, isConnected, error, setError
                 playersDimensions={playersDimensions}
                 pauseActions={pauseActions}
                 setPauseActions={setPauseActions}
+                setPoliciesStatusMessage={setPoliciesStatusMessage}
               />
             </Box>
             <Box
@@ -403,6 +425,8 @@ export default function Game({ name, game, setGame, isConnected, error, setError
                 boardDimensions={boardDimensions}
                 playersDimensions={playersDimensions}
                 hitlerFlippedForLibSpyGuess={hitlerFlippedForLibSpyGuess}
+                pauseActions={pauseActions}
+                policiesStatusMessage={policiesStatusMessage}
               />
             </Box>
             {/* display: { xs: "none", sm: "flex" },  */}
@@ -431,7 +455,12 @@ export default function Game({ name, game, setGame, isConnected, error, setError
           {/* <Box sx={{ display: { xs: "flex", sm: "none" }, marginTop: "15px" }}>{logChatComponentRef}</Box> */}
           {/* Snackbar is used in mixed role to let know if you can't discard */}
           <SnackBarError error={error} setError={setError} />{" "}
-          <ConfirmFascDialog confirmFascOpen={confirmFascOpen} setConfirmFascOpen={setConfirmFascOpen} handleConfirmFasc={handleConfirmFasc} />
+          <ConfirmFascDialog
+            game={game}
+            confirmFascOpen={confirmFascOpen}
+            setConfirmFascOpen={setConfirmFascOpen}
+            handleConfirmFasc={handleConfirmFasc}
+          />
         </Box>
       ) : (
         <Loading />

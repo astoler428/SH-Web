@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
 import { ENACT_POLICY_DURATION, GAMEOVER_NOT_FROM_POLICY_DELAY, GameType, Role, Status, TOP_DECK_DELAY, colors } from "../consts";
-import { gameEndedWithPolicyEnactment, gameOver, isBlindSetting } from "../helperFunctions";
+import { gameEndedWithPolicyEnactment, gameOver, isBlindSetting, showGameOverDelay } from "../helperFunctions";
 import Game from "../pages/Game";
 
-export default function StatusMessage({ game, hitlerFlippedForLibSpyGuess }) {
+export default function StatusMessage({ game, hitlerFlippedForLibSpyGuess, pauseActions, policiesStatusMessage }) {
   const [showGameOverMessage, setShowGameOverMessage] = useState(false);
   const [policyState, setPolicyState] = useState({ lib: game.LibPoliciesEnacted, fasc: game.FascPoliciesEnacted });
   const message = getStatusMessage(game.status);
 
   function getStatusMessage(status) {
     if (game.LibPoliciesEnacted !== policyState.lib || game.FascPoliciesEnacted !== policyState.fasc) {
-      return "Enacting a policy";
+      return policiesStatusMessage;
     }
     let message;
     switch (status) {
@@ -76,7 +76,7 @@ export default function StatusMessage({ game, hitlerFlippedForLibSpyGuess }) {
         } else if (showGameOverMessage) {
           message = `Game over. ${winners} win!`;
         } else {
-          message = getIfGameContinuedMessage();
+          message = reasonForGameOverMessage();
         }
         // message = showGameOverMessage ? `Game over. ${winners} win!` : `Game over`;
         break;
@@ -84,7 +84,7 @@ export default function StatusMessage({ game, hitlerFlippedForLibSpyGuess }) {
     return message;
   }
 
-  function getIfGameContinuedMessage() {
+  function reasonForGameOverMessage() {
     let message;
 
     if (game.players.find(player => player.role === Role.HITLER).alive === false) {
@@ -99,24 +99,16 @@ export default function StatusMessage({ game, hitlerFlippedForLibSpyGuess }) {
 
   useEffect(() => {
     if (gameOver(game.status)) {
-      const gameOverDelay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess)
-        ? game.topDecked
-          ? ENACT_POLICY_DURATION + TOP_DECK_DELAY
-          : ENACT_POLICY_DURATION
-        : GAMEOVER_NOT_FROM_POLICY_DELAY;
+      const gameOverDelay = showGameOverDelay(game, hitlerFlippedForLibSpyGuess);
       setTimeout(() => setShowGameOverMessage(true), gameOverDelay * 1000);
     }
   }, [game.status]);
 
   useEffect(() => {
-    if (game.LibPoliciesEnacted !== policyState.lib || game.FascPoliciesEnacted !== policyState.fasc) {
-      //delay matches pauseActions
-      const delay = game.topDecked ? (1000 * (ENACT_POLICY_DURATION + TOP_DECK_DELAY) * 2) / 3 : (1000 * ENACT_POLICY_DURATION * 2) / 3;
-      setTimeout(() => {
-        setPolicyState({ lib: game.LibPoliciesEnacted, fasc: game.FascPoliciesEnacted });
-      }, delay);
+    if ((game.LibPoliciesEnacted !== policyState.lib || game.FascPoliciesEnacted !== policyState.fasc) && !pauseActions) {
+      setPolicyState({ lib: game.LibPoliciesEnacted, fasc: game.FascPoliciesEnacted });
     }
-  }, [game.status]);
+  }, [pauseActions]); //used to depend on status...
 
   return (
     <Box

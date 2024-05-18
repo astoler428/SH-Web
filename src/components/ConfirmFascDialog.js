@@ -5,8 +5,15 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import { gameOver } from "../helperFunctions";
 
-export default function ConfirmFascDialog({ confirmFascOpen, setConfirmFascOpen, handleConfirmFasc }) {
+export default function ConfirmFascDialog({ game, confirmFascOpen, setConfirmFascOpen, handleConfirmFasc }) {
+  React.useEffect(() => {
+    if (gameOver(game.status)) {
+      setConfirmFascOpen(false);
+    }
+  }, [game.status]);
+
   return (
     <div>
       <Dialog

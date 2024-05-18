@@ -23,7 +23,7 @@ import {
   VOTE_DURATION,
   HITLER_FLIP_FOR_LIB_SPY_GUESS_DURATION,
 } from "../consts";
-import { gameOver, gameEndedWithPolicyEnactment, isBlindSetting } from "../helperFunctions";
+import { gameOver, gameEndedWithPolicyEnactment, isBlindSetting, policyEnactDelay, showGameOverDelay } from "../helperFunctions";
 import { Card, CircularProgress, Grid, Typography, Box, Tooltip } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
@@ -116,12 +116,7 @@ export default function Players({
     newState[idx] = val;
     return newState;
   };
-  const gameOverDelay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess)
-    ? game.topDecked
-      ? ENACT_POLICY_DURATION + TOP_DECK_DELAY
-      : ENACT_POLICY_DURATION
-    : GAMEOVER_NOT_FROM_POLICY_DELAY;
-
+  const gameOverDelay = showGameOverDelay(game, hitlerFlippedForLibSpyGuess);
   const renderPlayers = game?.players?.map((player, idx) => {
     let choosable = false;
     let makingDecision = false;
@@ -270,7 +265,7 @@ export default function Players({
     } else if (status === Status.LIB_SPY_GUESS && player.role === Role.HITLER && player.name !== name) {
       roleContent = roleBackPng;
       roleContentFlip = hitlerPng;
-      const delay = game.topDecked ? TOP_DECK_DELAY + ENACT_POLICY_DURATION : ENACT_POLICY_DURATION;
+      const delay = (2 / 3) * ENACT_POLICY_DURATION + policyEnactDelay(game);
       roleAnimation = `flip ${HITLER_FLIP_FOR_LIB_SPY_GUESS_DURATION}s forwards ${delay}s`;
       nameColor = colors.hitler;
       nameColorTransition = `color ${HITLER_FLIP_FOR_LIB_SPY_GUESS_DURATION}s ${delay}s`;
@@ -291,8 +286,8 @@ export default function Players({
         // roleContent = roleBackPng;
         roleContentFlip = getRoleImg(player)[0];
         // const delay = gameEndedWithPolicyEnactment(game, hitlerFlippedForLibSpyGuess) ? (game.topDecked ? 7 : 6) : 2
-        roleAnimation = `flip 3s forwards ${gameOverDelay}s`; //'flip 3s forwards 2.5s'
-        nameColorTransition = `color 1.5s ${gameOverDelay + 1.5}s`;
+        roleAnimation = game.alreadyEnded ? `flip 0s forwards` : `flip 3s forwards ${gameOverDelay}s`; //'flip 3s forwards 2.5s'
+        nameColorTransition = game.alreadyEnded ? `` : `color 1.5s ${gameOverDelay + 1.5}s`;
       }
     }
 
@@ -583,6 +578,10 @@ export default function Players({
     if (!thisPlayer.confirmedFasc || roleOpen) {
       return;
     }
+    if (game.alreadyEnded) {
+      //avoids the animations on refresh
+      return;
+    }
     game.players.forEach((player, idx) => {
       //never do this for yourself
       if (
@@ -621,7 +620,8 @@ export default function Players({
   }, [game, roleOpen]);
 
   useEffect(() => {
-    if (status === Status.LIB_SPY_GUESS) {
+    if (status === Status.LIB_SPY_GUESS || status === Status.SHOW_LIB_SPY_GUESS) {
+      //show_lib_spy_guess is redundant but in case of a refresh, need to set the state again
       setHitlerFlippedForLibSpyGuess(true);
     } else if (gameOver(status)) {
       setTimeout(() => setShowPlayerCardLabels(false), gameOverDelay * 1000);
@@ -663,7 +663,7 @@ export default function Players({
         minWidth: { sm: `calc(50px * ${n})`, md: `calc(90px * ${n})` },
         maxWidth: { sm: `min(calc(100vw - 10px), calc(140px * ${n}))` },
         display: "flex",
-        padding: { xs: "1px 5px 7px 5px", sm: "1px 5px 0 5px" },
+        padding: { xs: "1px 5px 7px 5px", sm: "5px 5px 0 5px" },
         // border: "2px solid red",
       }}
     >

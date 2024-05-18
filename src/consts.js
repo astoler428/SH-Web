@@ -168,8 +168,10 @@ export const PRES3 = {
   BBB: "BBB",
 };
 
-export const TOP_DECK_DELAY = 1.5;
-export const RESHUFFLE_DELAY = 4;
+export const POLICY_PILES_INITIAL_DELAY = 0.3;
+export const POLICY_PILES_DELAY_BETWEEN_POLICIES = 0.2;
+export const POLICY_PILES_DURATION = 1;
+export const TOP_DECK_DELAY = 1.5; //essentially inital delay + duration + a little delay
 export const ENACT_POLICY_DURATION = 6;
 export const GAMEOVER_NOT_FROM_POLICY_DELAY = 3;
 export const CONFIRM_FASC_DIALOG_DURATION = 1.5;

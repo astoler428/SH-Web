@@ -24,6 +24,7 @@ export default function DefaulDiscardDialog({ game, name, showDiscardDialog, set
         onClose={() => setShowDiscardDialog(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        sx={{ width: { xs: "300px", md: "100%" }, justifyContent: "center", margin: "auto" }}
       >
         <DialogTitle id="alert-dialog-title" sx={{ justifyContent: "center", display: "flex" }}>
           {"Your discard"}

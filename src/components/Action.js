@@ -6,7 +6,7 @@ import policyBackPng from "../img/PolicyBack.png";
 import jaPng from "../img/Ja.png";
 import neinPng from "../img/Nein.png";
 import { Color, draws3, PRES3, CHAN2, Status, Vote, Team, Role, GameType, RRR, RRB, RBB, BBB, colors } from "../consts";
-import { isBlindSetting } from "../helperFunctions";
+import { gameOver, isBlindSetting } from "../helperFunctions";
 import { post } from "../api/api";
 import DefaulDiscardDialog from "./DefaultDiscardDialog";
 
@@ -20,6 +20,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   const [keepShowingVoteSelection, setKeepShowingVoteSelection] = useState(true); //when show vote starts - keep showing the players selected vote
   const [currentVote, setCurrentVote] = useState(null);
   const [awaitingResponse, setAwaitingResponse] = useState(false);
+  const [refreshResizeComplete, setRefreshResizeComplete] = useState(false);
   const isCurrentPres = game.currentPres === name;
   const isCurrentChan = game.currentChan === name;
   const thisPlayer = game.players.find(player => player.name === name);
@@ -44,16 +45,16 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     : {};
 
   if ((status === Status.VOTE || (status === Status.SHOW_VOTE_RESULT && keepShowingVoteSelection)) && thisPlayer.alive) {
-    title = "SELECT A VOTE.";
+    title = "SELECT A VOTE";
     content = showVoteCards();
     _blur = true;
   } else if (status === Status.LIB_SPY_GUESS && isHitler) {
-    title = "GUESS THE LIBERAL SPY.";
+    title = "GUESS THE LIBERAL SPY";
   } else if (isCurrentPres) {
     showDefaultOption = isBlindSetting(game.settings.type) ? true : false;
     switch (status) {
       case Status.PRES_DISCARD:
-        title = "CHOOSE A POLICY TO DISCARD. ";
+        title = "CHOOSE A POLICY TO DISCARD";
         content = showPresPolicies();
         _blur = true;
         break;
@@ -76,24 +77,24 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
         }
         break;
       case Status.VETO_REPLY:
-        title = `THE CHANCELLOR REQUESTS A VETO. ACCEPT OR DECLINE.`;
+        title = `THE CHANCELLOR REQUESTS A VETO... ACCEPT OR DECLINE`;
         content = showVetoOptions();
         _blur = true;
         break;
       case Status.CHOOSE_CHAN:
-        title = `CHOOSE AN ELIGIBLE CHANCELLOR.`;
+        title = `CHOOSE AN ELIGIBLE CHANCELLOR`;
         showDefaultOption = false;
         break;
       case Status.INV:
-        title = `CHOOSE A PLAYER TO INVESTIGATE.`;
+        title = `CHOOSE A PLAYER TO INVESTIGATE`;
         showDefaultOption = false;
         break;
       case Status.SE:
-        title = `CHOOSE A PLAYER TO BECOME THE NEXT PRESIDENT.`;
+        title = `CHOOSE A PLAYER TO BECOME THE NEXT PRESIDENT`;
         showDefaultOption = false;
         break;
       case Status.GUN:
-        title = `CHOOSE A PLAYER TO SHOOT.`;
+        title = `CHOOSE A PLAYER TO SHOOT`;
         showDefaultOption = false;
         break;
       default:
@@ -104,12 +105,12 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     showDefaultOption = isBlindSetting(game.settings.type) ? true : false;
     switch (status) {
       case Status.CHAN_PLAY:
-        title = `CHOOSE A POLICY TO PLAY${inVetoZone ? ` OR REQUEST A VETO.` : `.`}`;
+        title = `CHOOSE A POLICY TO PLAY${inVetoZone ? ` OR REQUEST A VETO` : ``}`;
         content = showChanPolicies();
         _blur = true;
         break;
       case Status.VETO_DECLINED:
-        title = `VETO WAS DECLINED. CHOOSE A POLICY TO PLAY.`;
+        title = `VETO WAS DECLINED... CHOOSE A POLICY TO PLAY`;
         content = showChanPolicies();
         _blur = true;
         break;
@@ -240,9 +241,18 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
 
   useEffect(() => {
     //hack for certain reloads when images and stuff aren't showing properly
+    //this causes a resize every half second for 5 seconds
+    if (!refreshResizeComplete) {
+      setTimeout(() => {
+        window.dispatchEvent(new Event("resize"));
+      }, 500);
+    }
+  }, [boardDimensions]);
+
+  useEffect(() => {
     setTimeout(() => {
-      window.dispatchEvent(new Event("resize"));
-    }, 2000);
+      setRefreshResizeComplete(true);
+    }, 5000);
   }, []);
 
   function showVoteCards() {
@@ -695,13 +705,15 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
 
   //does not show default discard if deducable what was dropped
   useEffect(() => {
-    if (status === Status.CHAN_CLAIM) {
+    if (game.vetoAccepted) {
+      setShowDiscardDialog(false);
+    } else if (status === Status.CHAN_CLAIM || (gameOver(status) && game.presCards !== null)) {
       const presDraw = draws3[game.presCards.reduce((acc, policy) => acc + (policy.color === Color.BLUE ? 1 : 0), 0)];
       if (
         presDraw === BBB ||
         presDraw === RRR ||
-        (presDraw === RRB && game.chanPlay.color === Color.BLUE) ||
-        (presDraw === RBB && game.chanPlay.color === Color.RED)
+        (presDraw === RRB && game.chanPlay?.color === Color.BLUE) ||
+        (presDraw === RBB && game.chanPlay?.color === Color.RED)
       ) {
         setShowDiscardDialog(false);
       }

@@ -33,7 +33,7 @@ export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, se
     default:
       roleImg = roleBackPng;
   }
-  if (isBlindSetting(game.settings.type) && !thisPlayer.confirmedFasc && !gameOver(game.status)) {
+  if (isBlindSetting(game.settings.type) && !thisPlayer?.confirmedFasc && !gameOver(game.status)) {
     showRoleImg = false;
   }
 
