@@ -6,7 +6,7 @@ import Lobby from "./pages/Lobby";
 import Game from "./pages/Game";
 import Loading from "./components/Loading";
 import { socket } from "./socket";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
   const [name, setName] = useState(localStorage.getItem("USER") || "");
@@ -60,6 +60,7 @@ function App() {
         path="/game/:id"
         element={<Game name={name} game={game} setGame={setGame} isConnected={isConnected} error={error} setError={setError} />}
       />
+      <Route path="*" element={<Navigate to="/" />}></Route>
     </Routes>
   );
 }
