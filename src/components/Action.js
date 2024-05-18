@@ -18,8 +18,6 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   const [otherContent, setOtherContent] = useState(null);
   const [showTop3PoliciesNotClaim, setShowTop3PoliciesNotClaim] = useState(true); //first show policies
   const [keepShowingVoteSelection, setKeepShowingVoteSelection] = useState(true); //when show vote starts - keep showing the players selected vote
-  const [currentVote, setCurrentVote] = useState(null);
-  const [awaitingResponse, setAwaitingResponse] = useState(false);
   const [refreshResizeComplete, setRefreshResizeComplete] = useState(false);
   const isCurrentPres = game.currentPres === name;
   const isCurrentChan = game.currentChan === name;
@@ -220,24 +218,12 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   }, [boardDimensions, playersDimensions]);
 
   useEffect(() => {
-    if (awaitingResponse) {
-      return;
-    }
     if (game.status === Status.VOTE) {
       setActionContent(content);
       setActionTitle(title);
       setOtherContent(fixedOtherContent);
     }
-    setCurrentVote(thisPlayer.vote);
-  }, [thisPlayer.vote, awaitingResponse]); //Otherwise actionContent does not update with the new vote info
-
-  useEffect(() => {
-    if (game.status === Status.VOTE) {
-      setActionContent(content);
-      setActionTitle(title);
-      setOtherContent(fixedOtherContent);
-    }
-  }, [currentVote]);
+  }, [thisPlayer.vote]); //Otherwise actionContent does not update with the new vote info
 
   useEffect(() => {
     //hack for certain reloads when images and stuff aren't showing properly
@@ -264,7 +250,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
           src={jaPng}
           style={{
             width: boardDimensions.x / 4.5,
-            boxShadow: currentVote === Vote.JA ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
+            boxShadow: thisPlayer.vote === Vote.JA ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
             cursor: status === Status.SHOW_VOTE_RESULT ? "auto" : "pointer",
             transition: "box-shadow .3s",
           }}
@@ -275,7 +261,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
           src={neinPng}
           style={{
             width: boardDimensions.x / 4.5,
-            boxShadow: currentVote === Vote.NEIN ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
+            boxShadow: thisPlayer.vote === Vote.NEIN ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
             cursor: status === Status.SHOW_VOTE_RESULT ? "auto" : "pointer",
             transition: "box-shadow .3s",
           }}
@@ -594,24 +580,11 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   }
 
   async function handleVote(vote) {
-    if (currentVote === thisPlayer.vote) {
-      //I wonder if this situation can occur - click Ja -> currentVote set to Ja -> backend call -> somehow does
-      //not get processed (still null), but now vote cannot be switched because currentVote !== thisPlayer.vote
-      //need to refresh
-      if (vote === currentVote) {
-        setCurrentVote(null);
-      } else {
-        setCurrentVote(vote);
-      }
-      try {
-        setAwaitingResponse(true);
-        await post(`/game/vote/${id}`, { name, vote });
-        setAwaitingResponse(false);
-      } catch (err) {
-        setAwaitingResponse(false);
-        console.error(err);
-        console.error(err?.response?.data?.message);
-      }
+    try {
+      await post(`/game/vote/${id}`, { name, vote });
+    } catch (err) {
+      console.error(err);
+      console.error(err?.response?.data?.message);
     }
   }
 
