@@ -110,7 +110,8 @@ export default function Lobby({ name, game, setGame, isConnected, setError }) {
 
   const disabled = !game || game?.players?.length < 5 || game?.host !== name;
 
-  return game ? (
+  //game.id === id is because if playing back to back games, the game state temporarily has the old game id
+  return game && game.id === id ? (
     <>
       <AppBar position="static">
         <Toolbar>
