@@ -252,7 +252,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
             width: boardDimensions.x / 4.5,
             boxShadow: thisPlayer.vote === Vote.JA ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
             cursor: status === Status.SHOW_VOTE_RESULT ? "auto" : "pointer",
-            transition: "box-shadow .3s",
+            transition: "box-shadow .2s",
           }}
         />
         <img
@@ -263,7 +263,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
             width: boardDimensions.x / 4.5,
             boxShadow: thisPlayer.vote === Vote.NEIN ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
             cursor: status === Status.SHOW_VOTE_RESULT ? "auto" : "pointer",
-            transition: "box-shadow .3s",
+            transition: "box-shadow .2s",
           }}
         />
       </>

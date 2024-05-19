@@ -30,7 +30,7 @@ export default function GameOverLogsDialog({ game, gameOverLogsOpen, setGameOver
       fullWidth={true}
       maxWidth="md"
     >
-      <DialogTitle className="drag" sx={{ cursor: "move" }}></DialogTitle>
+      <DialogTitle className="drag" sx={{ cursor: "move", padding: window.innerHeight < 400 ? "1px" : "16px" }}></DialogTitle>
       <DialogContent sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
         <GameOverLogsTabs game={game} />
       </DialogContent>
@@ -57,7 +57,7 @@ function CustomTable({ rows, columns }) {
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <TableContainer sx={{ maxHeight: 440 }}>
+      <TableContainer sx={{ maxHeight: "min(440px, 70vh)" }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
@@ -87,7 +87,7 @@ function CustomTable({ rows, columns }) {
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
+      {/* <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
         count={rows.length}
@@ -95,7 +95,7 @@ function CustomTable({ rows, columns }) {
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+      /> */}
     </Paper>
   );
 }
