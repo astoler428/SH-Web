@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import client, { post } from "../api/api";
 import { socket } from "../socket";
-import { Status } from "../consts";
+import { EXISTING_GAMES, Status } from "../consts";
 import { Box, TextField, Button } from "@mui/material";
 import SnackBarError from "../components/SnackBarError";
 
 export default function Join({ name, setIsLoading, isConnected, error, setError }) {
   const navigate = useNavigate();
   const [id, setId] = useState("");
+  const [existingGameIds, setExistingGameIds] = useState([]);
 
   async function handleJoin() {
     //currently removed loading conditional from App.js
@@ -33,6 +34,15 @@ export default function Join({ name, setIsLoading, isConnected, error, setError 
     }
   }
 
+  useEffect(() => {
+    socket.on(EXISTING_GAMES, existingGameIds => setExistingGameIds(existingGameIds));
+    getExistingGames();
+    async function getExistingGames() {
+      await post("/game/existingGames");
+    }
+    return () => socket.off(EXISTING_GAMES, existingGameIds => setExistingGameIds(existingGameIds));
+  }, []);
+
   return (
     <Box
       sx={{
@@ -53,7 +63,14 @@ export default function Join({ name, setIsLoading, isConnected, error, setError 
       >
         <form onSubmit={e => e.preventDefault()}>
           <TextField autoFocus label="Game ID" value={id} onChange={e => setId(e.target.value.toUpperCase())} fullWidth required />
-          <Button type="submit" fullWidth variant="contained" disabled={id.length !== 4} onClick={handleJoin} sx={{ marginTop: "8px" }}>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            disabled={id.length !== 4 || !existingGameIds.includes(id)}
+            onClick={handleJoin}
+            sx={{ marginTop: "8px" }}
+          >
             Join Game
           </Button>
         </form>

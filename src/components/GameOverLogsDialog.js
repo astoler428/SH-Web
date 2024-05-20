@@ -13,6 +13,8 @@ import Box from "@mui/material/Box";
 import { determine2Cards, determine3Cards, isBlindSetting } from "../helperFunctions";
 import Draggable from "react-draggable";
 
+const heightCutoff = 650;
+
 function PaperComponent(props) {
   return (
     <Draggable handle=".drag">
@@ -30,7 +32,7 @@ export default function GameOverLogsDialog({ game, gameOverLogsOpen, setGameOver
       fullWidth={true}
       maxWidth="md"
     >
-      <DialogTitle className="drag" sx={{ cursor: "move", padding: window.innerHeight < 400 ? "1px" : "16px" }}></DialogTitle>
+      <DialogTitle className="drag" sx={{ cursor: "move", padding: window.innerHeight < heightCutoff ? "2px" : "10px" }}></DialogTitle>
       <DialogContent sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
         <GameOverLogsTabs game={game} />
       </DialogContent>
@@ -57,8 +59,8 @@ function CustomTable({ rows, columns }) {
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <TableContainer sx={{ maxHeight: window.innerHeight < 500 ? "min(440px, 40vh)" : "min(440px, 60vh)" }}>
-        <Table stickyHeader aria-label="sticky table">
+      <TableContainer sx={{ maxHeight: window.innerHeight < heightCutoff ? "min(440px, 40vh)" : "min(440px, 60vh)" }}>
+        <Table stickyHeader aria-label="sticky table" size={window.innerHeight < heightCutoff ? "small" : "medium"}>
           <TableHead>
             <TableRow>
               {columns.map(column => (
@@ -173,10 +175,10 @@ function GameOverLogsTabs({ game }) {
   ];
 
   govsColumns.forEach(col => (col.align = "center"));
-  const govsRows = game.govs.map((gov, idx) => ({
+  const govsRows = [...game.govs, ...game.govs, ...game.govs, ...game.govs, ...game.govs, ...game.govs, ...game.govs].map((gov, idx) => ({
     ...gov,
     govNum: idx + 1,
-    policyPlayed: gov.policyPlayed.color,
+    policyPlayed: gov.policyPlayed?.color,
     presCards: determine3Cards(gov.presCards),
     chanCards: determine2Cards(gov.chanCards),
   }));
@@ -185,9 +187,14 @@ function GameOverLogsTabs({ game }) {
     <Box sx={{ width: "100%" }}>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs centered value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Governments" {...{ id: "simple-tab-0", "aria-controls": `simple-tabpanel-0` }} />
+          <Tab
+            label="Governments"
+            sx={{ fontSize: window.innerHeight < heightCutoff ? "12px" : "14px" }}
+            {...{ id: "simple-tab-0", "aria-controls": `simple-tabpanel-0` }}
+          />
           <Tab
             label="Default Actions"
+            sx={{ fontSize: window.innerHeight < heightCutoff ? "12px" : "14px" }}
             disabled={!isBlindSetting(game.settings.type)}
             {...{ id: "simple-tab-1", "aria-controls": `simple-tabpanel-1` }}
           />
