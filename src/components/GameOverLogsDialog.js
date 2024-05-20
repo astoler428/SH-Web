@@ -57,7 +57,7 @@ function CustomTable({ rows, columns }) {
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <TableContainer sx={{ maxHeight: "min(440px, 70vh)" }}>
+      <TableContainer sx={{ maxHeight: window.innerHeight < 500 ? "min(440px, 40vh)" : "min(440px, 60vh)" }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
