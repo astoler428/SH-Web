@@ -175,7 +175,7 @@ function GameOverLogsTabs({ game }) {
   ];
 
   govsColumns.forEach(col => (col.align = "center"));
-  const govsRows = [...game.govs, ...game.govs, ...game.govs, ...game.govs, ...game.govs, ...game.govs, ...game.govs].map((gov, idx) => ({
+  const govsRows = game.govs.map((gov, idx) => ({
     ...gov,
     govNum: idx + 1,
     policyPlayed: gov.policyPlayed?.color,
