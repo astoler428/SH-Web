@@ -15,7 +15,7 @@ export default function ConfirmFascDialog({ game, confirmFascOpen, setConfirmFas
     }
   }, [game.status]);
 
-  const throttledHandleConfirmFasc = useCustomThrottle(handleConfirmFasc);
+  const throttledHandleConfirmFasc = useCustomThrottle(handleConfirmFasc, [setConfirmFascOpen]);
 
   return (
     <div>

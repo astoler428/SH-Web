@@ -5,11 +5,13 @@ import { socket } from "../socket";
 import { EXISTING_GAMES, Status } from "../consts";
 import { Box, TextField, Button } from "@mui/material";
 import SnackBarError from "../components/SnackBarError";
+import useCustomThrottle from "../hooks/useCustomThrottle";
 
 export default function Join({ name, setIsLoading, isConnected, error, setError }) {
   const navigate = useNavigate();
   const [id, setId] = useState("");
   const [existingGameIds, setExistingGameIds] = useState([]);
+  const throttledHandleJoin = useCustomThrottle(handleJoin, [setError, setIsLoading]);
 
   async function handleJoin() {
     //currently removed loading conditional from App.js
@@ -67,8 +69,8 @@ export default function Join({ name, setIsLoading, isConnected, error, setError 
             type="submit"
             fullWidth
             variant="contained"
-            disabled={id.length !== 4 || !existingGameIds.includes(id)}
-            onClick={handleJoin}
+            disabled={id.length !== 4 || !existingGameIds?.includes(id)}
+            onClick={throttledHandleJoin}
             sx={{ marginTop: "8px" }}
           >
             Join Game

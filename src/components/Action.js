@@ -21,18 +21,20 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   const [keepShowingVoteSelection, setKeepShowingVoteSelection] = useState(true); //when show vote starts - keep showing the players selected vote
   const [refreshResizeComplete, setRefreshResizeComplete] = useState(false);
   const throttledHandleVetoRequest = useCustomThrottle(handleVetoRequest);
-  const throttledHandleDefaultAction = useCustomThrottle(handleDefaultAction, [game.status]);
-  const throttledHandlePresDiscard = useCustomThrottle(handlePresDiscard);
-  const throttledHandleChanPlay = useCustomThrottle(handleChanPlay);
+  const throttledHandleDefaultAction = useCustomThrottle(handleDefaultAction, [game.status, setShowDiscardDialog]);
+  const throttledHandlePresDiscard = useCustomThrottle(handlePresDiscard, [setError, validDiscardDueToMixedRole]);
+  const throttledHandleChanPlay = useCustomThrottle(handleChanPlay, [setError, validPlayDueToMixedRole]);
   const throttledHandlePresClaim = useCustomThrottle(handlePresClaim);
   const throttledHandleChanClaim = useCustomThrottle(handleChanClaim);
   const throttledHandleInvClaim = useCustomThrottle(handleInvClaim);
   const throttledHandleInspect3Claim = useCustomThrottle(handleInspect3Claim);
   const throttledHandleVetoReply = useCustomThrottle(handleVetoReply);
-  const latestGameStatus = useRef(game.status);
   const isCurrentPres = game.currentPres === name;
   const isCurrentChan = game.currentChan === name;
   const thisPlayer = game.players.find(player => player.name === name);
+  const [currentVote, setCurrentVote] = useState(thisPlayer.vote);
+  const latestCurrentVote = useRef(currentVote);
+  const throttledHandleVote = useCustomThrottle(handleVote, [setCurrentVote], 350);
   const isHitler = thisPlayer.role === Role.HITLER;
   const inVetoZone = game.FascPoliciesEnacted === 5;
   const status = game.status;
@@ -231,7 +233,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
       setActionTitle(title);
       setOtherContent(fixedOtherContent);
     }
-  }, [boardDimensions, playersDimensions]);
+  }, [boardDimensions, playersDimensions, currentVote]);
 
   useEffect(() => {
     if (game.status === Status.VOTE) {
@@ -257,31 +259,27 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     }, 5000);
   }, []);
 
-  useEffect(() => {
-    latestGameStatus.current = game.status;
-  }, [game.status]);
-
   function showVoteCards() {
     return (
       <>
         <img
-          onClick={() => (status === Status.VOTE ? handleVote(Vote.JA) : {})}
+          onClick={() => (status === Status.VOTE ? throttledHandleVote(Vote.JA) : {})}
           draggable="false"
           src={jaPng}
           style={{
             width: boardDimensions.x / 4.5,
-            boxShadow: thisPlayer.vote === Vote.JA ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
+            boxShadow: currentVote === Vote.JA ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
             cursor: status === Status.SHOW_VOTE_RESULT ? "auto" : "pointer",
             transition: "box-shadow .2s",
           }}
         />
         <img
-          onClick={() => (status === Status.VOTE ? handleVote(Vote.NEIN) : {})}
+          onClick={() => (status === Status.VOTE ? throttledHandleVote(Vote.NEIN) : {})}
           draggable="false"
           src={neinPng}
           style={{
             width: boardDimensions.x / 4.5,
-            boxShadow: thisPlayer.vote === Vote.NEIN ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
+            boxShadow: currentVote === Vote.NEIN ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
             cursor: status === Status.SHOW_VOTE_RESULT ? "auto" : "pointer",
             transition: "box-shadow .2s",
           }}
@@ -600,6 +598,14 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   }
 
   async function handleVote(vote) {
+    if (latestCurrentVote.current !== vote) {
+      setCurrentVote(vote);
+      latestCurrentVote.current = vote;
+    } else {
+      setCurrentVote(null);
+      latestCurrentVote.current = null;
+    }
+
     try {
       await post(`/game/vote/${id}`, { name, vote });
     } catch (err) {
@@ -607,6 +613,11 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
       console.error(err?.response?.data?.message);
     }
   }
+
+  useEffect(() => {
+    setCurrentVote(thisPlayer.vote);
+    latestCurrentVote.current = thisPlayer.vote;
+  }, [thisPlayer.vote]);
 
   async function handlePresDiscard(e) {
     const cardColor = e.target.getAttribute("data-key");

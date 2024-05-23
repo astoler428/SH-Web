@@ -13,17 +13,14 @@ import {
   flipAnimation,
   flipAndUnflipAnimation,
   stillAnimation,
-  Identity,
-  TOP_DECK_DELAY,
   ENACT_POLICY_DURATION,
-  GAMEOVER_NOT_FROM_POLICY_DELAY,
   CONFIRM_FASC_DIALOG_DURATION,
   INV_DURATION,
   VOTE_DELAY,
   VOTE_DURATION,
   HITLER_FLIP_FOR_LIB_SPY_GUESS_DURATION,
 } from "../consts";
-import { gameOver, gameEndedWithPolicyEnactment, isBlindSetting, policyEnactDelay, showGameOverDelay } from "../helperFunctions";
+import { gameOver, isBlindSetting, policyEnactDelay, showGameOverDelay } from "../helperFunctions";
 import { Card, CircularProgress, Grid, Typography, Box, Tooltip } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
@@ -55,7 +52,7 @@ import hiddenRoleBackPng from "../img/HiddenRoleBack.png";
 export default function Players({
   name,
   game,
-  handleChoosePlayer,
+  throttledHandleChoosePlayer,
   playerImageRefs,
   playersRef,
   playersDimensions,
@@ -367,7 +364,7 @@ export default function Players({
           )}
           <Card
             data-key={player.name}
-            onClick={choosing && choosable ? handleChoosePlayer : () => {}}
+            onClick={choosing && choosable ? throttledHandleChoosePlayer : () => {}}
             sx={{
               cursor: choosable ? "pointer" : "auto",
               animation: chooseAnimation,

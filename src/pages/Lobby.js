@@ -9,6 +9,7 @@ import GameSettingsComponent from "../components/GameSettingsComponent";
 import HostGameSettings from "../components/HostGameSettings";
 import NonHostGameSettings from "../components/NonHostGameSettings";
 import Loading from "../components/Loading";
+import useCustomThrottle from "../hooks/useCustomThrottle";
 
 export default function Lobby({ name, game, setGame, isConnected, setError }) {
   const navigate = useNavigate();
@@ -17,6 +18,8 @@ export default function Lobby({ name, game, setGame, isConnected, setError }) {
   const enteringGameRef = useRef(false);
   const initialSettings = game?.settings || { type: GameType.BLIND, redDown: false, hitlerKnowsFasc: false, simpleBlind: false };
   const [currentSettings, setCurrentSettings] = useState(initialSettings);
+  const throttledStartGame = useCustomThrottle(startGame);
+
   //join game (redundant but just in case someone navigates directly to the url)
   useEffect(() => {
     joinGame();
@@ -153,7 +156,7 @@ export default function Lobby({ name, game, setGame, isConnected, setError }) {
             </Typography>
             {players}
           </Box>
-          <Button variant="contained" disabled={disabled} sx={{ marginBottom: "12px" }} onClick={startGame}>
+          <Button variant="contained" disabled={disabled} sx={{ marginBottom: "12px" }} onClick={throttledStartGame}>
             {startGameButtonText}
           </Button>
         </Box>

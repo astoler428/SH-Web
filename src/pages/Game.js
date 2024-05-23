@@ -25,6 +25,7 @@ import GameSettingsDialog from "../components/GameSettingsDialog";
 import GameOverLogsDialog from "../components/GameOverLogsDialog";
 import LogChat from "../components/LogChat";
 import Confetti from "react-confetti";
+import useCustomThrottle from "../hooks/useCustomThrottle";
 
 export default function Game({ name, game, setGame, isConnected, error, setError }) {
   // game.status = Status.CHOOSE_CHAN
@@ -51,6 +52,15 @@ export default function Game({ name, game, setGame, isConnected, error, setError
   const [runConfetti, setRunConfetti] = useState(false);
   const [pauseActions, setPauseActions] = useState(false);
   const [policiesStatusMessage, setPoliciesStatusMessage] = useState("");
+
+  const throttledHandleChoosePlayer = useCustomThrottle(handleChoosePlayer, [
+    handleChooseChan,
+    handleChooseInv,
+    handleChooseSE,
+    handleChooseGun,
+    handleChooseLibSpy,
+  ]);
+
   //redundant join by just in case someone navigates directly or refreshes page
   useEffect(() => {
     joinGame();
@@ -440,7 +450,7 @@ export default function Game({ name, game, setGame, isConnected, error, setError
               <Players
                 name={name}
                 game={game}
-                handleChoosePlayer={handleChoosePlayer}
+                throttledHandleChoosePlayer={throttledHandleChoosePlayer}
                 playerImageRefs={playerImageRefs}
                 playersRef={playersRef}
                 playersDimensions={playersDimensions}

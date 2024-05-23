@@ -4,11 +4,13 @@ import { socket } from "../socket";
 import client, { post } from "../api/api";
 import { Typography, CssBaseline, Box, TextField, Button, Snackbar } from "@mui/material";
 import SnackBarError from "../components/SnackBarError";
+import useCustomThrottle from "../hooks/useCustomThrottle";
 
 export default function Home({ name, setName, isConnected, setIsLoading, error, setError }) {
   const navigate = useNavigate();
   const nameInputRef = useRef();
   const [showConnectStatus, setShowConnectionStatus] = useState(false);
+  const throttledCreateGame = useCustomThrottle(createGame, [setError, setIsLoading]);
 
   async function createGame() {
     //currently removed loading conditional from App.js
@@ -86,7 +88,7 @@ export default function Home({ name, setName, isConnected, setIsLoading, error, 
         >
           <form onSubmit={e => e.preventDefault()}>
             <TextField inputRef={nameInputRef} label="Name" fullWidth value={name} onChange={handleInputChange} />
-            <Button type="submit" disabled={!name} onClick={createGame} fullWidth variant="contained" sx={{ margin: "8px 0 4px 0" }}>
+            <Button type="submit" disabled={!name} onClick={throttledCreateGame} fullWidth variant="contained" sx={{ margin: "8px 0 4px 0" }}>
               Create Game
             </Button>
             <Button disabled={!name} onClick={() => navigate("/join")} variant="outlined" fullWidth>
