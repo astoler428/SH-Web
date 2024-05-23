@@ -73,6 +73,7 @@ export default function Lobby({ name, game, setGame, isConnected, setError }) {
   }
 
   async function handleSettingsChange(propName, propValue) {
+    console.log(propName, propValue);
     if (game.host === name) {
       propValue = propName === GameSettings.TYPE ? propValue : !game.settings[propName];
       setCurrentSettings(prevSettings => ({ ...prevSettings, [propName]: propValue }));
