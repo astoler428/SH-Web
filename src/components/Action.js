@@ -21,9 +21,9 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   const [keepShowingVoteSelection, setKeepShowingVoteSelection] = useState(true); //when show vote starts - keep showing the players selected vote
   const [refreshResizeComplete, setRefreshResizeComplete] = useState(false);
   const throttledHandleVetoRequest = useCustomThrottle(handleVetoRequest);
-  const throttledHandleDefaultAction = useCustomThrottle(handleDefaultAction, [game.status, setShowDiscardDialog]);
-  const throttledHandlePresDiscard = useCustomThrottle(handlePresDiscard, [setError, validDiscardDueToMixedRole]);
-  const throttledHandleChanPlay = useCustomThrottle(handleChanPlay, [setError, validPlayDueToMixedRole]);
+  const throttledHandleDefaultAction = useCustomThrottle(handleDefaultAction);
+  const throttledHandlePresDiscard = useCustomThrottle(handlePresDiscard);
+  const throttledHandleChanPlay = useCustomThrottle(handleChanPlay);
   const throttledHandlePresClaim = useCustomThrottle(handlePresClaim);
   const throttledHandleChanClaim = useCustomThrottle(handleChanClaim);
   const throttledHandleInvClaim = useCustomThrottle(handleInvClaim);
@@ -34,7 +34,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   const thisPlayer = game.players.find(player => player.name === name);
   const [currentVote, setCurrentVote] = useState(thisPlayer.vote);
   const latestCurrentVote = useRef(currentVote);
-  const throttledHandleVote = useCustomThrottle(handleVote, [setCurrentVote], 350);
+  const throttledHandleVote = useCustomThrottle(handleVote, 350);
   const isHitler = thisPlayer.role === Role.HITLER;
   const inVetoZone = game.FascPoliciesEnacted === 5;
   const status = game.status;

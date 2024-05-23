@@ -10,7 +10,7 @@ export default function Home({ name, setName, isConnected, setIsLoading, error, 
   const navigate = useNavigate();
   const nameInputRef = useRef();
   const [showConnectStatus, setShowConnectionStatus] = useState(false);
-  const throttledCreateGame = useCustomThrottle(createGame, [setError, setIsLoading]);
+  const throttledCreateGame = useCustomThrottle(createGame);
 
   async function createGame() {
     //currently removed loading conditional from App.js

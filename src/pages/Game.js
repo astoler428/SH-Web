@@ -53,13 +53,7 @@ export default function Game({ name, game, setGame, isConnected, error, setError
   const [pauseActions, setPauseActions] = useState(false);
   const [policiesStatusMessage, setPoliciesStatusMessage] = useState("");
 
-  const throttledHandleChoosePlayer = useCustomThrottle(handleChoosePlayer, [
-    handleChooseChan,
-    handleChooseInv,
-    handleChooseSE,
-    handleChooseGun,
-    handleChooseLibSpy,
-  ]);
+  const throttledHandleChoosePlayer = useCustomThrottle(handleChoosePlayer);
 
   //redundant join by just in case someone navigates directly or refreshes page
   useEffect(() => {

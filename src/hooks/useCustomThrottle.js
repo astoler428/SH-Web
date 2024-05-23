@@ -1,20 +1,17 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import client, { post } from "../api/api";
 
-export default function useCustomThrottle(fn, dependencies = [], delay = 1000) {
+export default function useCustomThrottle(fn, delay = 1000) {
   // let lastTime = 0;
   const lastTimeRef = useRef(0);
-  return useCallback(
-    (...args) => {
-      const now = new Date().getTime();
-      if (now - lastTimeRef.current < delay) {
-        return;
-      }
-      lastTimeRef.current = now;
-      fn(...args);
-    },
-    [delay, fn, client, post, ...dependencies]
-  );
+  return (...args) => {
+    const now = new Date().getTime();
+    if (now - lastTimeRef.current < delay) {
+      return;
+    }
+    lastTimeRef.current = now;
+    fn(...args);
+  };
 }
 
 // export default function useCustomThrottle(fn, dependencies) {

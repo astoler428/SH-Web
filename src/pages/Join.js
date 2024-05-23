@@ -11,7 +11,7 @@ export default function Join({ name, setIsLoading, isConnected, error, setError 
   const navigate = useNavigate();
   const [id, setId] = useState("");
   const [existingGameIds, setExistingGameIds] = useState([]);
-  const throttledHandleJoin = useCustomThrottle(handleJoin, [setError, setIsLoading]);
+  const throttledHandleJoin = useCustomThrottle(handleJoin);
 
   async function handleJoin() {
     //currently removed loading conditional from App.js
