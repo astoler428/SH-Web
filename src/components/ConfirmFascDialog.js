@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { gameOver } from "../helperFunctions";
+import { gameOver, throttle } from "../helperFunctions";
+import useCustomThrottle from "../hooks/useCustomThrottle";
 
 export default function ConfirmFascDialog({ game, confirmFascOpen, setConfirmFascOpen, handleConfirmFasc }) {
   React.useEffect(() => {
@@ -13,6 +14,8 @@ export default function ConfirmFascDialog({ game, confirmFascOpen, setConfirmFas
       setConfirmFascOpen(false);
     }
   }, [game.status]);
+
+  const throttledHandleConfirmFasc = useCustomThrottle(handleConfirmFasc);
 
   return (
     <div>
@@ -28,7 +31,7 @@ export default function ConfirmFascDialog({ game, confirmFascOpen, setConfirmFas
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setConfirmFascOpen(false)}>Nevermind</Button>
-          <Button onClick={handleConfirmFasc} autoFocus>
+          <Button onClick={throttledHandleConfirmFasc} autoFocus>
             Confirm
           </Button>
         </DialogActions>

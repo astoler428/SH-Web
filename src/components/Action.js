@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import useCustomThrottle from "../hooks/useCustomThrottle";
 import { Button, Typography, Box } from "@mui/material";
 import libPolicyPng from "../img/LibPolicy.png";
 import fascPolicyPng from "../img/FascPolicy.png";
@@ -6,7 +7,7 @@ import policyBackPng from "../img/PolicyBack.png";
 import jaPng from "../img/Ja.png";
 import neinPng from "../img/Nein.png";
 import { Color, draws3, PRES3, CHAN2, Status, Vote, Team, Role, GameType, RRR, RRB, RBB, BBB, colors } from "../consts";
-import { gameOver, isBlindSetting } from "../helperFunctions";
+import { gameOver, isBlindSetting, throttle } from "../helperFunctions";
 import { post } from "../api/api";
 import DefaulDiscardDialog from "./DefaultDiscardDialog";
 
@@ -19,12 +20,21 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   const [showTop3PoliciesNotClaim, setShowTop3PoliciesNotClaim] = useState(true); //first show policies
   const [keepShowingVoteSelection, setKeepShowingVoteSelection] = useState(true); //when show vote starts - keep showing the players selected vote
   const [refreshResizeComplete, setRefreshResizeComplete] = useState(false);
+  const throttledHandleVetoRequest = useCustomThrottle(handleVetoRequest);
+  const throttledHandleDefaultAction = useCustomThrottle(handleDefaultAction, [game.status]);
+  const throttledHandlePresDiscard = useCustomThrottle(handlePresDiscard);
+  const throttledHandleChanPlay = useCustomThrottle(handleChanPlay);
+  const throttledHandlePresClaim = useCustomThrottle(handlePresClaim);
+  const throttledHandleChanClaim = useCustomThrottle(handleChanClaim);
+  const throttledHandleInvClaim = useCustomThrottle(handleInvClaim);
+  const throttledHandleInspect3Claim = useCustomThrottle(handleInspect3Claim);
+  const throttledHandleVetoReply = useCustomThrottle(handleVetoReply);
+  const latestGameStatus = useRef(game.status);
   const isCurrentPres = game.currentPres === name;
   const isCurrentChan = game.currentChan === name;
   const thisPlayer = game.players.find(player => player.name === name);
   const isHitler = thisPlayer.role === Role.HITLER;
   const inVetoZone = game.FascPoliciesEnacted === 5;
-  const n = game.players.length;
   const status = game.status;
   let title,
     content,
@@ -134,7 +144,13 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
       }}
     >
       {inVetoZone && isCurrentChan && status === Status.CHAN_PLAY && (
-        <Button variant="contained" color="secondary" disabled={disabled} sx={{ fontSize: { xs: "min(1em, 16px)" } }} onClick={handleVetoRequest}>
+        <Button
+          variant="contained"
+          color="secondary"
+          disabled={disabled}
+          sx={{ fontSize: { xs: "min(1em, 16px)" } }}
+          onClick={throttledHandleVetoRequest}
+        >
           Request Veto
         </Button>
       )}
@@ -143,7 +159,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
           variant="contained"
           style={{ backgroundColor: colors.default }}
           sx={{ fontSize: { xs: "min(1em, 16px)" } }}
-          onClick={handleDefaultAction}
+          onClick={throttledHandleDefaultAction}
         >
           Default to Role
         </Button>
@@ -241,6 +257,10 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     }, 5000);
   }, []);
 
+  useEffect(() => {
+    latestGameStatus.current = game.status;
+  }, [game.status]);
+
   function showVoteCards() {
     return (
       <>
@@ -279,7 +299,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
           className="choosable-policy"
           draggable="false"
           data-key={card.color}
-          onClick={handlePresDiscard}
+          onClick={throttledHandlePresDiscard}
           src={policyImg}
           style={{ width: boardDimensions.x / 6, cursor: "pointer", ...disabledStyles }}
         />
@@ -297,7 +317,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
           className="choosable-policy"
           draggable="false"
           data-key={card.color}
-          onClick={handleChanPlay}
+          onClick={throttledHandleChanPlay}
           src={policyImg}
           style={{ width: boardDimensions.x / 6, cursor: "pointer", ...disabledStyles }}
         />
@@ -309,7 +329,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   function showPresClaims() {
     return (
       <Box
-        onClick={handlePresClaim}
+        onClick={throttledHandlePresClaim}
         sx={{
           display: "flex",
           flexDirection: "column",
@@ -374,7 +394,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   function showChanClaims() {
     return (
       <Box
-        onClick={handleChanClaim}
+        onClick={throttledHandleChanClaim}
         sx={{
           display: "flex",
           flexDirection: "column",
@@ -426,7 +446,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   function showInvClaims() {
     return (
       <Box
-        onClick={handleInvClaim}
+        onClick={throttledHandleInvClaim}
         sx={{
           display: "flex",
           flexDirection: "column",
@@ -472,7 +492,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     ) : (
       <>
         <Box
-          onClick={handleInspect3Claim}
+          onClick={throttledHandleInspect3Claim}
           sx={{
             display: "flex",
             flexDirection: "column",
@@ -538,7 +558,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   function showVetoOptions() {
     return (
       <Box
-        onClick={handleVetoReply}
+        onClick={throttledHandleVetoReply}
         sx={{
           display: "flex",
           flexDirection: "column",
