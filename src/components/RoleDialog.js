@@ -47,7 +47,7 @@ export default function RoleDialog({ thisPlayer, game, roleOpen, setRoleOpen, se
   }
 
   const disableConfirmFasc =
-    inGov(game, thisPlayer.name) || (game.currentPres === thisPlayer.name && game.status === Status.CHAN_CLAIM) || claiming(game, thisPlayer.name);
+    inGov(game, thisPlayer?.name) || (game.currentPres === thisPlayer?.name && game.status === Status.CHAN_CLAIM) || claiming(game, thisPlayer?.name);
   const confirmFascText = disableConfirmFasc ? "Cannot confirm fascist until after claims" : "confirm fascist";
 
   //for the player who incorrectly confirmed fasc, close their role automatically

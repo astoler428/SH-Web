@@ -64,3 +64,17 @@ export const showGameOverDelay = (game, hitlerFlippedForLibSpyGuess) => {
     ? policyEnactDelay(game) + ENACT_POLICY_DURATION
     : GAMEOVER_NOT_FROM_POLICY_DELAY;
 };
+
+export const throttle = (fn, delay = 1000) => {
+  let lastTime = 0;
+  return (...args) => {
+    const now = new Date().getTime();
+    console.log(lastTime, now);
+    if (now - lastTime < delay) {
+      return;
+    }
+    lastTime = now;
+    console.log(lastTime);
+    fn(...args);
+  };
+};
