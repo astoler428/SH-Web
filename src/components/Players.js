@@ -563,7 +563,7 @@ export default function Players({
 
   useEffect(() => {
     setFirstRender(false);
-    // game.players.forEach(player => (player.team === Team.FASC ? console.log(player.name + player.role) : ""));
+    game.players.forEach(player => (player.team === Team.FASC ? console.log(player.name + player.role) : ""));
   }, []);
 
   useEffect(() => {
