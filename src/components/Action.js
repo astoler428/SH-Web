@@ -18,7 +18,6 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   const [actionTitle, setActionTitle] = useState(null);
   const [otherContent, setOtherContent] = useState(null);
   const [showTop3PoliciesNotClaim, setShowTop3PoliciesNotClaim] = useState(true); //first show policies
-  const [keepShowingVoteSelection, setKeepShowingVoteSelection] = useState(true); //when show vote starts - keep showing the players selected vote
   const [refreshResizeComplete, setRefreshResizeComplete] = useState(false);
   const throttledHandleVetoRequest = useCustomThrottle(handleVetoRequest);
   const throttledHandleDefaultAction = useCustomThrottle(handleDefaultAction);
@@ -54,7 +53,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
       }
     : {};
 
-  if ((status === Status.VOTE || (status === Status.SHOW_VOTE_RESULT && keepShowingVoteSelection)) && thisPlayer.alive) {
+  if ((status === Status.VOTE || status === Status.VOTE_LOCK) && thisPlayer.alive) {
     title = "SELECT A VOTE";
     content = showVoteCards();
     _blur = true;
@@ -183,9 +182,8 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
    */
 
   useEffect(() => {
-    if (status === Status.SHOW_VOTE_RESULT && keepShowingVoteSelection) {
+    if (status === Status.VOTE_LOCK) {
       setActionContent(content);
-      setTimeout(() => setKeepShowingVoteSelection(false), 1000); //300
       return;
     }
 
@@ -195,11 +193,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     if (blur) {
       setBlur(false);
     }
-
-    if (status !== Status.SHOW_VOTE_RESULT && !keepShowingVoteSelection) {
-      setKeepShowingVoteSelection(true);
-    }
-  }, [status, showTop3PoliciesNotClaim, keepShowingVoteSelection]);
+  }, [status, showTop3PoliciesNotClaim]);
 
   useEffect(() => {
     if (!centerContent && (content || title) && !pauseActions) {
@@ -236,7 +230,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   }, [boardDimensions, playersDimensions]);
 
   useEffect(() => {
-    if (game.status === Status.VOTE || (game.status === Status.SHOW_VOTE_RESULT && keepShowingVoteSelection)) {
+    if (game.status === Status.VOTE || game.status === Status.VOTE_LOCK) {
       setActionContent(content);
       setActionTitle(title);
       setOtherContent(fixedOtherContent);
@@ -269,7 +263,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
           style={{
             width: boardDimensions.x / 4.5,
             boxShadow: currentVote === Vote.JA ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
-            cursor: status === Status.SHOW_VOTE_RESULT ? "auto" : "pointer",
+            cursor: status === Status.VOTE ? "pointer" : "auto",
             transition: "box-shadow .2s",
           }}
         />
@@ -280,7 +274,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
           style={{
             width: boardDimensions.x / 4.5,
             boxShadow: currentVote === Vote.NEIN ? `0 0 6px ${boardDimensions.x / 50}px #79DFA0` : "none",
-            cursor: status === Status.SHOW_VOTE_RESULT ? "auto" : "pointer",
+            cursor: status === Status.VOTE ? "pointer" : "auto",
             transition: "box-shadow .2s",
           }}
         />
@@ -610,7 +604,6 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     try {
       await client.post(`/game/vote/${id}`, { name, vote });
     } catch (err) {
-      console.log("error caught");
       setCurrentVote(prevVote);
       latestCurrentVote.current = prevVote;
       console.error(err);

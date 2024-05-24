@@ -69,12 +69,10 @@ export const throttle = (fn, delay = 1000) => {
   let lastTime = 0;
   return (...args) => {
     const now = new Date().getTime();
-    console.log(lastTime, now);
     if (now - lastTime < delay) {
       return;
     }
     lastTime = now;
-    console.log(lastTime);
     fn(...args);
   };
 };

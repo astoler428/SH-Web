@@ -174,7 +174,7 @@ export default function Players({
         makingDecision = true;
       }
     }
-    if (status === Status.VOTE && !player.vote && player.alive) {
+    if ((status === Status.VOTE || status === Status.VOTE_LOCK) && !player.vote && player.alive) {
       makingDecision = true;
     }
     if (status === Status.LIB_SPY_GUESS && player.role === Role.HITLER) {
@@ -234,7 +234,7 @@ export default function Players({
           nameColorTransition = "color 1s 4s";
         }
       }
-    } else if (status === Status.VOTE) {
+    } else if (status === Status.VOTE || status === Status.VOTE_LOCK) {
       if (player.alive) {
         overlayContent = voteBackPng;
         animation = `up ${VOTE_DURATION}s forwards ${VOTE_DELAY}s`;
