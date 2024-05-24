@@ -185,7 +185,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   useEffect(() => {
     if (status === Status.SHOW_VOTE_RESULT && keepShowingVoteSelection) {
       setActionContent(content);
-      setTimeout(() => setKeepShowingVoteSelection(false), 300);
+      setTimeout(() => setKeepShowingVoteSelection(false), 1000); //300
       return;
     }
 
@@ -607,7 +607,6 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
       latestCurrentVote.current = null;
     }
 
-    console.log(currentVote);
     try {
       await client.post(`/game/vote/${id}`, { name, vote });
     } catch (err) {
