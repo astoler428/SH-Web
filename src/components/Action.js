@@ -598,6 +598,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   }
 
   async function handleVote(vote) {
+    const prevVote = latestCurrentVote.current;
     if (latestCurrentVote.current !== vote) {
       setCurrentVote(vote);
       latestCurrentVote.current = vote;
@@ -609,6 +610,8 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     try {
       await post(`/game/vote/${id}`, { name, vote });
     } catch (err) {
+      setCurrentVote(prevVote);
+      latestCurrentVote.current = prevVote;
       console.error(err);
       console.error(err?.response?.data?.message);
     }
