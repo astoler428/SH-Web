@@ -607,9 +607,11 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
       latestCurrentVote.current = null;
     }
 
+    console.log(currentVote);
     try {
       await client.post(`/game/vote/${id}`, { name, vote });
     } catch (err) {
+      console.log("error caught");
       setCurrentVote(prevVote);
       latestCurrentVote.current = prevVote;
       console.error(err);
