@@ -233,15 +233,15 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
       setActionTitle(title);
       setOtherContent(fixedOtherContent);
     }
-  }, [boardDimensions, playersDimensions, currentVote]);
+  }, [boardDimensions, playersDimensions]);
 
   useEffect(() => {
-    if (game.status === Status.VOTE) {
+    if (game.status === Status.VOTE || (game.status === Status.SHOW_VOTE_RESULT && keepShowingVoteSelection)) {
       setActionContent(content);
       setActionTitle(title);
       setOtherContent(fixedOtherContent);
     }
-  }, [thisPlayer.vote]); //Otherwise actionContent does not update with the new vote info
+  }, [thisPlayer.vote, currentVote]); //Otherwise actionContent does not update with the new vote info
 
   useEffect(() => {
     //hack for certain reloads when images and stuff aren't showing properly
