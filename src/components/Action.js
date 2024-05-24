@@ -8,7 +8,7 @@ import jaPng from "../img/Ja.png";
 import neinPng from "../img/Nein.png";
 import { Color, draws3, PRES3, CHAN2, Status, Vote, Team, Role, GameType, RRR, RRB, RBB, BBB, colors } from "../consts";
 import { gameOver, isBlindSetting, throttle } from "../helperFunctions";
-import { post } from "../api/api";
+import client, { post } from "../api/api";
 import DefaulDiscardDialog from "./DefaultDiscardDialog";
 
 export default function Action({ game, name, id, setError, blur, setBlur, boardDimensions, playersDimensions, pauseActions, setPauseActions }) {
@@ -608,7 +608,7 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
     }
 
     try {
-      await post(`/game/vote/${id}`, { name, vote });
+      await client.post(`/game/vote/${id}`, { name, vote });
     } catch (err) {
       setCurrentVote(prevVote);
       latestCurrentVote.current = prevVote;
