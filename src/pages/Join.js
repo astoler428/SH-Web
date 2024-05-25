@@ -46,38 +46,40 @@ export default function Join({ name, setIsLoading, isConnected, error, setError 
   }, []);
 
   return (
-    <Box
-      sx={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-      }}
-    >
+    <>
       <Box
         sx={{
-          display: "flex",
-          flexDirection: "row",
-          flexWrap: "wrap",
-          width: 320,
-          gap: 2,
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
         }}
       >
-        <form onSubmit={e => e.preventDefault()}>
-          <TextField autoFocus label="Game ID" value={id} onChange={e => setId(e.target.value.toUpperCase())} fullWidth required />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            disabled={id.length !== 4 || !existingGameIds?.includes(id)}
-            onClick={throttledHandleJoin}
-            sx={{ marginTop: "8px" }}
-          >
-            Join Game
-          </Button>
-        </form>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            width: 320,
+            gap: 2,
+          }}
+        >
+          <form onSubmit={e => e.preventDefault()}>
+            <TextField autoFocus label="Game ID" value={id} onChange={e => setId(e.target.value.toUpperCase())} fullWidth required />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              disabled={id.length !== 4 || !existingGameIds?.includes(id)}
+              onClick={throttledHandleJoin}
+              sx={{ marginTop: "8px" }}
+            >
+              Join Game
+            </Button>
+          </form>
+        </Box>
       </Box>
-      <SnackBarError error={error} setError={setError} />{" "}
-    </Box>
+      <SnackBarError error={error} setError={setError} />
+    </>
   );
 }

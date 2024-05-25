@@ -96,8 +96,8 @@ export default function Home({ name, setName, isConnected, setIsLoading, error, 
             </Button>
           </form>
         </Box>
-        <SnackBarError error={error} setError={setError} />
       </Box>
+      <SnackBarError error={error} setError={setError} />
     </>
   );
 }
