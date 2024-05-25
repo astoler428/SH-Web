@@ -71,10 +71,10 @@ export default function Home({ name, setName, isConnected, setIsLoading, error, 
       <CssBaseline />
       <Box
         sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100vh",
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
         }}
       >
         <Box
