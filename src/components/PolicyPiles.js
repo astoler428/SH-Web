@@ -73,9 +73,12 @@ export default function PolicyPiles({ game, boardDimensions, setEnactPolicyDelay
       } else if (game.status === Status.CHAN_PLAY) {
         setAnimatePolicyPile({ draw: null, discard: { initial: policyPilesState.discardPile, move: 1, direction: "up" } });
         animationLength += policyPilesAnimationLength(1);
-        setTimeout(() => {
-          setPolicyPileCountDisplay({ drawPile: policyPilesState.drawPile, discardPile: policyPilesState.discardPile + 1 });
-        }, POLICY_PILES_INITIAL_DELAY * 1000);
+        setTimeout(
+          () => {
+            setPolicyPileCountDisplay({ drawPile: policyPilesState.drawPile, discardPile: policyPilesState.discardPile + 1 });
+          },
+          policyPilesState.discardPile === 0 ? animationLength * 1000 : POLICY_PILES_INITIAL_DELAY * 1000
+        );
       } else if (!game.vetoAccepted && !game.topDecked) {
         //might work - when else is policyPileCount different from no vetoAccepted, no topDeck?
         //would have to be a status resembling chan_claim -> maybe game over lib or fasc or libspyguess
@@ -285,8 +288,9 @@ export default function PolicyPiles({ game, boardDimensions, setEnactPolicyDelay
         sx={{
           position: "absolute",
           left: boardDimensions.x / 22.5,
-          bottom: boardDimensions.x / 9.8,
+          bottom: boardDimensions.x / 9,
           width: policyPilesWidth * 1.25,
+          display: "flex",
         }}
       >
         <img src={DrawPile} draggable="false" style={{ width: "100%" }} />
@@ -295,7 +299,7 @@ export default function PolicyPiles({ game, boardDimensions, setEnactPolicyDelay
             position: "absolute",
             overflow: "hidden",
             left: boardDimensions.x / 95,
-            bottom: boardDimensions.x / 30,
+            bottom: boardDimensions.x / 37,
             width: policyPilesWidth,
             display: "flex",
           }}
@@ -316,8 +320,9 @@ export default function PolicyPiles({ game, boardDimensions, setEnactPolicyDelay
         sx={{
           position: "absolute",
           right: boardDimensions.x / 22.2,
-          bottom: boardDimensions.x / 9.8,
+          bottom: boardDimensions.x / 9,
           width: policyPilesWidth * 1.25,
+          display: "flex",
         }}
       >
         <img src={DiscardPile} draggable="false" style={{ width: "100%" }} />
@@ -326,7 +331,7 @@ export default function PolicyPiles({ game, boardDimensions, setEnactPolicyDelay
             position: "absolute",
             overflow: "hidden",
             left: boardDimensions.x / 95,
-            bottom: boardDimensions.x / 30,
+            bottom: boardDimensions.x / 37,
             width: policyPilesWidth,
             display: "flex",
           }}
