@@ -74,7 +74,7 @@ export default function Home({ name, setName, isConnected, setIsLoading, error, 
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          minHeight: "100vh",
+          height: "100vh",
         }}
       >
         <Box
