@@ -278,7 +278,7 @@ export default function PolicyPiles({ game, boardDimensions, setEnactPolicyDelay
   }
 
   return (
-    <Box sx={{ display: "flex", gap: 1 }}>
+    <Box sx={{ display: "flex", gap: 1, position: "relative" }}>
       <style>{policyPileDownKeyFrames}</style>
       <style>{policyPileUpKeyFrames}</style>
       <Box

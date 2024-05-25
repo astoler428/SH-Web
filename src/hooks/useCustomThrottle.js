@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import client, { post } from "../api/api";
 
-export default function useCustomThrottle(fn, delay = 1000) {
-  // let lastTime = 0;
+export default function useCustomThrottle(fn, delay = 1500) {
   const lastTimeRef = useRef(0);
   return (...args) => {
     const now = new Date().getTime();

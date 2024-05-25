@@ -461,7 +461,7 @@ export default function Players({
                   src={presPng}
                   draggable="false"
                   style={{
-                    opacity: game.currentPres === player.name ? 1 : 0,
+                    opacity: game.currentPres === player.name && game.status !== Status.STARTED ? 1 : 0,
                     transition: "opacity 1s",
                     width: "100%",
                     position: "absolute",
@@ -469,6 +469,7 @@ export default function Players({
                     bottom: 0,
                   }}
                 />
+
                 <img
                   src={chanPng}
                   draggable="false"

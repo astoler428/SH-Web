@@ -24,6 +24,9 @@ export default function StatusMessage({ game, hitlerFlippedForLibSpyGuess, pause
       case Status.VOTE:
         message = "Players to vote";
         break;
+      case Status.VOTE_LOCK:
+        message = "All votes are in";
+        break;
       case Status.SHOW_VOTE_RESULT:
         message = "Tallying vote results";
         break;
