@@ -230,12 +230,21 @@ export default function Game({ name, game, setGame, isConnected, error, setError
         const spyGuessedPlayer = game.players.find(player => player.guessedToBeLibSpy);
         await post(`/game/libSpyResult/${id}`, { spyName: spyGuessedPlayer.name });
       }, 10000); //4000
+    } else if (game?.status === Status.VOTE_LOCK) {
+      getResultTimeoutIds.current.voteLock = setTimeout(async () => {
+        if (game.status === Status.VOTE_LOCK) {
+          await post(`/game/voteLockResult/${id}`);
+        }
+      }, 10000);
     }
     if (game?.status !== Status.SHOW_VOTE_RESULT) {
       clearTimeout(getResultTimeoutIds.current.vote);
     }
     if (game?.status !== Status.SHOW_LIB_SPY_GUESS) {
       clearTimeout(getResultTimeoutIds.current.libSpy);
+    }
+    if (game?.status !== Status.VOTE_LOCK) {
+      clearTimeout(getResultTimeoutIds.current.voteLock);
     }
   }, [game?.status]);
 

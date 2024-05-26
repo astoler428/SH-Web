@@ -6,7 +6,8 @@ import Lobby from "./pages/Lobby";
 import Game from "./pages/Game";
 import Loading from "./components/Loading";
 import { socket } from "./socket";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { CHECK_IN_GAME } from "./consts";
 
 function App() {
   const [name, setName] = useState(localStorage.getItem("USER") || "");
@@ -14,6 +15,7 @@ function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -32,6 +34,19 @@ function App() {
       });
     };
   }, []);
+
+  useEffect(() => {
+    function emitInGame() {
+      const loc = location.pathname.split("/")[1];
+      const inGame = ["lobby", "game"].includes(loc);
+      socket.emit("inGameUpdate", { socketId: socket.id, inGame });
+    }
+    socket.on(CHECK_IN_GAME, emitInGame);
+
+    return () => {
+      socket.off(CHECK_IN_GAME, emitInGame);
+    };
+  }, [location]);
 
   useEffect(() => {
     const images = document.querySelectorAll("img");

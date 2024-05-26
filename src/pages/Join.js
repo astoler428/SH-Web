@@ -43,7 +43,7 @@ export default function Join({ name, setIsLoading, isConnected, error, setError 
       await post("/game/existingGames");
     }
     return () => socket.off(EXISTING_GAMES, existingGameIds => setExistingGameIds(existingGameIds));
-  }, []);
+  }, [isConnected]);
 
   return (
     <>

@@ -15,6 +15,7 @@ export const colors = {
 
 export const UPDATE = "UPDATE";
 export const EXISTING_GAMES = "EXISTING_GAMES";
+export const CHECK_IN_GAME = "CHECK_IN_GAME";
 
 export const ClaimType = {
   PRES: "PRES",
