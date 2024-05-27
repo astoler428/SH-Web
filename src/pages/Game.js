@@ -219,7 +219,13 @@ export default function Game({ name, game, setGame, isConnected, error, setError
 
   //used for if backend crashes and timeout of setting the status based on vote result never runs
   useEffect(() => {
-    if (game?.status === Status.SHOW_VOTE_RESULT) {
+    if (game?.status === Status.STARTED) {
+      getResultTimeoutIds.current.started = setTimeout(async () => {
+        if (game.status === Status.STARTED) {
+          await post(`/game/startedResult/${id}`);
+        }
+      }, 15000); //7000
+    } else if (game?.status === Status.SHOW_VOTE_RESULT) {
       getResultTimeoutIds.current.vote = setTimeout(async () => {
         if (game.status === Status.SHOW_VOTE_RESULT) {
           await post(`/game/voteResult/${id}`);
@@ -237,6 +243,9 @@ export default function Game({ name, game, setGame, isConnected, error, setError
         }
       }, 10000);
     }
+    if (game?.status !== Status.STARTED) {
+      clearTimeout(getResultTimeoutIds.current.started);
+    }
     if (game?.status !== Status.SHOW_VOTE_RESULT) {
       clearTimeout(getResultTimeoutIds.current.vote);
     }
@@ -246,6 +255,13 @@ export default function Game({ name, game, setGame, isConnected, error, setError
     if (game?.status !== Status.VOTE_LOCK) {
       clearTimeout(getResultTimeoutIds.current.voteLock);
     }
+
+    return () => {
+      clearTimeout(getResultTimeoutIds.current.started);
+      clearTimeout(getResultTimeoutIds.current.vote);
+      clearTimeout(getResultTimeoutIds.current.libSpy);
+      clearTimeout(getResultTimeoutIds.current.voteLock);
+    };
   }, [game?.status]);
 
   // determine dimensions of player area

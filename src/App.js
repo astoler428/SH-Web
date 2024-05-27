@@ -35,6 +35,7 @@ function App() {
     };
   }, []);
 
+  //not used currently. Made for backend to double check if connected socket is in the game in case removed from game but player.socketId still there. If this happens, player should be able to close window and rejoin and the confirmInGame check will override playerAlreadyInGame.
   useEffect(() => {
     function emitInGame() {
       const loc = location.pathname.split("/")[1];
