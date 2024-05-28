@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import useCustomThrottle from "../hooks/useCustomThrottle";
+import useCustomThrottle, { useCustomSharedThrottle } from "../hooks/useCustomThrottle";
 import { Button, Typography, Box } from "@mui/material";
 import libPolicyPng from "../img/LibPolicy.png";
 import fascPolicyPng from "../img/FascPolicy.png";
@@ -7,7 +7,7 @@ import policyBackPng from "../img/PolicyBack.png";
 import jaPng from "../img/Ja.png";
 import neinPng from "../img/Nein.png";
 import { Color, draws3, PRES3, CHAN2, Status, Vote, Team, Role, GameType, RRR, RRB, RBB, BBB, colors } from "../consts";
-import { gameOver, isBlindSetting, throttle } from "../helperFunctions";
+import { gameOver, isBlindSetting } from "../helperFunctions";
 import client, { post } from "../api/api";
 import DefaulDiscardDialog from "./DefaultDiscardDialog";
 
@@ -19,15 +19,16 @@ export default function Action({ game, name, id, setError, blur, setBlur, boardD
   const [otherContent, setOtherContent] = useState(null);
   const [showTop3PoliciesNotClaim, setShowTop3PoliciesNotClaim] = useState(true); //first show policies
   const [refreshResizeComplete, setRefreshResizeComplete] = useState(false);
-  const throttledHandleVetoRequest = useCustomThrottle(handleVetoRequest);
-  const throttledHandleDefaultAction = useCustomThrottle(handleDefaultAction);
-  const throttledHandlePresDiscard = useCustomThrottle(handlePresDiscard);
-  const throttledHandleChanPlay = useCustomThrottle(handleChanPlay);
-  const throttledHandlePresClaim = useCustomThrottle(handlePresClaim);
-  const throttledHandleChanClaim = useCustomThrottle(handleChanClaim);
-  const throttledHandleInvClaim = useCustomThrottle(handleInvClaim);
-  const throttledHandleInspect3Claim = useCustomThrottle(handleInspect3Claim);
-  const throttledHandleVetoReply = useCustomThrottle(handleVetoReply);
+  const sharedLastTimeRef = useRef(0);
+  const throttledHandleVetoRequest = useCustomSharedThrottle(handleVetoRequest, sharedLastTimeRef);
+  const throttledHandleDefaultAction = useCustomSharedThrottle(handleDefaultAction, sharedLastTimeRef);
+  const throttledHandlePresDiscard = useCustomSharedThrottle(handlePresDiscard, sharedLastTimeRef);
+  const throttledHandleChanPlay = useCustomSharedThrottle(handleChanPlay, sharedLastTimeRef);
+  const throttledHandlePresClaim = useCustomSharedThrottle(handlePresClaim, sharedLastTimeRef);
+  const throttledHandleChanClaim = useCustomSharedThrottle(handleChanClaim, sharedLastTimeRef);
+  const throttledHandleInvClaim = useCustomSharedThrottle(handleInvClaim, sharedLastTimeRef);
+  const throttledHandleInspect3Claim = useCustomSharedThrottle(handleInspect3Claim, sharedLastTimeRef);
+  const throttledHandleVetoReply = useCustomSharedThrottle(handleVetoReply, sharedLastTimeRef);
   const isCurrentPres = game.currentPres === name;
   const isCurrentChan = game.currentChan === name;
   const thisPlayer = game.players.find(player => player.name === name);

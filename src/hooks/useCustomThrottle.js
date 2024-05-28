@@ -13,6 +13,17 @@ export default function useCustomThrottle(fn, delay = 1500) {
   };
 }
 
+export function useCustomSharedThrottle(fn, lastTimeRef, delay = 1500) {
+  return (...args) => {
+    const now = new Date().getTime();
+    if (now - lastTimeRef.current < delay) {
+      return;
+    }
+    lastTimeRef.current = now;
+    fn(...args);
+  };
+}
+
 // export default function useCustomThrottle(fn, dependencies) {
 //   const canCallFn = useRef(true);
 
