@@ -42,6 +42,8 @@ import voteBackPng from "../img/VoteBack.png";
 import errorPng from "../img/Error.png";
 import partyBackPng from "../img/PartyBack.png";
 import hiddenRoleBackPng from "../img/HiddenRoleBack.png";
+import notHitlerPng from "../img/NotHitler.png";
+import notHitlerSvg from "../img/NotHitler.svg";
 //card height to width ratio = 1.36
 
 // const colors.hitler = '#A72323'
@@ -424,7 +426,7 @@ export default function Players({
             <div
               style={{
                 position: "absolute",
-                zIndex: 50,
+                zIndex: game.status === Status.INV_CLAIM ? 85 : 50,
                 width: "100%",
                 height: "100%",
                 backgroundColor: "transparent",
@@ -457,6 +459,19 @@ export default function Players({
             </div>
             {showPlayerCardLabels && ( //used to be !(gameOver(status))
               <>
+                <img
+                  src={notHitlerSvg}
+                  draggable="false"
+                  style={{
+                    width: "100%",
+                    position: "absolute",
+                    zIndex: 75,
+                    top: 0,
+                    opacity: player.confirmedNotHitler ? 1 : 0,
+                    transition: "opacity 1s",
+                    width: player.confirmedNotHitler ? "100%" : "0%",
+                  }}
+                />
                 <img
                   src={presPng}
                   draggable="false"
@@ -553,8 +568,8 @@ export default function Players({
    * roleContent: 10
    * Alliance color opacity: 15
    * blind ? role: 25
-   * overlayContent: 50
-   * prev and current pres and chan: 75
+   * overlayContent: 50 for vote and 85 for investigation
+   * prev and current pres and chan and not hitler: 75
    * CircularProgress: 100
    * Dead: 150
    */
