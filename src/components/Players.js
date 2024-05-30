@@ -42,7 +42,6 @@ import voteBackPng from "../img/VoteBack.png";
 import errorPng from "../img/Error.png";
 import partyBackPng from "../img/PartyBack.png";
 import hiddenRoleBackPng from "../img/HiddenRoleBack.png";
-import notHitlerSvg from "../img/NotHitler.svg";
 import notHitlerPng from "../img/NotHitler.png";
 //card height to width ratio = 1.36
 
@@ -465,11 +464,10 @@ export default function Players({
                   style={{
                     width: "100%",
                     position: "absolute",
-                    zIndex: 75,
+                    zIndex: 76,
                     top: 0,
                     opacity: player.confirmedNotHitler ? 1 : 0,
                     transition: "opacity 1s",
-                    width: player.confirmedNotHitler ? "100%" : "0%",
                   }}
                 />
                 <img
@@ -569,7 +567,8 @@ export default function Players({
    * Alliance color opacity: 15
    * blind ? role: 25
    * overlayContent: 50 for vote and 85 for investigation
-   * prev and current pres and chan and not hitler: 75
+   * prev and current pres and chan: 75
+   * notHitler: 76 so it does not lose the opacity
    * CircularProgress: 100
    * Dead: 150
    */
