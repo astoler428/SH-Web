@@ -42,8 +42,8 @@ import voteBackPng from "../img/VoteBack.png";
 import errorPng from "../img/Error.png";
 import partyBackPng from "../img/PartyBack.png";
 import hiddenRoleBackPng from "../img/HiddenRoleBack.png";
-import notHitlerPng from "../img/NotHitler.png";
 import notHitlerSvg from "../img/NotHitler.svg";
+import notHitlerPng from "../img/NotHitler.png";
 //card height to width ratio = 1.36
 
 // const colors.hitler = '#A72323'
@@ -460,7 +460,7 @@ export default function Players({
             {showPlayerCardLabels && ( //used to be !(gameOver(status))
               <>
                 <img
-                  src={notHitlerSvg}
+                  src={notHitlerPng}
                   draggable="false"
                   style={{
                     width: "100%",
